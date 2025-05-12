@@ -1,0 +1,67 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-09 13:10:36.367148",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "lot_size",
+  "column_break_omrn",
+  "location_warehouse",
+  "barcode_length"
+ ],
+ "fields": [
+  {
+   "fieldname": "lot_size",
+   "fieldtype": "Int",
+   "label": "Lot Size"
+  },
+  {
+   "fieldname": "column_break_omrn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "barcode_length",
+   "fieldtype": "Int",
+   "label": "Barcode Length"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "label": "Location (Warehouse)",
+   "options": "Warehouse"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-05-10 14:45:17.944355",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Leaf Procurement Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -5,6 +5,16 @@ app_description = "Tobaco purchase and process system"
 app_email = "amir.baloch@sowaan.com"
 app_license = "mit"
 
+fixtures = [
+	{
+        "doctype":"Custom Field",
+		"filters":[
+			[
+				"module", "=", "Leaf Procurement"
+			]
+		]
+	}
+]
 # Apps
 # ------------------
 

@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:Quo-{#####}",
+ "creation": "2025-05-09 12:17:45.938852",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "bale_minimum_weight_kg",
+  "column_break_idjp",
+  "location_warehouse",
+  "bal_maximum_weight_kg"
+ ],
+ "fields": [
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location (Warehouse)",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_idjp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bale_minimum_weight_kg",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Bale Minimum Weight (KG)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bal_maximum_weight_kg",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Bal Maximum Weight (KG)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-10 14:49:56.771094",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Quota Setup",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

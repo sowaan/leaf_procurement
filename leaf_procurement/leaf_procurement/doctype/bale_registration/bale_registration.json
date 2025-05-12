@@ -1,0 +1,104 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-10 16:08:35.296718",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "supplier_grower",
+  "lot_size",
+  "column_break_gtqf",
+  "location_warehouse",
+  "remaining_weight",
+  "bales_in_lot",
+  "remaining_bales",
+  "section_break_ykxl",
+  "bale_registration_detail"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "supplier_grower",
+   "fieldtype": "Link",
+   "label": "Supplier (Grower)",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "bales_in_lot",
+   "fieldtype": "Read Only",
+   "label": "Bales In Lot"
+  },
+  {
+   "fieldname": "column_break_gtqf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location (Warehouse)",
+   "options": "Warehouse",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "remaining_weight",
+   "fieldtype": "Read Only",
+   "label": "Remaining Weight"
+  },
+  {
+   "fieldname": "remaining_bales",
+   "fieldtype": "Read Only",
+   "label": "Remaining Bales"
+  },
+  {
+   "fieldname": "section_break_ykxl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "lot_size",
+   "fieldtype": "Read Only",
+   "label": "Lot Size"
+  },
+  {
+   "fieldname": "bale_registration_detail",
+   "fieldtype": "Table",
+   "options": "Bale Registration Detail"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-10 16:51:29.644000",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Bale Registration",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

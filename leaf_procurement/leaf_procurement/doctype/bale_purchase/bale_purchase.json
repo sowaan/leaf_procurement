@@ -1,0 +1,100 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-11 17:03:44.022270",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "bale_registration_code",
+  "total_available",
+  "column_break_jzzd",
+  "location_warehouse",
+  "supplier_grower",
+  "total_purchased",
+  "section_break_risd",
+  "detail_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "bale_registration_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Bale Registration Code",
+   "options": "Bale Registration",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_available",
+   "fieldtype": "Int",
+   "label": "Total Available"
+  },
+  {
+   "fieldname": "column_break_jzzd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier_grower",
+   "fieldtype": "Read Only",
+   "label": "Supplier (Grower)"
+  },
+  {
+   "fieldname": "total_purchased",
+   "fieldtype": "Int",
+   "label": "Total Purchased"
+  },
+  {
+   "fieldname": "section_break_risd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Bale Purchase Detail"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location (Warehouse)",
+   "options": "Warehouse",
+   "read_only": 1,
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-12 14:15:35.089736",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Bale Purchase",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
