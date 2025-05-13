@@ -7,11 +7,11 @@
  "field_order": [
   "company",
   "bale_registration_code",
-  "total_available",
+  "total_bales",
   "column_break_jzzd",
   "location_warehouse",
   "supplier_grower",
-  "total_purchased",
+  "remaining_bales",
   "section_break_risd",
   "detail_table"
  ],
@@ -25,11 +25,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "total_available",
-   "fieldtype": "Int",
-   "label": "Total Available"
-  },
-  {
    "fieldname": "column_break_jzzd",
    "fieldtype": "Column Break"
   },
@@ -37,11 +32,6 @@
    "fieldname": "supplier_grower",
    "fieldtype": "Read Only",
    "label": "Supplier (Grower)"
-  },
-  {
-   "fieldname": "total_purchased",
-   "fieldtype": "Int",
-   "label": "Total Purchased"
   },
   {
    "fieldname": "section_break_risd",
@@ -69,12 +59,22 @@
    "options": "Warehouse",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "total_bales",
+   "fieldtype": "Read Only",
+   "label": "Total Bales"
+  },
+  {
+   "fieldname": "remaining_bales",
+   "fieldtype": "Read Only",
+   "label": "Remaining Bales"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-12 14:15:35.089736",
+ "modified": "2025-05-13 11:38:08.159843",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

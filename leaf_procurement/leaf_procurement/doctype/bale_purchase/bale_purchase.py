@@ -1,30 +1,16 @@
 # Copyright (c) 2025, Sowaan and contributors
 # For license information, please see license.txt
 
-from datetime import datetime
-import frappe
-from frappe.model.document import Document
-from frappe import _, ValidationError
+import frappe 	#type: ignore
+from frappe.model.document import Document 	#type: ignore
+from frappe import _, ValidationError 	#type: ignore
+from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BalePurchase(Document):
 	def autoname(self):
-		if not self.company or not self.location_warehouse:
-			frappe.throw("Company and Location Warehouse must be set before saving.")
+		cached_prefix = get_cached_prefix()
 
-		# Fetch Company Abbreviation
-		company_abbr = frappe.db.get_value("Company", self.company, "abbr")
-		# Fetch Warehouse Short Code
-		warehouse_code = frappe.db.get_value("Warehouse", self.location_warehouse, "custom_short_code")
-
-		if not company_abbr or not warehouse_code:
-			frappe.throw("Could not fetch Company Abbreviation or Warehouse Short Code.")
-
-		# Get current year
-		current_year = datetime.now().year
-
-		# Compose prefix
-		prefix = f"{warehouse_code}-PO-{current_year}"
-
+		prefix = f"{cached_prefix}-PO"
 
 		# Find current max number with this prefix
 		last_name = frappe.db.sql(
@@ -86,3 +72,4 @@ class BalePurchase(Document):
 				indicator='orange'
 			)
 			raise ValidationError
+	
