@@ -1,10 +1,7 @@
-    // Copyright (c) 2025, Sowaan and contributors
-    // For license information, please see license.txt
 
     frappe.ui.form.on("Bale Purchase", {
         bale_registration_code(frm) {
             if (!frm.doc.bale_registration_code) return;
-    
             frappe.call({
                 method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_registered_bale_count',
                 args: {
@@ -12,29 +9,33 @@
                 },
                 callback(r) {
                     if (r.message !== undefined) {
-                        frm.doc.total_bales = r.message;
-                        frm.doc.remaining_bales = r.message;
-                        frm.refresh_field('total_bales');
-                        frm.refresh_field('remaining_bales');
-                        toggle_add_button(frm);
+                        let count = parseInt(r.message); 
+                        if (!isNaN(count)) {
+                            frm.doc.total_bales = count;
+                            frm.doc.remaining_bales = count;
+                            frm.refresh_field('total_bales');
+                            frm.refresh_field('remaining_bales');
+            
+                            frm.clear_table('detail_table'); // optional: clear before add
+                            for (let i = 0; i < count; i++) {
+                                let row = frm.add_child('detail_table');
+                                row.index = i + 1;
+                            }
+                            frm.refresh_field('detail_table');
+            
+                            hide_grid_controls(frm);
+                        } else {
+                            frappe.msgprint("Returned value is not a number");
+                        }                        
                     }
                 }
             });
-
-            frappe.call({
-                method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_supplier',
-                args: {
-                    bale_registration_code: frm.doc.bale_registration_code
-                },
-                callback(r) {
-                    if (r.message !== undefined) {
-                        frm.doc.supplier_grower = r.message;
-                        frm.refresh_field('supplier_grower');
-
-                    }
-                }
-            });            
+    
+  
         },        
+        refresh: function(frm) {
+            hide_grid_controls(frm);
+        },
         onload: function(frm) {
             
             //override bale_registration_code query to load 
@@ -66,6 +67,7 @@
                     if (r.message) {
                         frm.set_value('company', r.message.company_name);
                         frm.set_value('location_warehouse', r.message.location_warehouse);    
+                        frm.set_value('item', r.message.default_item);                    
                     }
                 }
             });            
@@ -73,6 +75,9 @@
     });
 
     frappe.ui.form.on("Bale Purchase Detail", {
+        refresh: function(frm){
+            hide_grid_controls(frm);
+        },
         item_grade(frm, cdt, cdn) {
             frappe.model.set_value(cdt, cdn, 'item_sub_grade', '');
         },
@@ -106,15 +111,14 @@ function update_bale_counter(frm) {
     let total = frm.doc.total_bales;  // increment before recounting
     frm.doc.remaining_bales = total - (frm.doc.detail_table || []).length;
     frm.refresh_field('remaining_bales');
-    toggle_add_button(frm);
+}
+function hide_grid_controls(frm) {
+    // Hide Add Row and Delete Rows buttons
+    frm.fields_dict.detail_table.grid.wrapper
+        .find('.grid-add-row, .grid-remove-rows, .btn-open-row')
+        .hide();
 }
 
-function toggle_add_button(frm) {
-    const can_add = (frm.doc.remaining_bales > 0);
-    // Ensure the grid is rendered
-    if (frm.fields_dict.detail_table && frm.fields_dict.detail_table.grid) {
-        frm.fields_dict.detail_table.grid.toggle_add_button(can_add);
-    }
-}
+
 
 

@@ -1,19 +1,28 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{location_short_code}-{YYYY}-BR-{######}",
  "creation": "2025-05-10 16:08:35.296718",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "company",
   "supplier_grower",
-  "lot_size",
+  "remaining_weight",
   "column_break_gtqf",
   "location_warehouse",
-  "remaining_weight",
-  "bales_in_lot",
+  "item",
   "remaining_bales",
-  "section_break_ykxl",
+  "column_break_mesd",
+  "location_short_code",
+  "lot_size",
+  "bales_in_lot",
+  "section_break_riwp",
+  "scan_barcode",
+  "column_break_boca",
+  "barcode_length",
+  "column_break_ipfc",
+  "section_for_detail",
   "bale_registration_detail"
  ],
  "fields": [
@@ -61,10 +70,6 @@
    "label": "Remaining Bales"
   },
   {
-   "fieldname": "section_break_ykxl",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "lot_size",
    "fieldtype": "Read Only",
    "label": "Lot Size"
@@ -73,15 +78,60 @@
    "fieldname": "bale_registration_detail",
    "fieldtype": "Table",
    "options": "Bale Registration Detail"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "location_warehouse.custom_short_code",
+   "fieldname": "location_short_code",
+   "fieldtype": "Data",
+   "label": "Location Short Code"
+  },
+  {
+   "fieldname": "section_for_detail",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_riwp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Barcode"
+  },
+  {
+   "fieldname": "column_break_mesd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_boca",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ipfc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "barcode_length",
+   "fieldtype": "Read Only",
+   "label": "Barcode Length"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-10 16:51:29.644000",
+ "modified": "2025-05-14 14:59:36.499251",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

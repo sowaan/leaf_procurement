@@ -1,51 +1,24 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{location_short_code}-{YYYY}-BP-{######}",
- "creation": "2025-05-11 17:03:44.022270",
+ "autoname": "format:{location_short_code}-{YYYY}-BW-{######}",
+ "creation": "2025-05-13 12:02:39.080025",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "company",
   "bale_registration_code",
   "item",
-  "column_break_jzzd",
+  "column_break_zlih",
   "location_warehouse",
   "location_short_code",
   "supplier_grower",
   "total_bales",
   "remaining_bales",
-  "section_break_risd",
+  "section_break_lrtu",
   "detail_table"
  ],
  "fields": [
-  {
-   "fieldname": "bale_registration_code",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Bale Registration Code",
-   "options": "Bale Registration",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_jzzd",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "bale_registration_code.supplier_grower",
-   "fieldname": "supplier_grower",
-   "fieldtype": "Read Only",
-   "label": "Supplier (Grower)"
-  },
-  {
-   "fieldname": "section_break_risd",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "detail_table",
-   "fieldtype": "Table",
-   "options": "Bale Purchase Detail"
-  },
   {
    "fieldname": "company",
    "fieldtype": "Link",
@@ -54,6 +27,10 @@
    "options": "Company",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zlih",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "location_warehouse",
@@ -65,6 +42,19 @@
    "reqd": 1
   },
   {
+   "fieldname": "bale_registration_code",
+   "fieldtype": "Link",
+   "label": "Bale Registration Code",
+   "options": "Bale Registration",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "bale_registration_code.supplier_grower",
+   "fieldname": "supplier_grower",
+   "fieldtype": "Read Only",
+   "label": "Supplier (Grower)"
+  },
+  {
    "fieldname": "total_bales",
    "fieldtype": "Read Only",
    "label": "Total Bales"
@@ -73,6 +63,15 @@
    "fieldname": "remaining_bales",
    "fieldtype": "Read Only",
    "label": "Remaining Bales"
+  },
+  {
+   "fieldname": "section_break_lrtu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Bale Weight Detail"
   },
   {
    "fieldname": "item",
@@ -91,10 +90,10 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 14:35:50.800959",
+ "modified": "2025-05-14 14:38:50.536647",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
- "name": "Bale Purchase",
+ "name": "Bale Weight Info",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

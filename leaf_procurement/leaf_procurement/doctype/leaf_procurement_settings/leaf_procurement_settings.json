@@ -7,6 +7,7 @@
  "field_order": [
   "company_name",
   "lot_size",
+  "default_item",
   "column_break_omrn",
   "location_warehouse",
   "barcode_length"
@@ -37,13 +38,19 @@
    "fieldtype": "Link",
    "label": "Location (Warehouse)",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "default_item",
+   "fieldtype": "Link",
+   "label": "Default Item",
+   "options": "Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-10 14:45:17.944355",
+ "modified": "2025-05-13 14:43:52.983468",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

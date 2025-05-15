@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-05-12 10:01:00.302073",
+ "creation": "2025-05-13 12:13:48.091561",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -9,6 +9,7 @@
   "bale_barcode",
   "item_grade",
   "item_sub_grade",
+  "weight",
   "rate"
  ],
  "fields": [
@@ -42,16 +43,23 @@
    "label": "Rate",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weight",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-13 14:09:10.605412",
+ "modified": "2025-05-13 14:08:34.137231",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
- "name": "Bale Purchase Detail",
+ "name": "Bale Weight Detail",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
