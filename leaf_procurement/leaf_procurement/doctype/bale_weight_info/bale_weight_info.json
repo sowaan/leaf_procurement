@@ -11,8 +11,9 @@
   "item",
   "column_break_zlih",
   "location_warehouse",
-  "location_short_code",
   "supplier_grower",
+  "column_break_ceqy",
+  "location_short_code",
   "total_bales",
   "remaining_bales",
   "section_break_lrtu",
@@ -52,16 +53,20 @@
    "fetch_from": "bale_registration_code.supplier_grower",
    "fieldname": "supplier_grower",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Supplier (Grower)"
   },
   {
+   "fetch_from": "bale_registration_code.bales_in_lot",
    "fieldname": "total_bales",
    "fieldtype": "Read Only",
    "label": "Total Bales"
   },
   {
+   "fetch_from": "bale_registration_code.bales_in_lot",
    "fieldname": "remaining_bales",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Remaining Bales"
   },
   {
@@ -85,12 +90,16 @@
    "fieldname": "location_short_code",
    "fieldtype": "Read Only",
    "label": "Location Short Code"
+  },
+  {
+   "fieldname": "column_break_ceqy",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 14:38:50.536647",
+ "modified": "2025-05-15 12:21:45.191611",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

@@ -4,44 +4,34 @@
 frappe.ui.form.on("Bale Weight Info", {
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
+        let count = parseInt(frm.doc.total_bales); 
+        frm.clear_table('detail_table'); // optional: clear before add
+        for (let i = 0; i < count; i++) {
+            let row = frm.add_child('detail_table');
+            row.index = i + 1;
+        }
+        frm.refresh_field('detail_table');
 
         frappe.call({
-            method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_registered_bale_count',
+            method: 'frappe.client.get',
             args: {
-                bale_registration_code: frm.doc.bale_registration_code
+                doctype: 'Bale Registration',
+                name: frm.doc.bale_registration_code
             },
-            callback(r) {
-                if (r.message !== undefined) {
-                    let count = parseInt(r.message); 
-                    if (!isNaN(count)) {
-                        frm.doc.total_bales = count;
-                        frm.doc.remaining_bales = count;
-                        frm.refresh_field('total_bales');
-                        frm.refresh_field('remaining_bales');
-        
-                        frm.clear_table('detail_table'); // optional: clear before add
-                        for (let i = 0; i < count; i++) {
-                            let row = frm.add_child('detail_table');
-                            row.index = i + 1;
-                        }
-                        frm.refresh_field('detail_table');
-        
-                        hide_grid_controls(frm);
-                    } else {
-                        frappe.msgprint("Returned value is not a number");
-                    }                        
+            callback: function (r) {
+                if (r.message) {
+                    const details = r.message.bale_registration_detail || [];
+                    // Store barcodes in a temporary variable
+                    frm.bale_registration_barcodes = details.map(row => row.bale_barcode);
+                    console.log(frm.bale_registration_barcodes);
                 }
             }
-        });
-
-           
+        });        
     },        
     refresh: function(frm){
         hide_grid_controls(frm);
-
     },
     onload: function(frm) {
-        
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record
         frm.set_query('bale_registration_code', function() {
@@ -104,12 +94,21 @@ frappe.ui.form.on("Bale Weight Detail", {
             });
         }
     },
-    bale_barcode(frm, cdt, cdn) {
-        update_bale_counter(frm);
-    },
-    bale_purchase_detail_remove(frm) {
-        update_bale_counter(frm);
-    }        
+    bale_barcode: function (frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+        const valid_barcodes = frm.bale_registration_barcodes || [];
+
+        if (!valid_barcodes.includes(row.bale_barcode)) {
+            frappe.msgprint(__('Invalid Bale Barcode: {0}', [row.bale_barcode]));
+            frappe.model.set_value(cdt, cdn, 'bale_barcode', '');
+        }
+    },    
+    // bale_barcode(frm, cdt, cdn) {
+    //     update_bale_counter(frm);
+    // },
+    // bale_purchase_detail_remove(frm) {
+    //     update_bale_counter(frm);
+    // }        
 });  
 
 function hide_grid_controls(frm) {

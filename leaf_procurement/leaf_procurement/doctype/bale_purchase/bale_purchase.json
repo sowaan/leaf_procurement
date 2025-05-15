@@ -11,8 +11,9 @@
   "item",
   "column_break_jzzd",
   "location_warehouse",
-  "location_short_code",
   "supplier_grower",
+  "column_break_xwsz",
+  "location_short_code",
   "total_bales",
   "remaining_bales",
   "section_break_risd",
@@ -65,13 +66,16 @@
    "reqd": 1
   },
   {
+   "fetch_from": "bale_registration_code.bales_in_lot",
    "fieldname": "total_bales",
    "fieldtype": "Read Only",
    "label": "Total Bales"
   },
   {
+   "fetch_from": "bale_registration_code.bales_in_lot",
    "fieldname": "remaining_bales",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Remaining Bales"
   },
   {
@@ -79,6 +83,7 @@
    "fieldtype": "Link",
    "label": "Item",
    "options": "Item",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -86,12 +91,16 @@
    "fieldname": "location_short_code",
    "fieldtype": "Read Only",
    "label": "Location Short Code"
+  },
+  {
+   "fieldname": "column_break_xwsz",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 14:35:50.800959",
+ "modified": "2025-05-15 11:46:28.532478",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",
