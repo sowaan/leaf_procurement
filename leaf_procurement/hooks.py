@@ -13,8 +13,21 @@ fixtures = [
 				"module", "=", "Leaf Procurement"
 			]
 		]
-	}
+	},
+	{
+        "doctype":"Inventory Dimension",
+		"filters":[
+			[
+				"name", "in", ("Sub Grade","Grade", "Lot Number")
+			]
+		]
+	}    
 ]
+doc_events = {
+    "Supplier": {
+        "validate": "leaf_procurement.leaf_procurement.custom.doctype.supplier.supplier.validate_unique_nic"
+    }
+}
 # Apps
 # ------------------
 

@@ -6,10 +6,11 @@
  "engine": "InnoDB",
  "field_order": [
   "company_name",
-  "lot_size",
   "default_item",
+  "lot_size",
   "column_break_omrn",
   "location_warehouse",
+  "rejected_location_warehouse",
   "barcode_length"
  ],
  "fields": [
@@ -44,13 +45,19 @@
    "fieldtype": "Link",
    "label": "Default Item",
    "options": "Item"
+  },
+  {
+   "fieldname": "rejected_location_warehouse",
+   "fieldtype": "Link",
+   "label": "Rejected Location (Warehouse)",
+   "options": "Warehouse"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-13 14:43:52.983468",
+ "modified": "2025-05-16 16:14:14.764818",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

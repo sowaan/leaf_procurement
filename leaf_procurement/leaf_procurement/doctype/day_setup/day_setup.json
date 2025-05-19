@@ -59,6 +59,7 @@
    "label": "Due Date"
   },
   {
+   "depends_on": "eval:parent.payment_method === 'Bank Draft'",
    "fieldname": "bank",
    "fieldtype": "Link",
    "label": "Bank",
@@ -74,7 +75,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-12 12:29:38.766245",
+ "modified": "2025-05-16 18:35:25.557778",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",

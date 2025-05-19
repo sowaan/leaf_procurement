@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{location_short_code}-{YYYY}-BR-{######}",
+ "autoname": "format:{location_short_code}-{YYYY}-{MM}-{DD}-{######}",
  "creation": "2025-05-10 16:08:35.296718",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -15,6 +15,7 @@
   "remaining_bales",
   "column_break_mesd",
   "location_short_code",
+  "date",
   "lot_size",
   "bales_in_lot",
   "section_break_riwp",
@@ -39,11 +40,13 @@
    "fieldname": "supplier_grower",
    "fieldtype": "Link",
    "label": "Supplier (Grower)",
-   "options": "Supplier"
+   "options": "Supplier",
+   "reqd": 1
   },
   {
    "fieldname": "bales_in_lot",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Bales In Lot"
   },
   {
@@ -122,12 +125,19 @@
    "fieldname": "barcode_length",
    "fieldtype": "Read Only",
    "label": "Barcode Length"
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-14 14:59:36.499251",
+ "modified": "2025-05-19 14:27:48.690428",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

@@ -11,6 +11,18 @@ class BalePurchase(Document):
 		if not self.bale_registration_code:
 			return
 
+		day_open = frappe.get_all("Day Setup",
+			filters={
+				"date": self.date,
+				"day_open_time": ["is", "set"],
+				"day_close_time": ["is", "not set"]
+			},
+			fields=["name"]
+		)
+
+		if not day_open:
+			frappe.throw(_("⚠️ You cannot register bales because the day is either not opened or already closed."))
+
 		# Get all registered bale barcodes for this registration
 		registered_bales = frappe.get_all(
 			"Bale Registration Detail",

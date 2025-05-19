@@ -8,12 +8,14 @@
  "field_order": [
   "company",
   "bale_registration_code",
-  "item",
+  "date",
   "column_break_jzzd",
   "location_warehouse",
   "supplier_grower",
+  "item",
   "column_break_xwsz",
   "location_short_code",
+  "registration_date",
   "total_bales",
   "remaining_bales",
   "section_break_risd",
@@ -95,12 +97,25 @@
   {
    "fieldname": "column_break_xwsz",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Purchase Date",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "bale_registration_code.date",
+   "fieldname": "registration_date",
+   "fieldtype": "Read Only",
+   "label": "Bale Registration Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-15 11:46:28.532478",
+ "modified": "2025-05-19 14:31:20.216434",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

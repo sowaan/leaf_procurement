@@ -2,6 +2,17 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Day Setup", {
+    set_due_date_min: function(frm) {
+        if (frm.doc.date) {
+            // Convert frappe date string (YYYY-MM-DD) to JavaScript Date object
+            let parts = frm.doc.date.split('-'); // [YYYY, MM, DD]
+            let jsDate = new Date(parts[0], parts[1] - 1, Number(parts[2]) + 1); // add 1 day
+
+            frm.set_df_property('due_date', 'min_date', jsDate); // JS Date object
+        } else {
+            frm.set_df_property('due_date', 'min_date', null);
+        }
+    },
 	refresh(frm) {
         frm.clear_custom_buttons();
 
@@ -31,7 +42,21 @@ frappe.ui.form.on("Day Setup", {
             }, __('Actions'));
         }
 	},
+    date: function (frm) {
+        frm.events.set_due_date_min(frm);
+
+        // Compare with today's date
+        let today = frappe.datetime.get_today();
+        if (frm.doc.date !== today) {
+            frappe.msgprint({
+                title: __('Caution'),
+                message: __('Selected date ({0}) is not today ({1}).', [frm.doc.date, today]),
+                indicator: 'orange'
+            });
+        }        
+    },    
     onload: function(frm) {
+        frm.events.set_due_date_min(frm);
         frappe.call({
             method: 'frappe.client.get',
             args: {

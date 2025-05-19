@@ -4,6 +4,8 @@
 frappe.ui.form.on("Bale Weight Info", {
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
+
+        validate_day_status(frm);        
         let count = parseInt(frm.doc.total_bales); 
         frm.clear_table('detail_table'); // optional: clear before add
         for (let i = 0; i < count; i++) {
@@ -29,8 +31,29 @@ frappe.ui.form.on("Bale Weight Info", {
         });        
     },        
     refresh: function(frm){
-        hide_grid_controls(frm);
+        //if (frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
+        if (!frm.is_new() && !frm.doc.purchase_receipt_created) {
+            frm.add_custom_button(__('Create Purchase Invoice'), function () {
+                frappe.call({
+                    method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.create_purchase_invoice',
+                    args: {
+                        bale_weight_info_name: frm.doc.name
+                    },
+                    callback: function (r) {
+                        if (r.message) {
+                            frappe.msgprint(__('Purchase Receipt {0} created.', [r.message]));
+                            frm.reload_doc();
+                        }
+                    }
+                });
+            });
+        }
+        //hide_grid_controls(frm);
+
     },
+    date: function(frm) {
+        validate_day_status(frm);
+    },    
     onload: function(frm) {
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record
@@ -61,10 +84,13 @@ frappe.ui.form.on("Bale Weight Info", {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
                     frm.set_value('location_warehouse', r.message.location_warehouse);    
+                    frm.set_value('rejected_item_location', r.message.rejected_location_warehouse);    
+                    
                     frm.set_value('item', r.message.default_item);    
                 }
             }
-        });            
+        });  
+        hide_grid_controls(frm);                  
     }        
 });
 
@@ -111,12 +137,7 @@ frappe.ui.form.on("Bale Weight Detail", {
     // }        
 });  
 
-function hide_grid_controls(frm) {
-    // Hide Add Row and Delete Rows buttons
-    frm.fields_dict.detail_table.grid.wrapper
-        .find('.grid-add-row, .grid-remove-rows, .btn-open-row')
-        .hide();
-}
+
 
 function update_bale_counter(frm) {
     let total = frm.doc.total_bales;  // increment before recounting
@@ -124,4 +145,72 @@ function update_bale_counter(frm) {
     frm.refresh_field('remaining_bales');
 }
 
+function validate_day_status(frm) {
+    if (!frm.doc.date) return;
 
+    // If registration_date is set, validate it matches doc.date
+    if (frm.doc.registration_date) {
+        if (frm.doc.date !== frm.doc.registration_date) {
+            frappe.msgprint({
+                title: __("Date Mismatch"),
+                message: __("⚠️ The selected Bale Registration was created on <b>{0}</b>, which does not match this document's date <b>{1}</b>.")
+                    .replace('{0}', frm.doc.registration_date)
+                    .replace('{1}', frm.doc.date),
+                indicator: 'red'
+            });
+            toggle_fields(frm, false);
+            return;
+        }
+    }
+
+    // Proceed to check if the day is open
+    check_day_open_status(frm);
+}
+function check_day_open_status(frm) {
+    frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Day Setup",
+            filters: {
+                date: frm.doc.date,
+                day_open_time: ["is", "set"],
+                day_close_time: ["is", "not set"]
+            },
+            fields: ["name"]
+        },
+        callback: function(r) {
+            const is_day_open = r.message && r.message.length > 0;
+
+            toggle_fields(frm, is_day_open);
+
+            if (!is_day_open) {
+                frappe.msgprint({
+                    title: __("Day Not Open"),
+                    message: __("⚠️ You cannot register or purchase bales because the day is either not opened or already closed."),
+                    indicator: 'red'
+                });
+            }
+        }
+    });
+}
+
+
+function toggle_fields(frm, enable) {
+    // Replace 'bale_purchase_detail' with your actual child table fieldname
+    frm.toggle_display('detail_table', enable);
+
+    // Optionally, clear any error messages or refresh the field
+    frm.refresh_field('detail_table');
+    hide_grid_controls(frm);
+}
+
+function hide_grid_controls(frm) {
+
+    const grid_field = frm.fields_dict.detail_table;
+   // console.log ('hello',grid_field,grid_field.grid,grid_field.grid.wrapper);
+    if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
+        grid_field.grid.wrapper
+            .find('.grid-add-row, .grid-remove-rows, .btn-open-row')
+            .hide();
+    }
+}

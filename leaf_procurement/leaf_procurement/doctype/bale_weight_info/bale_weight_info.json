@@ -8,14 +8,18 @@
  "field_order": [
   "company",
   "bale_registration_code",
-  "item",
+  "date",
+  "purchase_receipt_created",
   "column_break_zlih",
   "location_warehouse",
   "supplier_grower",
+  "item",
   "column_break_ceqy",
   "location_short_code",
+  "registration_date",
   "total_bales",
   "remaining_bales",
+  "rejected_item_location",
   "section_break_lrtu",
   "detail_table"
  ],
@@ -94,12 +98,38 @@
   {
    "fieldname": "column_break_ceqy",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "purchase_receipt_created",
+   "fieldtype": "Check",
+   "label": "Purchase Invoice Created"
+  },
+  {
+   "fieldname": "rejected_item_location",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Rejected Item Location",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "bale_registration_code.date",
+   "fieldname": "registration_date",
+   "fieldtype": "Read Only",
+   "label": "Bale Registration Date"
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Weighment Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-15 12:21:45.191611",
+ "modified": "2025-05-19 15:17:13.483595",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

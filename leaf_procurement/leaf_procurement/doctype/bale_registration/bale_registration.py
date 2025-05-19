@@ -3,32 +3,50 @@
 
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
+from frappe import _, ValidationError 	#type: ignore
 
 
-from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BaleRegistration(Document):
-    pass
-    # def autoname(self):
-    #     cached_prefix = get_cached_prefix()
+    def validate(self):
+        day_open = frappe.get_all("Day Setup",
+            filters={
+                "date": self.date,
+                "day_open_time": ["is", "set"],
+                "day_close_time": ["is", "not set"]
+            },
+            fields=["name"]
+        )
 
-    #     prefix = f"{cached_prefix}-BR"
+        if not day_open:
+            frappe.throw(_("⚠️ You cannot register bales because the day is either not opened or already closed."))
+
+        expected_count = self.lot_size
+        entered_count = len(self.bale_registration_detail or [])
+        if entered_count > expected_count:
+            frappe.msgprint(
+                msg=_("⚠️ The number of bales entered is <b>{0}</b>, but the maximum number of bales allowed in a lot is <b>{1}</b> for Bale Registration.".format(
+                    entered_count, expected_count
+                )),
+                title=_("Mismatch in Bale Count"),
+                indicator='orange'
+            )
+            raise ValidationError
         
+        invalid_barcodes = []
 
-    #     # Find current max number with this prefix
-    #     last_name = frappe.db.sql(
-    #         """
-    #         SELECT name FROM `tabBale Registration`
-    #         WHERE name LIKE %s ORDER BY name DESC LIMIT 1
-    #         """,
-    #         (prefix + "-%%%%%",),
-    #     )
+        for row in self.bale_registration_detail:
+            if not row.bale_barcode.isdigit() or len(row.bale_barcode) != self.barcode_length:
+                invalid_barcodes.append(row.bale_barcode)
 
-    #     if last_name:
-    #         last_number = int(last_name[0][0].split("-")[-1])
-    #         next_number = last_number + 1
-    #     else:
-    #         next_number = 1
+        invalid_barcodes_list = "<br>".join(invalid_barcodes)
 
-    #     self.name = f"{prefix}-{next_number:05d}"
-
+        if invalid_barcodes:
+            frappe.msgprint(
+                msg=_("⚠️ The following barcodes are invalid (must be <b>{0}</b> digits and only numeric values are allowed for barcode).<br><br>{1}".format(
+                    self.barcode_length, invalid_barcodes_list
+                )),
+                title=_("Incorrect Barcodes Found"),
+                indicator='orange'
+            )
+            raise ValidationError
