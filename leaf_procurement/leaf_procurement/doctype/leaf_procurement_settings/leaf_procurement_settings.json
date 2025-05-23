@@ -7,10 +7,13 @@
  "field_order": [
   "company_name",
   "default_item",
+  "rejected_item_sub_grade",
   "lot_size",
   "column_break_omrn",
   "location_warehouse",
+  "rejected_item_grade",
   "rejected_location_warehouse",
+  "transport_charges_item",
   "barcode_length"
  ],
  "fields": [
@@ -51,13 +54,31 @@
    "fieldtype": "Link",
    "label": "Rejected Location (Warehouse)",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "rejected_item_grade",
+   "fieldtype": "Link",
+   "label": "Rejected Item Grade",
+   "options": "Item Grade"
+  },
+  {
+   "fieldname": "transport_charges_item",
+   "fieldtype": "Link",
+   "label": "Transport Charges Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "rejected_item_sub_grade",
+   "fieldtype": "Link",
+   "label": "Rejected Item Sub Grade",
+   "options": "Item Sub Grade"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-16 16:14:14.764818",
+ "modified": "2025-05-21 14:08:38.559255",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

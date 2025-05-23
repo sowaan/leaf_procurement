@@ -28,7 +28,9 @@
    "default": "Today",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
   },
   {
    "fieldname": "payment_method",
@@ -39,6 +41,7 @@
   {
    "fieldname": "day_open_time",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Day Open Time",
    "read_only": 1
   },
@@ -68,6 +71,7 @@
   {
    "fieldname": "day_close_time",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Day Close Time",
    "read_only": 1
   }
@@ -75,7 +79,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-16 18:35:25.557778",
+ "modified": "2025-05-21 12:39:30.930685",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",

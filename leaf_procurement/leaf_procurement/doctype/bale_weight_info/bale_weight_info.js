@@ -25,7 +25,6 @@ frappe.ui.form.on("Bale Weight Info", {
                     const details = r.message.bale_registration_detail || [];
                     // Store barcodes in a temporary variable
                     frm.bale_registration_barcodes = details.map(row => row.bale_barcode);
-                    console.log(frm.bale_registration_barcodes);
                 }
             }
         });        
@@ -41,7 +40,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     },
                     callback: function (r) {
                         if (r.message) {
-                            frappe.msgprint(__('Purchase Receipt {0} created.', [r.message]));
+                            frappe.msgprint(__('Purchase Invoice {0} created.', [r.message]));
                             frm.reload_doc();
                         }
                     }
@@ -86,8 +85,11 @@ frappe.ui.form.on("Bale Weight Info", {
                     frm.set_value('location_warehouse', r.message.location_warehouse);    
                     frm.set_value('rejected_item_location', r.message.rejected_location_warehouse);    
                     
-                    frm.set_value('item', r.message.default_item);    
-                }
+                    frm.set_value('item', r.message.default_item); 
+                    frm.set_value('rejected_item_grade', r.message.rejected_item_grade); 
+                    frm.set_value('rejected_item_sub_grade', r.message.rejected_item_sub_grade); 
+                    frm.set_value('transport_charges_item', r.message.transport_charges_item);                                            
+                }   
             }
         });  
         hide_grid_controls(frm);                  
@@ -95,10 +97,46 @@ frappe.ui.form.on("Bale Weight Info", {
 });
 
 frappe.ui.form.on("Bale Weight Detail", {
+    get_weight_btn: function(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+
+        frappe.prompt(
+            [
+                {
+                    fieldname: 'p_item_grade',
+                    label: 'Item Grade',
+                    fieldtype: 'Data',
+                    default: row.item_grade,
+                    read_only: 1
+                },
+                {
+                    fieldname: 'p_item_sub_grade',
+                    label: 'Item Sub Grade',
+                    fieldtype: 'Data',
+                    default: row.item_sub_grade,
+                    read_only: 1
+                },
+                {
+                    fieldname: 'p_weight',
+                    label: 'Captured Weight',
+                    fieldtype: 'Float',
+                    reqd: 1,
+                    description: 'Connect to the device and press Get Weight'
+                }
+            ],
+            async function(values) {
+                let simulatedWeight = values.p_weight;
+                frappe.model.set_value(cdt, cdn, 'weight', parseFloat(simulatedWeight).toFixed(2));
+            },
+            'Get Weight',
+            'Capture Weight'
+        );
+    },    
     refresh: function(frm){
         hide_grid_controls(frm);
 
     },    
+  
     item_grade(frm, cdt, cdn) {
         frappe.model.set_value(cdt, cdn, 'item_sub_grade', '');
     },
@@ -109,6 +147,9 @@ frappe.ui.form.on("Bale Weight Detail", {
             frappe.call({
                 method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
                 args: {
+                    company: frm.doc.company,
+                    location_warehouse: frm.doc.location_warehouse,
+                    item: frm.doc.item,
                     item_grade: row.item_grade,
                     item_sub_grade: row.item_sub_grade
                 },
@@ -137,8 +178,6 @@ frappe.ui.form.on("Bale Weight Detail", {
     // }        
 });  
 
-
-
 function update_bale_counter(frm) {
     let total = frm.doc.total_bales;  // increment before recounting
     frm.doc.remaining_bales = total - (frm.doc.detail_table || []).length;
@@ -162,7 +201,6 @@ function validate_day_status(frm) {
             return;
         }
     }
-
     // Proceed to check if the day is open
     check_day_open_status(frm);
 }
@@ -207,7 +245,6 @@ function toggle_fields(frm, enable) {
 function hide_grid_controls(frm) {
 
     const grid_field = frm.fields_dict.detail_table;
-   // console.log ('hello',grid_field,grid_field.grid,grid_field.grid.wrapper);
     if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
         grid_field.grid.wrapper
             .find('.grid-add-row, .grid-remove-rows, .btn-open-row')

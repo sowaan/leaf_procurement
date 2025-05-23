@@ -85,6 +85,9 @@ frappe.ui.form.on("Bale Purchase Detail", {
             frappe.call({
                 method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
                 args: {
+                    company: frm.doc.company,
+                    location_warehouse: frm.doc.location_warehouse,
+                    item: frm.doc.item,
                     item_grade: row.item_grade,
                     item_sub_grade: row.item_sub_grade
                 },

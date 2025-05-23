@@ -9,11 +9,15 @@
   "company",
   "bale_registration_code",
   "date",
-  "purchase_receipt_created",
+  "purchase_invoice",
+  "rejected_item_grade",
+  "rejected_item_sub_grade",
   "column_break_zlih",
   "location_warehouse",
   "supplier_grower",
   "item",
+  "purchase_receipt_created",
+  "transport_charges_item",
   "column_break_ceqy",
   "location_short_code",
   "registration_date",
@@ -51,7 +55,8 @@
    "fieldtype": "Link",
    "label": "Bale Registration Code",
    "options": "Bale Registration",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fetch_from": "bale_registration_code.supplier_grower",
@@ -87,6 +92,7 @@
    "fieldtype": "Link",
    "label": "Item",
    "options": "Item",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -124,12 +130,42 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Weighment Date"
+  },
+  {
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Link",
+   "label": "Purchase Invoice",
+   "options": "Purchase Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rejected_item_grade",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Rejected Item Grade",
+   "options": "Item Grade",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transport_charges_item",
+   "fieldtype": "Link",
+   "label": "Transport Charges Item",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rejected_item_sub_grade",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Rejected Item Sub Grade",
+   "options": "Item Sub Grade",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-19 15:17:13.483595",
+ "modified": "2025-05-22 11:25:47.675524",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

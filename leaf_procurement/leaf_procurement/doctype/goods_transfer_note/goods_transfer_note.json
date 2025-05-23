@@ -1,0 +1,200 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{location_short_code}-GTN-{YYYY}-{######}",
+ "creation": "2025-05-22 14:22:10.926317",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "date",
+  "driver",
+  "driver_mobile",
+  "transport_type",
+  "column_break_vvyy",
+  "location_warehouse",
+  "receiving_location",
+  "driver_name",
+  "vehicle_number",
+  "tsa_number",
+  "column_break_qkth",
+  "default_item",
+  "receiving_warehouse_mobile",
+  "driver_cnic",
+  "freight",
+  "reverse_confirmation_mobile",
+  "location_short_code",
+  "section_break_nppb",
+  "scan_barcode",
+  "column_break_qsdm",
+  "barcode_length",
+  "column_break_vomc",
+  "section_break_sgpc",
+  "bale_registration_detail"
+ ],
+ "fields": [
+  {
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "label": "Driver",
+   "options": "Driver"
+  },
+  {
+   "fieldname": "column_break_vvyy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiving_location",
+   "fieldtype": "Link",
+   "label": "Receiving Location",
+   "options": "Warehouse"
+  },
+  {
+   "fetch_from": "driver.full_name",
+   "fieldname": "driver_name",
+   "fieldtype": "Read Only",
+   "label": "Driver Name"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "label": "Dispatch Location",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "driver.custom_cnic_number",
+   "fieldname": "driver_cnic",
+   "fieldtype": "Read Only",
+   "label": "Driver CNIC"
+  },
+  {
+   "fetch_from": "driver.custom_vehicle_plate_number",
+   "fieldname": "vehicle_number",
+   "fieldtype": "Read Only",
+   "label": "Vehicle Number"
+  },
+  {
+   "fetch_from": "driver.cell_number",
+   "fieldname": "driver_mobile",
+   "fieldtype": "Read Only",
+   "label": "Driver Mobile"
+  },
+  {
+   "fetch_from": "driver.custom_freight_to_be_paid",
+   "fieldname": "freight",
+   "fieldtype": "Read Only",
+   "label": "Freight"
+  },
+  {
+   "fieldname": "column_break_qkth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "location_warehouse.custom_short_code",
+   "fieldname": "location_short_code",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Location Short Code"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "transport_type",
+   "fieldtype": "Link",
+   "label": "Transport Type",
+   "options": "Transport Type"
+  },
+  {
+   "fetch_from": "receiving_location.mobile_no",
+   "fieldname": "receiving_warehouse_mobile",
+   "fieldtype": "Read Only",
+   "label": "Receiving Warehouse Mobile"
+  },
+  {
+   "fieldname": "tsa_number",
+   "fieldtype": "Data",
+   "label": "TSA Number"
+  },
+  {
+   "fieldname": "reverse_confirmation_mobile",
+   "fieldtype": "Data",
+   "label": "Reverse Confirmation Mobile"
+  },
+  {
+   "fieldname": "section_break_nppb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qsdm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "barcode_length",
+   "fieldtype": "Read Only",
+   "label": "Barcode Length"
+  },
+  {
+   "fieldname": "column_break_vomc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_sgpc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bale_registration_detail",
+   "fieldtype": "Table",
+   "options": "Goods Transfer Note Items"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Bale Barcode"
+  },
+  {
+   "fieldname": "default_item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-23 16:01:20.557374",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Goods Transfer Note",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
