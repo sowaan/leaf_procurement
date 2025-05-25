@@ -25,7 +25,8 @@
   "remaining_bales",
   "rejected_item_location",
   "section_break_lrtu",
-  "detail_table"
+  "detail_table",
+  "amended_from"
  ],
  "fields": [
   {
@@ -83,6 +84,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "detail_table",
    "fieldtype": "Table",
    "options": "Bale Weight Detail"
@@ -149,6 +151,7 @@
   {
    "fieldname": "transport_charges_item",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Transport Charges Item",
    "options": "Item",
    "read_only": 1
@@ -160,12 +163,23 @@
    "label": "Rejected Item Sub Grade",
    "options": "Item Sub Grade",
    "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bale Weight Info",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-05-22 11:25:47.675524",
+ "modified": "2025-05-23 17:07:47.442286",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

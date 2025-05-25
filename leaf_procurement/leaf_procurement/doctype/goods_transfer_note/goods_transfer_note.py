@@ -6,10 +6,10 @@ from frappe.model.document import Document # type: ignore
 
 
 class GoodsTransferNote(Document):
-	# def on_submit(self):
-	# 	create_stock_entry_from_gtn(self)
-    def on_update(self):
-        create_stock_entry_from_gtn(self)
+	def on_submit(self):
+		create_stock_entry_from_gtn(self)
+    # def on_update(self):
+    #     create_stock_entry_from_gtn(self)
         
 def create_stock_entry_from_gtn(gtn_doc):
     if not gtn_doc.location_warehouse or not gtn_doc.receiving_location:

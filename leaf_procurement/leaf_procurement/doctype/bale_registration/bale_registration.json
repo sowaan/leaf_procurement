@@ -24,7 +24,8 @@
   "barcode_length",
   "column_break_ipfc",
   "section_for_detail",
-  "bale_registration_detail"
+  "bale_registration_detail",
+  "amended_from"
  ],
  "fields": [
   {
@@ -132,12 +133,23 @@
    "fieldtype": "Date",
    "label": "Date",
    "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bale Registration",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-05-21 12:38:07.465237",
+ "modified": "2025-05-23 16:33:06.005931",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

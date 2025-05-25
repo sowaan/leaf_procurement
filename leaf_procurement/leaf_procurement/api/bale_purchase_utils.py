@@ -13,6 +13,7 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
             AND bale_registration_code IS NOT NULL
         )
         AND name LIKE %(txt)s
+                         AND docstatus=1
         ORDER BY name
         LIMIT %(start)s, %(page_len)s
     """, {

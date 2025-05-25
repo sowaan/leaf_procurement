@@ -19,7 +19,8 @@
   "total_bales",
   "remaining_bales",
   "section_break_risd",
-  "detail_table"
+  "detail_table",
+  "amended_from"
  ],
  "fields": [
   {
@@ -111,12 +112,23 @@
    "fieldname": "registration_date",
    "fieldtype": "Read Only",
    "label": "Bale Registration Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bale Purchase",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-05-21 13:23:13.655310",
+ "modified": "2025-05-23 16:41:59.526306",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

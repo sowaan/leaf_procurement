@@ -183,6 +183,7 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
             WHERE bwi.bale_registration_code = br.name
         )
         AND br.name LIKE %(txt)s
+        and br.docstatus=1 and bp.docstatus=1
         ORDER BY br.name
         LIMIT %(start)s, %(page_len)s
     """, {
