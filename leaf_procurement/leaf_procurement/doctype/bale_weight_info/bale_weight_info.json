@@ -18,12 +18,15 @@
   "item",
   "purchase_receipt_created",
   "transport_charges_item",
+  "barcode_length",
   "column_break_ceqy",
   "location_short_code",
   "registration_date",
   "total_bales",
   "remaining_bales",
   "rejected_item_location",
+  "section_break_zoru",
+  "add_weight_information",
   "section_break_lrtu",
   "detail_table",
   "amended_from"
@@ -40,7 +43,8 @@
   },
   {
    "fieldname": "column_break_zlih",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "fieldname": "location_warehouse",
@@ -54,7 +58,7 @@
   {
    "fieldname": "bale_registration_code",
    "fieldtype": "Link",
-   "label": "Bale Registration Code",
+   "label": "Bale Registration Code (Lot #)",
    "options": "Bale Registration",
    "reqd": 1,
    "unique": 1
@@ -87,7 +91,8 @@
    "allow_on_submit": 1,
    "fieldname": "detail_table",
    "fieldtype": "Table",
-   "options": "Bale Weight Detail"
+   "options": "Bale Weight Detail",
+   "read_only": 1
   },
   {
    "fieldname": "item",
@@ -111,6 +116,7 @@
    "default": "0",
    "fieldname": "purchase_receipt_created",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Purchase Invoice Created"
   },
   {
@@ -165,6 +171,21 @@
    "read_only": 1
   },
   {
+   "fieldname": "barcode_length",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Barcode Length"
+  },
+  {
+   "fieldname": "section_break_zoru",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "add_weight_information",
+   "fieldtype": "Button",
+   "label": "Add Weight Information"
+  },
+  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -179,7 +200,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-23 17:07:47.442286",
+ "modified": "2025-05-25 14:15:10.122716",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

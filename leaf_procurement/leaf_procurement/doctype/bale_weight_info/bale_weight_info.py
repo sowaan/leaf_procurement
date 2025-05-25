@@ -59,7 +59,7 @@ class BaleWeightInfo(Document):
 				indicator='orange'
 			)
 			raise ValidationError
-		
+
 	# def autoname(self):
 	# 	cached_prefix = get_cached_prefix()
 
