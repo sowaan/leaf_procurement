@@ -1,17 +1,177 @@
 // Copyright (c) 2025, Sowaan and contributors
 // For license information, please see license.txt
+let suppress_focus = false;
 frappe.ui.form.on("Bale Purchase", {
+    add_grades: function (frm) {
+        const d = new frappe.ui.Dialog({
+            title: 'Capture Weight Information',
+            fields: [
+                {
+                    fieldtype: 'Section Break'
+                },
+                {
+                    fieldtype: 'Column Break'
+                },
+                {
+                    fieldname: 'p_bale_registration_code',
+                    label: 'Bale BarCode',
+                    fieldtype: 'Data',
+                    reqd: 1,
+                },
+                {
+                    fieldname: 'p_item_sub_grade',
+                    label: 'Item Sub Grade',
+                    fieldtype: 'Link',
+                    options: 'Item Sub Grade',
+                    reqd: 1,
+                    change: function () {
+                        const grade = d.get_value('p_item_grade');
+                        const sub_grade = d.get_value('p_item_sub_grade');
+                        if (grade && sub_grade) {
+                            frappe.call({
+                                method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
+                                args: {
+                                    company: frm.doc.company,
+                                    location_warehouse: frm.doc.location_warehouse,
+                                    item: frm.doc.item,
+                                    item_grade: grade,
+                                    item_sub_grade: sub_grade
+                                },
+                                callback: function (r) {
+                                    if (r.message !== undefined) {
+                                        d.set_value("p_price", r.message);
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                },
+
+                {
+                    fieldtype: 'Column Break'
+                },
+                {
+                    fieldname: 'p_item_grade',
+                    label: 'Item Grade',
+                    fieldtype: 'Link',
+                    options: 'Item Grade',
+                    reqd: 1,
+                    change: function () {
+                        d.set_value('p_item_sub_grade', null);
+                        d.fields_dict.p_item_sub_grade.get_query = function () {
+                            return {
+                                filters: {
+                                    item_grade: d.get_value('p_item_grade')
+                                }
+                            };
+                        };
+                        if (suppress_focus) return;
+                        setTimeout(() => {
+                            const $barcode_input = d.fields_dict.p_item_sub_grade.$wrapper.find('input');
+                            $barcode_input.focus();
+                        }, 20);
+                    }
+                },
+                {
+                    fieldname: 'p_price',
+                    label: 'Price',
+                    fieldtype: 'Currency',
+                    read_only: 1
+                },
+                {
+                    fieldtype: 'Section Break'
+                }
+            ],
+            primary_action_label: 'Add Item',
+            primary_action: function (values) {
+                // if (!values.p_weight) {
+                //     frappe.msgprint(__('Please capture weight first.'));
+                //     return;
+                // }
+
+                frm.add_child('detail_table', {
+                    bale_barcode: values.p_bale_registration_code,
+                    item_grade: values.p_item_grade,
+                    item_sub_grade: values.p_item_sub_grade,
+                    rate: values.p_price,
+                });
+
+                frm.refresh_field('detail_table');
+
+                hide_grid_controls(frm);
+
+                if (frm.doc.total_bales <= frm.doc.detail_table.length) {
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                    }
+                    d.hide();
+                }
+
+                // Reset fields
+                d.set_value('p_bale_registration_code', '');
+                d.set_value('p_item_grade', '');
+                d.set_value('p_item_sub_grade', '');
+                d.set_value('p_price', '');
+
+
+                // Focus barcode field again
+                setTimeout(() => {
+                    suppress_focus = false;
+                    const $barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input');
+                    $barcode_input.focus();
+
+                }, 300);
+            }
+
+        });
+        d.onhide = function () {
+            //console.log('on hide');
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+
+        };
+        d.show();
+
+        const $barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input');
+
+        $barcode_input.on('keyup', function (e) {
+
+            const barcode = $(this).val();
+            const expectedLength = frm.doc.barcode_length || 0;
+            const validBarcodes = frm.bale_registration_barcodes || [];
+
+            if (e.key === 'Enter' || barcode.length === expectedLength) {
+                if (!validBarcodes.includes(barcode)) {
+                    frappe.msgprint(__('❌ Invalid Bale Barcode: {0}', [barcode]));
+                    d.set_value('p_bale_registration_code', '');
+                    updateWeightDisplay("0.00");
+                    $barcode_input.focus();
+                    return;
+                }
+
+                const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
+                if (already_scanned) {
+                    frappe.msgprint(__('⚠️ This Bale Barcode is already scanned: {0}', [barcode]));
+                    d.set_value('p_bale_registration_code', '');
+                    updateWeightDisplay("0.00");
+                    $barcode_input.focus();
+                    return;
+                }
+                setTimeout(() => {
+                    const $next_input = d.fields_dict.p_item_grade.$wrapper.find('input');
+                    $next_input.focus();
+                }, 100);
+
+            }
+        });
+
+    },
     bale_registration_code(frm) {
 
         if (!frm.doc.bale_registration_code) return;
         validate_day_status(frm);
-        let count = parseInt(frm.doc.total_bales); 
-        frm.clear_table('detail_table'); // optional: clear before add
-        for (let i = 0; i < count; i++) {
-            let row = frm.add_child('detail_table');
-            row.index = i + 1;
-        }
-        frm.refresh_field('detail_table');
 
         frappe.call({
             method: 'frappe.client.get',
@@ -64,7 +224,8 @@ frappe.ui.form.on("Bale Purchase", {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
                     frm.set_value('location_warehouse', r.message.location_warehouse);    
-                    frm.set_value('item', r.message.default_item);                    
+                    frm.set_value('item', r.message.default_item);    
+                    frm.set_value('barcode_length',r.message.barcode_length)                
                 }
             }
         });            
@@ -136,7 +297,7 @@ function validate_day_status(frm) {
                     .replace('{1}', frm.doc.date),
                 indicator: 'red'
             });
-            toggle_fields(frm, false);
+
             return;
         }
     }
@@ -159,7 +320,6 @@ function check_day_open_status(frm) {
         callback: function(r) {
             const is_day_open = r.message && r.message.length > 0;
 
-            toggle_fields(frm, is_day_open);
 
             if (!is_day_open) {
                 frappe.msgprint({
@@ -173,20 +333,12 @@ function check_day_open_status(frm) {
 }
 
 
-function toggle_fields(frm, enable) {
-    // Replace 'bale_purchase_detail' with your actual child table fieldname
-    frm.toggle_display('detail_table', enable);
-
-    // Optionally, clear any error messages or refresh the field
-    frm.refresh_field('detail_table');
-    hide_grid_controls(frm);
-}
 
 function hide_grid_controls(frm) {
     const grid_field = frm.fields_dict.detail_table;
     if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
         grid_field.grid.wrapper
-            .find('.grid-add-row, .grid-remove-rows, .btn-open-row')
+            .find('.grid-add-row,  .btn-open-row')
             .hide();
     }
 }

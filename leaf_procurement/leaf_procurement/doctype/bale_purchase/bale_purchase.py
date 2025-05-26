@@ -45,23 +45,26 @@ class BalePurchase(Document):
 			for code in unregistered:
 				message += f"<li>{code}</li>"
 			message += "</ul>"
-        	# Show message without traceback
-			frappe.msgprint(msg=message, title=_("Unregistered Bale Barcodes"), indicator='orange')
-			
-			# Raise clean validation error to stop save
-			raise ValidationError
+
+			# Raise with user-friendly HTML message and title
+			frappe.throw(
+				msg=message,
+				title=_("Unregistered Bale Barcodes"),
+				indicator='orange'
+			)
+
         
 		# Check for incorrect number of bales
 		entered_count = len(self.detail_table or [])
 		if entered_count != expected_count:
-			frappe.msgprint(
+			frappe.throw(
 				msg=_("⚠️ The number of bales entered is <b>{0}</b>, but the expected number of bales is <b>{1}</b> from Bale Registration '{2}'.".format(
 					entered_count, expected_count, self.bale_registration_code
 				)),
 				title=_("Mismatch in Bale Count"),
 				indicator='orange'
 			)
-			raise ValidationError
+
 	
 
 	# def autoname(self):
