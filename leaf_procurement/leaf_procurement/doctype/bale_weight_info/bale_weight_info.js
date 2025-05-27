@@ -6,8 +6,120 @@ let lastWeight = null;
 let stopReading = false;
 let suppress_focus = false;
 
+
+function open_grade_selector_popup(callback) {
+    let selected_grade = null;
+    let selected_sub_grade = null;
+
+    const dialog = new frappe.ui.Dialog({
+        title: 'Select Item Grade & Sub Grade',
+        fields: [
+            {
+                fieldname: 'grade_html',
+                fieldtype: 'HTML',
+                options: '<div id="grade-buttons" style="margin-bottom: 1rem;"></div>'
+            },
+            {
+                fieldtype: 'HTML',
+                options: `<hr style="margin: 0.5rem 0; border-top: 1px solid #ddd;">`
+            },
+            {
+                fieldname: 'sub_grade_html',
+                fieldtype: 'HTML',
+                options: '<div id="sub-grade-buttons"></div>'
+            }
+        ],
+        primary_action_label: 'Select',
+        primary_action: function () {
+            if (!selected_grade || !selected_sub_grade) {
+                frappe.msgprint('Please select both grade and sub grade');
+                return;
+            }
+            dialog.hide();
+            callback(selected_grade, selected_sub_grade);
+        }
+    });
+
+    function render_grade_buttons() {
+        frappe.call({
+            method: 'frappe.client.get_list',
+            args: {
+                doctype: 'Item Grade',
+                fields: ['name', 'rejected_grade']
+            },
+            callback: function (r) {
+                if(r.message){
+
+                    const sortedGrades = r.message.sort((a, b) => {
+                        return a.rejected_grade - b.rejected_grade;
+                    });
+                    const container = dialog.fields_dict.grade_html.$wrapper;
+                    container.empty();
+
+                    sortedGrades.forEach(grade => {
+                        const colorClass = grade.rejected_grade ? 'indicator-pill red' : 'indicator-pill green';                        
+                        const $btn = $(`
+                            <button class="btn btn-sm grade-btn m-1 ${colorClass}" style="
+                                min-width: 98px;
+                                text-align: center;
+                            ">${grade.name}</button>
+                        `);
+                        $btn.on('click', function () {
+                            selected_grade = grade.name;
+                            selected_sub_grade = null;
+                            render_sub_grade_buttons(grade.name);
+                            $('.grade-btn').removeClass('btn-success').addClass('btn-primary');
+                            $(this).removeClass('btn-primary').addClass('btn-success');
+                        });
+                        container.append($btn);
+                    });
+                }
+            }
+        });
+    }
+
+    function render_sub_grade_buttons(grade) {
+        frappe.call({
+            method: 'frappe.client.get_list',
+            args: {
+                doctype: 'Item Sub Grade',
+                fields: ['name'],
+                filters: { item_grade: grade }
+            },
+            callback: function (r) {
+                const container = dialog.fields_dict.sub_grade_html.$wrapper;
+                container.empty();
+                r.message.forEach(sub_grade => {
+                    const $btn = $(`
+                        <button class="btn btn-sm indicator-pill orange m-1 sub-grade-btn" style="
+                            min-width: 100px;
+                            text-align: center;
+                        ">${sub_grade.name}</button>
+                    `);
+                    $btn.on('click', function () {
+                        selected_sub_grade = sub_grade.name;
+                        $('.sub-grade-btn').removeClass('btn-success').addClass('btn-outline-secondary');
+                        $(this).removeClass('btn-outline-secondary').addClass('btn-success');
+                    });
+                    container.append($btn);
+                });
+            }
+        });
+    }
+
+    dialog.show();
+    render_grade_buttons();
+}
+
 frappe.ui.form.on("Bale Weight Info", {
     add_weight_information: function (frm) {
+        const total = cint(frm.doc.total_bales || 0);
+        const scanned = (frm.doc.detail_table || []).length;
+
+        if (scanned >= total) {
+            frappe.msgprint(__('⚠️ Weight completed for all bales in this lot, please remove a bale and press add weight again if you need to update a record.'));
+            return;
+        }
         const d = new frappe.ui.Dialog({
             title: 'Capture Weight Information',
             fields: [
@@ -29,32 +141,33 @@ frappe.ui.form.on("Bale Weight Info", {
                     fieldtype: 'Link',
                     options: 'Item Sub Grade',
                     reqd: 1,
-                    change: function () {
-                        const grade = d.get_value('p_item_grade');
-                        const sub_grade = d.get_value('p_item_sub_grade');
-                        if (grade && sub_grade) {
-                            frappe.call({
-                                method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
-                                args: {
-                                    company: frm.doc.company,
-                                    location_warehouse: frm.doc.location_warehouse,
-                                    item: frm.doc.item,
-                                    item_grade: grade,
-                                    item_sub_grade: sub_grade
-                                },
-                                callback: function (r) {
-                                    if (r.message !== undefined) {
-                                        d.set_value("p_price", r.message);
-                                    }
-                                }
-                            });
-                            if (suppress_focus) return;
-                            setTimeout(() => {
-                                const $barcode_input = d.fields_dict.p_reclassification_grade.$wrapper.find('input');
-                                $barcode_input.focus();
-                            }, 20);
-                        }
-                    }
+                    read_only:1,
+                    // change: function () {
+                    //     const grade = d.get_value('p_item_grade');
+                    //     const sub_grade = d.get_value('p_item_sub_grade');
+                    //     if (grade && sub_grade) {
+                    //         frappe.call({
+                    //             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
+                    //             args: {
+                    //                 company: frm.doc.company,
+                    //                 location_warehouse: frm.doc.location_warehouse,
+                    //                 item: frm.doc.item,
+                    //                 item_grade: grade,
+                    //                 item_sub_grade: sub_grade
+                    //             },
+                    //             callback: function (r) {
+                    //                 if (r.message !== undefined) {
+                    //                     d.set_value("p_price", r.message);
+                    //                 }
+                    //             }
+                    //         });
+                    //         if (suppress_focus) return;
+                    //         setTimeout(() => {
+                    //             const $barcode_input = d.fields_dict.p_reclassification_grade.$wrapper.find('input');
+                    //             $barcode_input.focus();
+                    //         }, 20);
+                    //     }
+                    // }
                 },
                 {
                     fieldname: 'p_price',
@@ -71,21 +184,22 @@ frappe.ui.form.on("Bale Weight Info", {
                     fieldtype: 'Link',
                     options: 'Item Grade',
                     reqd: 1,
-                    change: function () {
-                        d.set_value('p_item_sub_grade', null);
-                        d.fields_dict.p_item_sub_grade.get_query = function () {
-                            return {
-                                filters: {
-                                    item_grade: d.get_value('p_item_grade')
-                                }
-                            };
-                        };
-                        if (suppress_focus) return;
-                        setTimeout(() => {
-                            const $barcode_input = d.fields_dict.p_item_sub_grade.$wrapper.find('input');
-                            $barcode_input.focus();
-                        }, 20);
-                    }
+                    read_only:1,
+                    // change: function () {
+                    //     d.set_value('p_item_sub_grade', null);
+                    //     d.fields_dict.p_item_sub_grade.get_query = function () {
+                    //         return {
+                    //             filters: {
+                    //                 item_grade: d.get_value('p_item_grade')
+                    //             }
+                    //         };
+                    //     };
+                    //     if (suppress_focus) return;
+                    //     setTimeout(() => {
+                    //         const $barcode_input = d.fields_dict.p_item_sub_grade.$wrapper.find('input');
+                    //         $barcode_input.focus();
+                    //     }, 20);
+                    // }
                 },
                 {
                     fieldname: 'p_reclassification_grade',
@@ -127,8 +241,6 @@ frappe.ui.form.on("Bale Weight Info", {
 
                 frm.refresh_field('detail_table');
 
-                hide_grid_controls(frm);
-
                 if (frm.doc.total_bales <= frm.doc.detail_table.length) {
                     cleanupSerial();
                     if (document.activeElement) {
@@ -155,6 +267,8 @@ frappe.ui.form.on("Bale Weight Info", {
                     $barcode_input.focus();
 
                 }, 300);
+
+                hide_grid_controls(frm);
             }
 
         });
@@ -208,11 +322,34 @@ frappe.ui.form.on("Bale Weight Info", {
                     $barcode_input.focus();
                     return;
                 }
-                setTimeout(() => {
-                    const $next_input = d.fields_dict.p_item_grade.$wrapper.find('input');
-                    $next_input.focus();
-                }, 100);
+                // setTimeout(() => {
+                //     const $next_input = d.fields_dict.p_item_grade.$wrapper.find('input');
+                //     $next_input.focus();
+                // }, 100);
+                open_grade_selector_popup(function (grade, sub_grade) {
+                    selected_grade = grade;
+                    selected_sub_grade = sub_grade;
 
+                    d.set_value('p_item_grade', grade);
+                    d.set_value('p_item_sub_grade', sub_grade);
+
+                    // Fetch price
+                    frappe.call({
+                        method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
+                        args: {
+                            company: frm.doc.company,
+                            location_warehouse: frm.doc.location_warehouse,
+                            item: frm.doc.item,
+                            item_grade: grade,
+                            item_sub_grade: sub_grade
+                        },
+                        callback: function (r) {
+                            if (r.message !== undefined) {
+                                d.set_value("p_price", r.message);
+                            }
+                        }
+                    });
+                });
             }
         });
 
@@ -278,7 +415,7 @@ frappe.ui.form.on("Bale Weight Info", {
     ,
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
-        hide_grid_controls(frm);
+
         validate_day_status(frm);
         let count = parseInt(frm.doc.total_bales);
         frm.clear_table('detail_table'); // optional: clear before add
@@ -298,10 +435,11 @@ frappe.ui.form.on("Bale Weight Info", {
                 }
             }
         });
+        hide_grid_controls(frm);
     },
     refresh: function (frm) {
         
-        hide_grid_controls(frm);
+
         if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
             frm.add_custom_button(__('Create Purchase Invoice'), function () {
                 frappe.call({
@@ -318,6 +456,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 });
             });
         }
+        hide_grid_controls(frm);
     },
     date: function (frm) {
         validate_day_status(frm);
@@ -471,6 +610,7 @@ function validate_day_status(frm) {
     }
     // Proceed to check if the day is open
     check_day_open_status(frm);
+
 }
 function check_day_open_status(frm) {
     frappe.call({

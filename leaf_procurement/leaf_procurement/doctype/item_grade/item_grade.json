@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "item_grade_name"
+  "item_grade_name",
+  "rejected_grade"
  ],
  "fields": [
   {
@@ -16,12 +17,18 @@
    "label": "Item Grade Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "rejected_grade",
+   "fieldtype": "Check",
+   "label": "Rejected Grade"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-09 11:32:13.106020",
+ "modified": "2025-05-27 13:05:02.809707",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Item Grade",

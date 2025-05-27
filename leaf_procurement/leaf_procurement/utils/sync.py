@@ -2,9 +2,8 @@ import requests
 import frappe # type: ignore
 
 MASTER_DOCTYPES = [
-    "Company", "Supplier", "Item", "Item Grade", "Item Sub Grade",
-    "Driver", "Bale Status", "Reclassification Grade", "Transport Type",
-    "Leaf Procurement Settings"
+    "Company", "Warehouse", "Item", "Item Grade", "Item Sub Grade", "Item Grade Price",
+    "Bale Status", "Reclassification Grade", "Transport Type"
 ]
 
 # SOURCE_SITE = "https://central.example.com"
@@ -41,7 +40,18 @@ def sync_master_data():
             new_doc = frappe.get_doc(doc_data)
             new_doc.insert(ignore_permissions=True)
 
-TRANSACTION_DOCTYPES = ["Purchase Invoice"]
+TRANSACTION_DOCTYPES = ["Supplier",
+"Driver",
+"Bale Registration",
+"Bale Registration Detail",
+"Bale Purchase",
+"Bale Purchase Detail",
+"Bale Weight Info",
+"Bale Weight Detail",
+"Purchase Invoice",
+"Purchase Invoice Item",
+"Stock Entry",
+"Stock Entry Detail"]
 
 def sync_transactions():
     config = get_sync_settings()

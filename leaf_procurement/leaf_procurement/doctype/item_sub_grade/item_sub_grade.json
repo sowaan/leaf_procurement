@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{item_grade}-{item_sub_grade}",
+ "autoname": "format:{item_sub_grade}",
  "creation": "2025-05-09 11:36:55.410659",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -29,7 +29,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-09 11:50:59.170389",
+ "modified": "2025-05-27 11:58:01.146344",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Item Sub Grade",
