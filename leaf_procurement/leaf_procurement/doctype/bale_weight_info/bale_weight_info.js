@@ -103,7 +103,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     label: 'Captured Weight',
                     fieldtype: 'Float',
                     reqd: 1,
-                    read_only: 0
+                    read_only: 1
                 },
                 {
                     fieldtype: 'Section Break'
@@ -158,6 +158,7 @@ frappe.ui.form.on("Bale Weight Info", {
             }
 
         });
+
         d.onhide = function () {
             //console.log('on hide');
             if (document.activeElement) {
@@ -165,6 +166,22 @@ frappe.ui.form.on("Bale Weight Info", {
             }
             cleanupSerial();
         };
+    // Prevent Enter key from submitting dialog
+        setTimeout(() => {
+            const barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input').get(0);
+            if (barcode_input) {
+                barcode_input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Optionally, you can trigger your add_weight logic here manually
+                        // or just prevent Enter from submitting form on barcode input
+                    }
+                });
+            }
+        }, 100);
+
+
         d.show();
 
         const $barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input');
