@@ -21,6 +21,7 @@ frappe.ui.form.on("Day Setup", {
             frm.add_custom_button(__('Day Open'), function() {
                 const now = frappe.datetime.now_datetime();
                 frm.set_value('day_open_time', now);
+                frm.set_value('status', "Opened");
 
                 frm.save().then(() => {
                     frappe.msgprint(__('Day opened at: ') + now);
@@ -34,6 +35,7 @@ frappe.ui.form.on("Day Setup", {
             frm.add_custom_button(__('Day Close'), function() {
                 const now = frappe.datetime.now_datetime();
                 frm.set_value('day_close_time', now);
+                frm.set_value('status', "Closed");
 
                 frm.save().then(() => {
                     frappe.msgprint(__('Day closed at: ') + now);
@@ -56,19 +58,21 @@ frappe.ui.form.on("Day Setup", {
         }        
     },    
     onload: function(frm) {
-        frm.events.set_due_date_min(frm);
-        frappe.call({
-            method: 'frappe.client.get',
-            args: {
-                doctype: 'Leaf Procurement Settings',
-                name: 'Leaf Procurement Settings'
-            },
-            callback: function(r) {
-                if (r.message) {
-                    frm.set_value('company', r.message.company_name);
-                    frm.set_value('location_warehouse', r.message.location_warehouse);
+        if(frm.is_new()) {
+            frm.events.set_due_date_min(frm);
+            frappe.call({
+                method: 'frappe.client.get',
+                args: {
+                    doctype: 'Leaf Procurement Settings',
+                    name: 'Leaf Procurement Settings'
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        frm.set_value('company', r.message.company_name);
+                        frm.set_value('location_warehouse', r.message.location_warehouse);
+                    }
                 }
-            }
-        });
+            });
+        }
     }    
 });
