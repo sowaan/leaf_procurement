@@ -1,0 +1,247 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"m0R5lm5ONt\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Leaf Procurement</span>\",\"col\":12}},{\"id\":\"nljq0EQ2M-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Leaf Buying Day Block\",\"col\":12}},{\"id\":\"qg_RUpiNY0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Registration\",\"col\":3}},{\"id\":\"HLq8hbF8FV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Purchase\",\"col\":3}},{\"id\":\"4Fvr2KB47Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Weight Info\",\"col\":3}},{\"id\":\"_YQrRw95oU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GTN\",\"col\":3}},{\"id\":\"dxT3ym0B0C\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Lx__SCWt2-\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"dqOrzvhmwF\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CCh1URUzh3\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
+ "creation": "2025-05-28 14:26:58.912035",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Leaf Buying Day Block",
+   "label": "Leaf Buying Day Block"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "buying",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Leaf Procurement",
+ "links": [
+  {
+   "description": "Master Setups",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setups",
+   "link_count": 10,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Supplier",
+   "link_count": 0,
+   "link_to": "Supplier",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Quota Setup",
+   "link_count": 0,
+   "link_to": "Quota Setup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Day Setup",
+   "link_count": 0,
+   "link_to": "Day Setup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Grade",
+   "link_count": 0,
+   "link_to": "Item Grade",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Sub Grade",
+   "link_count": 0,
+   "link_to": "Item Sub Grade",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Grade Price",
+   "link_count": 0,
+   "link_to": "Item Grade Price",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reclassification Grade",
+   "link_count": 0,
+   "link_to": "Reclassification Grade",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bale Status",
+   "link_count": 0,
+   "link_to": "Bale Status",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GLT Grade",
+   "link_count": 0,
+   "link_to": "GLT Grade",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Prized Grade",
+   "link_count": 0,
+   "link_to": "Prized Grade",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Operations",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bale Registration",
+   "link_count": 0,
+   "link_to": "Bale Registration",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bale Purchase",
+   "link_count": 0,
+   "link_to": "Bale Purchase",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bale Weight Info",
+   "link_count": 0,
+   "link_to": "Bale Weight Info",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Goods Transfer Note",
+   "link_count": 0,
+   "link_to": "Goods Transfer Note",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tools",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Leaf Procurement Settings",
+   "link_count": 0,
+   "link_to": "Leaf Procurement Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-05-28 15:25:37.962262",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Leaf Procurement",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 2.0,
+ "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} lots today",
+   "label": "Bale Registration",
+   "link_to": "Bale Registration",
+   "stats_filter": "[[\"Bale Registration\",\"creation\",\"Timespan\",\"today\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Bale Weight Info",
+   "link_to": "Bale Weight Info",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Bale Purchase",
+   "link_to": "Bale Purchase",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "GTN",
+   "link_to": "Goods Transfer Note",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Leaf Procurement"
+}
