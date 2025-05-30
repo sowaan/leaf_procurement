@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"m0R5lm5ONt\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Leaf Procurement</span>\",\"col\":12}},{\"id\":\"nljq0EQ2M-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Leaf Buying Day Block\",\"col\":12}},{\"id\":\"qg_RUpiNY0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Registration\",\"col\":3}},{\"id\":\"HLq8hbF8FV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Purchase\",\"col\":3}},{\"id\":\"4Fvr2KB47Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Weight Info\",\"col\":3}},{\"id\":\"_YQrRw95oU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GTN\",\"col\":3}},{\"id\":\"dxT3ym0B0C\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Lx__SCWt2-\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"dqOrzvhmwF\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CCh1URUzh3\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
+ "content": "[{\"id\":\"m0R5lm5ONt\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Leaf Procurement</span>\",\"col\":12}},{\"id\":\"nljq0EQ2M-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Leaf Buying Day Block\",\"col\":12}},{\"id\":\"d6HYVRPxHh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create a new Grower\",\"col\":4}},{\"id\":\"zSpuVUO9Ck\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create a new Day\",\"col\":4}},{\"id\":\"kVULT4634q\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"qg_RUpiNY0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Registration\",\"col\":4}},{\"id\":\"HLq8hbF8FV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Purchase\",\"col\":3}},{\"id\":\"4Fvr2KB47Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Weight Info\",\"col\":3}},{\"id\":\"_YQrRw95oU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GTN\",\"col\":3}},{\"id\":\"dxT3ym0B0C\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"H61Vn87ieR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Bale Registrations\",\"col\":4}},{\"id\":\"wfoSFuvrhB\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Bale Purchases\",\"col\":4}},{\"id\":\"WHLRb6QlOV\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Bale Weighments\",\"col\":4}},{\"id\":\"05yeTuAiDA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Lx__SCWt2-\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"dqOrzvhmwF\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CCh1URUzh3\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
  "creation": "2025-05-28 14:26:58.912035",
  "custom_blocks": [
   {
@@ -197,7 +197,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-05-28 15:25:37.962262",
+ "modified": "2025-05-30 12:14:15.596826",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement",
@@ -205,10 +205,42 @@
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
- "quick_lists": [],
+ "quick_lists": [
+  {
+   "document_type": "Bale Registration",
+   "label": "Bale Registrations",
+   "quick_list_filter": "[[\"Bale Registration\",\"creation\",\"Timespan\",\"today\",false]]"
+  },
+  {
+   "document_type": "Bale Purchase",
+   "label": "Bale Purchases",
+   "quick_list_filter": "[[\"Bale Purchase\",\"creation\",\"Timespan\",\"today\",false]]"
+  },
+  {
+   "document_type": "Bale Weight Info",
+   "label": "Bale Weighments",
+   "quick_list_filter": "[[\"Bale Weight Info\",\"creation\",\"Timespan\",\"today\",false]]"
+  }
+ ],
  "roles": [],
  "sequence_id": 2.0,
  "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Bale Weight Info",
+   "link_to": "Bale Weight Info",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "New",
+   "label": "Create a new Grower",
+   "link_to": "Supplier",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
   {
    "color": "Green",
    "doc_view": "List",
@@ -216,14 +248,6 @@
    "label": "Bale Registration",
    "link_to": "Bale Registration",
    "stats_filter": "[[\"Bale Registration\",\"creation\",\"Timespan\",\"today\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Bale Weight Info",
-   "link_to": "Bale Weight Info",
-   "stats_filter": "[]",
    "type": "DocType"
   },
   {
@@ -239,6 +263,14 @@
    "doc_view": "List",
    "label": "GTN",
    "link_to": "Goods Transfer Note",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "New",
+   "label": "Create a new Day",
+   "link_to": "Day Setup",
    "stats_filter": "[]",
    "type": "DocType"
   }
