@@ -1,0 +1,13 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Custom HTML Block",
+  "html": "<div id=\"day-status\"></div>\n",
+  "modified": "2025-05-28 15:45:49.452071",
+  "name": "Leaf Buying Day Block",
+  "private": 0,
+  "roles": [],
+  "script": "frappe.call({\n      method: \"frappe.client.get_list\",\n      args: {\n        doctype: \"Day Setup\",\n        filters: {\n          date: frappe.datetime.get_today()\n        },\n        fields: [\"day_open_time\", \"day_close_time\"],\n        limit_page_length: 1\n      },\n      callback: function (r) {\n        let el = root_element.querySelector('#day-status');\n        console.log(el)\n        if (r.message && r.message.length > 0) {\n          const day = r.message[0];\n          if (day.day_open_time && !day.day_close_time) {\n            el.classList.add(\"indicator-pill\", \"green\");\n            el.innerText = \"Day is open for today\";\n          } else {\n            el.classList.add(\"indicator-pill\", \"orange\");\n            el.innerText = \"Day is not open for today\";\n          }\n        } else {\n          el.classList.add(\"indicator-pill\", \"orange\");\n          el.innerText = \"Day is not open for today\";\n        }\n      }\n    });",
+  "style": null
+ }
+]

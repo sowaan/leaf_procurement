@@ -21,6 +21,14 @@ fixtures = [
 				"name", "in", ("Sub Grade","Grade", "Lot Number")
 			]
 		]
+	},
+    {
+        "doctype":"Custom HTML Block",
+		"filters":[
+			[
+				"name", "in", ("Leaf Buying Day Block")
+			]
+		]
 	}    
 ]
 doc_events = {
@@ -109,12 +117,12 @@ doctype_js = {"Supplier" : "public/js/supplier.js"}
 # ------------
 
 # before_install = "leaf_procurement.install.before_install"
-# after_install = "leaf_procurement.install.after_install"
+after_install = "leaf_procurement.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "leaf_procurement.uninstall.before_uninstall"
+before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 # after_uninstall = "leaf_procurement.uninstall.after_uninstall"
 
 # Integration Setup

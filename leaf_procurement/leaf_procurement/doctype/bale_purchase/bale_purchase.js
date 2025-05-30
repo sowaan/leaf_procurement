@@ -352,21 +352,23 @@ bale_registration_code(frm) {
         if (!frm.is_new) return;
     
         //get company and location records from settings
-        frappe.call({
-            method: 'frappe.client.get',
-            args: {
-                doctype: 'Leaf Procurement Settings',
-                name: 'Leaf Procurement Settings'
-            },
-            callback: function(r) {
-                if (r.message) {
-                    frm.set_value('company', r.message.company_name);
-                    frm.set_value('location_warehouse', r.message.location_warehouse);    
-                    frm.set_value('item', r.message.default_item);    
-                    frm.set_value('barcode_length',r.message.barcode_length)                
+        if(frm.is_new()) {
+            frappe.call({
+                method: 'frappe.client.get',
+                args: {
+                    doctype: 'Leaf Procurement Settings',
+                    name: 'Leaf Procurement Settings'
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        frm.set_value('company', r.message.company_name);
+                        frm.set_value('location_warehouse', r.message.location_warehouse);    
+                        frm.set_value('item', r.message.default_item);    
+                        frm.set_value('barcode_length',r.message.barcode_length)                
+                    }
                 }
-            }
-        });            
+            });   
+        }         
     }        
 });
 function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {

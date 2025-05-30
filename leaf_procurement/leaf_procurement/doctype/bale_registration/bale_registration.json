@@ -49,6 +49,8 @@
    "fieldname": "bales_in_lot",
    "fieldtype": "Read Only",
    "hidden": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
    "label": "Bales In Lot"
   },
   {
