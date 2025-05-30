@@ -21,6 +21,14 @@ fixtures = [
 				"name", "in", ("Sub Grade","Grade", "Lot Number")
 			]
 		]
+	},
+    {
+        "doctype":"Custom HTML Block",
+		"filters":[
+			[
+				"name", "in", ("Leaf Buying Day Block")
+			]
+		]
 	}    
 ]
 doc_events = {
@@ -66,7 +74,7 @@ doc_events = {
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Supplier" : "public/js/supplier.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -109,12 +117,12 @@ doc_events = {
 # ------------
 
 # before_install = "leaf_procurement.install.before_install"
-# after_install = "leaf_procurement.install.after_install"
+after_install = "leaf_procurement.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "leaf_procurement.uninstall.before_uninstall"
+before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 # after_uninstall = "leaf_procurement.uninstall.after_uninstall"
 
 # Integration Setup
@@ -259,4 +267,3 @@ doc_events = {
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-
