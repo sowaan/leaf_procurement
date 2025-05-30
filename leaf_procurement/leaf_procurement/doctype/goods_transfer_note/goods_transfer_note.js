@@ -58,8 +58,6 @@ frappe.ui.form.on("Goods Transfer Note", {
         });
     },        
     onload: function(frm){
-        if (!frm.is_new()) return;
-
         frappe.call({
             method: 'frappe.client.get',
             args: {

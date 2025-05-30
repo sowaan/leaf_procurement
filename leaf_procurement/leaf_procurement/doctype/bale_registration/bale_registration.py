@@ -9,12 +9,6 @@ from frappe import _, ValidationError 	#type: ignore
 
 class BaleRegistration(Document):
     def validate(self):
-        # if check validations is false, no need to check validations
-        # as this is a sync operation
-        if not self.check_validations:
-            return
-	
-        
         day_open = frappe.get_all("Day Setup",
             filters={
                 "date": self.date,

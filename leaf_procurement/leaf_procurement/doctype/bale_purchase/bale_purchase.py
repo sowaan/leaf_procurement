@@ -11,7 +11,6 @@ class BalePurchase(Document):
 		if not self.bale_registration_code:
 			return
 
-	
 		day_open = frappe.get_all("Day Setup",
 			filters={
 				"date": self.date,
@@ -50,8 +49,8 @@ class BalePurchase(Document):
 			# Raise with user-friendly HTML message and title
 			frappe.throw(
 				msg=message,
-					title=_("Unregistered Bale Barcodes"),
-
+				title=_("Unregistered Bale Barcodes"),
+				indicator='orange'
 			)
 
         

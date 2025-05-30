@@ -9,8 +9,7 @@
   "bale_barcode",
   "item_grade",
   "item_sub_grade",
-  "rate",
-  "delete_row"
+  "rate"
  ],
  "fields": [
   {
@@ -41,19 +40,15 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Rate",
-   "read_only": 1
-  },
-  {
-   "fieldname": "delete_row",
-   "fieldtype": "Button",
-   "label": "Delete"
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-30 16:02:41.489551",
+ "modified": "2025-05-13 14:09:10.605412",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase Detail",

@@ -91,8 +91,7 @@
    "allow_on_submit": 1,
    "fieldname": "detail_table",
    "fieldtype": "Table",
-   "options": "Bale Weight Detail",
-   "read_only": 1
+   "options": "Bale Weight Detail"
   },
   {
    "fieldname": "item",
@@ -196,11 +195,10 @@
    "search_index": 1
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-29 13:31:48.914634",
+ "modified": "2025-05-30 14:58:13.778683",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
@@ -208,6 +206,7 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -217,10 +216,10 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
