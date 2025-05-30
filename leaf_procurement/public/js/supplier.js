@@ -1,4 +1,5 @@
 frappe.ui.form.on('Supplier', {
+    //custom supplier client script
     onload: function(frm) {
         frappe.call({
             method: 'frappe.client.get',
