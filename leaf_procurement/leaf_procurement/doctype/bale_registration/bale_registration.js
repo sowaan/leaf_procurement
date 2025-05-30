@@ -5,7 +5,6 @@ frappe.ui.form.on("Bale Registration", {
 	refresh(frm) {
         
 	},
-
     scan_barcode: function(frm) {
         let barcode = frm.doc.scan_barcode;
         let expected_length = parseInt(frm.doc.barcode_length);
@@ -13,12 +12,6 @@ frappe.ui.form.on("Bale Registration", {
         // Ensure barcode is present
         if (!barcode) return;
 
-        // Check if the barcode is numeric
-        if (!/^\d+$/.test(barcode)) {
-            frappe.msgprint(__('Barcode must be numeric.'));
-            frm.set_value('scan_barcode', '');
-            return;
-        }
 
         // Check length
         if (expected_length && barcode.length !== expected_length) {
@@ -26,6 +19,18 @@ frappe.ui.form.on("Bale Registration", {
             return;
         }
 
+                // Check if the barcode is numeric
+        if (!/^\d+$/.test(barcode)) {
+            frappe.msgprint(__('Barcode must be numeric.'));
+            frm.set_value('scan_barcode', '');
+            return;
+        }
+
+        if (frm.doc.remaining_bales<=0)
+        {
+            frappe.msgprint(__('Cannot add more barcodes, Lot already completed.'));
+            returnl
+        }
         // Check if barcode already exists in child table
         let exists = frm.doc.bale_registration_detail.some(row => row.bale_barcode === barcode);
         if (exists) {
@@ -36,12 +41,16 @@ frappe.ui.form.on("Bale Registration", {
                 bale_barcode: barcode
             });
             frm.refresh_field('bale_registration_detail');
+            recalculate_bale_counts(frm);
+
         }
 
         // Clear the input field
         frm.set_value('scan_barcode', '');
     },    
     onload: function(frm) {
+        if (!frm.is_new) return;
+        
         //validate_day_status(frm);        
         frappe.call({
             method: 'frappe.client.get',
@@ -80,25 +89,40 @@ frappe.ui.form.on("Bale Registration", {
     },    
     bale_registration_detail_on_form_rendered: function(frm) {
         // trigger recalc when form is rendered
-        frm.trigger("recalculate_bale_counts");
+        recalculate_bale_counts(frm);
     },
 
     validate: function(frm) {
-        frm.trigger("recalculate_bale_counts");
+        recalculate_bale_counts(frm);
     },
 
-    recalculate_bale_counts: function(frm) {
-        const balesCount = frm.doc.bale_registration_detail.length;
-        const lotSize = frm.doc.lot_size || 0;
+    // recalculate_bale_counts: function(frm) {
+    //     const balesCount = frm.doc.bale_registration_detail.length;
+    //     const lotSize = frm.doc.lot_size || 0;
 
-        frm.set_value('bales_in_lot', balesCount);
-        frm.set_value('remaining_bales', lotSize - balesCount);
-    },
+    //     frm.set_value('bales_in_lot', balesCount);
+    //     frm.set_value('remaining_bales', lotSize - balesCount);
+    // },
 
 });
 
+
+frappe.ui.form.on('Bale Registration Detail', {
+    delete_row(frm, cdt, cdn) {
+        frappe.model.clear_doc(cdt, cdn);  // delete the row
+        frm.refresh_field('bale_registration_detail');
+
+            if (cur_dialog) {
+                cur_dialog.hide();
+            }
+
+            // Remove any lingering modal backdrop
+            $('.modal-backdrop').remove();        
+    }
+});
+
+
 function validate_day_status(frm) {
-    console.log('here i am ');
     if (!frm.doc.date) return;
 
     frappe.call({
@@ -116,7 +140,7 @@ function validate_day_status(frm) {
             const is_day_open = r.message && r.message.length > 0;
 
             // Enable or disable fields based on day status
-            toggle_fields(frm, is_day_open);
+            //toggle_fields(frm, is_day_open);
 
             if (!is_day_open) {
                 frappe.msgprint({
@@ -135,13 +159,14 @@ function toggle_fields(frm, enable) {
     // Optionally, clear any error messages or refresh the field
     frm.refresh_field('bale_registration_detail');
         frm.refresh_field('scan_barcode');
-    hide_grid_controls(frm);
+
 }
-function hide_grid_controls(frm) {
-    const grid_field = frm.fields_dict.bale_registration_detail;
-    if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
-        grid_field.grid.wrapper
-            .find('.grid-add-row, .grid-remove-rows, .btn-open-row')
-            .hide();
-    }
+
+function recalculate_bale_counts(frm)
+{
+    const balesCount = frm.doc.bale_registration_detail.length;
+    const lotSize = frm.doc.lot_size || 0;
+
+    frm.set_value('bales_in_lot', balesCount);
+    frm.set_value('remaining_bales', lotSize - balesCount);    
 }

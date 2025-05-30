@@ -52,7 +52,8 @@
   {
    "fieldname": "detail_table",
    "fieldtype": "Table",
-   "options": "Bale Purchase Detail"
+   "options": "Bale Purchase Detail",
+   "read_only": 1
   },
   {
    "fieldname": "company",
@@ -146,7 +147,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-25 15:08:31.081847",
+ "modified": "2025-05-29 13:38:06.064200",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

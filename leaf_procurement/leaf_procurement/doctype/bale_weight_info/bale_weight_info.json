@@ -91,7 +91,8 @@
    "allow_on_submit": 1,
    "fieldname": "detail_table",
    "fieldtype": "Table",
-   "options": "Bale Weight Detail"
+   "options": "Bale Weight Detail",
+   "read_only": 1
   },
   {
    "fieldname": "item",
@@ -199,7 +200,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-27 12:03:03.114590",
+ "modified": "2025-05-29 13:31:48.914634",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

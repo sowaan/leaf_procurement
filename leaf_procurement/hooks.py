@@ -6,6 +6,14 @@ app_email = "amir.baloch@sowaan.com"
 app_license = "mit"
 
 fixtures = [
+    {
+        "doctype":"Client Script",
+        "filters":[
+            [
+                "name", "=", "Supplier Company Location Setting"
+			]
+		]
+	},
 	{
         "doctype":"Custom Field",
 		"filters":[

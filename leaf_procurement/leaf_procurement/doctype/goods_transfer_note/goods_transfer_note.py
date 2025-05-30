@@ -22,7 +22,7 @@ def create_stock_entry_from_gtn(gtn_doc):
     stock_entry.from_warehouse = gtn_doc.location_warehouse
     stock_entry.to_warehouse = gtn_doc.receiving_location
     stock_entry.purpose = "Material Transfer"
-    stock_entry.gtn_reference = gtn_doc.name  # custom field if needed
+    stock_entry.custom_gtn_number = gtn_doc.name  # custom field if needed
 
     for row in gtn_doc.bale_registration_detail:
 

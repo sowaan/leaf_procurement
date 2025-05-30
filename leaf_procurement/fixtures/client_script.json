@@ -1,0 +1,13 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Supplier",
+  "enabled": 1,
+  "modified": "2025-05-17 13:40:34.630425",
+  "module": "Leaf Procurement",
+  "name": "Supplier Company Location Setting",
+  "script": "frappe.ui.form.on('Supplier', {\n    onload: function(frm) {\n        frappe.call({\n            method: 'frappe.client.get',\n            args: {\n                doctype: 'Leaf Procurement Settings',\n                name: 'Leaf Procurement Settings'\n            },\n            callback: function(r) {\n                if (r.message) {\n                    frm.set_value('custom_company', r.message.company_name);\n                    frm.set_value('custom_location_warehouse', r.message.location_warehouse);\n                }\n            }\n        });\n    }\n});\n",
+  "view": "Form"
+ }
+]
