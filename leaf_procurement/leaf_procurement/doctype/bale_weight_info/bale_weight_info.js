@@ -217,7 +217,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     label: 'Captured Weight',
                     fieldtype: 'Float',
                     reqd: 1,
-                    read_only: 1
+                    read_only: 0
                 },
                 {
                     fieldtype: 'Section Break'
@@ -410,9 +410,8 @@ frappe.ui.form.on("Bale Weight Info", {
                 await cleanupSerial();
             }
         });
-    }
+    },
 
-    ,
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
 
@@ -438,8 +437,7 @@ frappe.ui.form.on("Bale Weight Info", {
         hide_grid_controls(frm);
     },
     refresh: function (frm) {
-        
-
+    
         if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
             frm.add_custom_button(__('Create Purchase Invoice'), function () {
                 frappe.call({
@@ -447,6 +445,8 @@ frappe.ui.form.on("Bale Weight Info", {
                     args: {
                         bale_weight_info_name: frm.doc.name
                     },
+                    freeze: true,
+                    freeze_message: __('Creating Purchase Invoice...'),
                     callback: function (r) {
                         if (r.message) {
                             frappe.msgprint(__('Purchase Invoice {0} created.', [r.message]));
@@ -465,6 +465,7 @@ frappe.ui.form.on("Bale Weight Info", {
     onload: function (frm) {
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record
+        
         frm.set_query('bale_registration_code', function () {
             return {
                 query: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_available_bale_registrations'
