@@ -11,6 +11,7 @@ class BalePurchase(Document):
 		if not self.bale_registration_code:
 			return
 
+	
 		day_open = frappe.get_all("Day Setup",
 			filters={
 				"date": self.date,
@@ -49,8 +50,8 @@ class BalePurchase(Document):
 			# Raise with user-friendly HTML message and title
 			frappe.throw(
 				msg=message,
-				title=_("Unregistered Bale Barcodes"),
-				indicator='orange'
+					title=_("Unregistered Bale Barcodes"),
+
 			)
 
         
@@ -61,8 +62,7 @@ class BalePurchase(Document):
 				msg=_("⚠️ The number of bales entered is <b>{0}</b>, but the expected number of bales is <b>{1}</b> from Bale Registration '{2}'.".format(
 					entered_count, expected_count, self.bale_registration_code
 				)),
-				title=_("Mismatch in Bale Count"),
-				indicator='orange'
+				title=_("Mismatch in Bale Count")
 			)
 
 	

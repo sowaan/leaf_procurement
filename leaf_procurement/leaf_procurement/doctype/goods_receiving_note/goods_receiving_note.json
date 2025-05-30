@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-28 13:40:55.912026",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "gtn_number",
+  "column_break_ydmp",
+  "date",
+  "column_break_npwo",
+  "bale_registration_lot_no",
+  "section_break_qxrp",
+  "scan_barcode",
+  "column_break_tzax",
+  "barcode_length",
+  "column_break_waau",
+  "section_break_jbaj",
+  "detail_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "gtn_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "GTN Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ydmp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bale_registration_lot_no",
+   "fieldtype": "Data",
+   "label": "Bale Registration (Lot No)"
+  },
+  {
+   "fieldname": "column_break_npwo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_qxrp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "bold": 1,
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Barcode"
+  },
+  {
+   "fieldname": "column_break_tzax",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "11",
+   "fieldname": "barcode_length",
+   "fieldtype": "Read Only",
+   "label": "Barcode Length"
+  },
+  {
+   "fieldname": "column_break_waau",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jbaj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Goods Receiving Detail"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-28 14:08:51.820038",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Goods Receiving Note",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

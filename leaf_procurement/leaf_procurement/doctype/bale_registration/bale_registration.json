@@ -13,6 +13,7 @@
   "location_warehouse",
   "item",
   "remaining_bales",
+  "check_validations",
   "column_break_mesd",
   "location_short_code",
   "lot_size",
@@ -83,7 +84,8 @@
   {
    "fieldname": "bale_registration_detail",
    "fieldtype": "Table",
-   "options": "Bale Registration Detail"
+   "options": "Bale Registration Detail",
+   "read_only": 1
   },
   {
    "fieldname": "item",
@@ -145,13 +147,20 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "check_validations",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Check Validations"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-30 12:10:53.883917",
+ "modified": "2025-05-30 12:01:26.899599",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
