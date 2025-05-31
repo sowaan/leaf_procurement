@@ -23,22 +23,6 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
     })	
 
 @frappe.whitelist()
-def get_bale_registration_code_by_barcode(barcode):
-    # Step 1: Get parent Bale Registration Code
-    result = frappe.db.get_value('Bale Registration Detail', {'bale_barcode': barcode}, 'parent', as_dict=True)
-    if not result:
-        return None
-
-    bale_registration_code = result.parent
-
-    # Step 2: Check if already exists in Bale Purchase
-    exists_in_purchase = frappe.db.exists('Bale Purchase', {'bale_registration_code': bale_registration_code})
-    if exists_in_purchase:
-        return None  # Already used, don't allow again
-
-    return bale_registration_code  # Valid and not used yet
-
-@frappe.whitelist()
 def get_registered_bale_count(bale_registration_code):
     if not bale_registration_code:
         return 0

@@ -49,7 +49,7 @@ frappe.ui.form.on("Bale Registration", {
         frm.set_value('scan_barcode', '');
     },    
     onload: function(frm) {
-        if (!frm.is_new) return;
+        if (!frm.is_new()) return;
         
         //validate_day_status(frm);        
         frappe.call({

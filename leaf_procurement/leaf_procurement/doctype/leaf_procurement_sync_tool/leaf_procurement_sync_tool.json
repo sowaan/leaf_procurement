@@ -1,0 +1,202 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-28 10:57:02.937454",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_bogd",
+  "sync_down_select_all",
+  "column_break_ctdr",
+  "sync_down",
+  "column_break_mjua",
+  "sync_up_select_all",
+  "column_break_jefq",
+  "sync_up",
+  "section_break_xxtu",
+  "company_check",
+  "warehouse",
+  "item",
+  "item_grade",
+  "item_sub_grade",
+  "item_grade_price",
+  "bale_status",
+  "reclassification_grade",
+  "transport_type",
+  "column_break_sjov",
+  "supplier",
+  "driver",
+  "bale_registration",
+  "purchase_invoice",
+  "stock_entry",
+  "leaf_sync_detail_tab",
+  "leaf_sync_detail"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "warehouse",
+   "fieldtype": "Check",
+   "label": "Warehouse"
+  },
+  {
+   "default": "0",
+   "fieldname": "item",
+   "fieldtype": "Check",
+   "label": "Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "item_grade",
+   "fieldtype": "Check",
+   "label": "Item Grade"
+  },
+  {
+   "default": "0",
+   "fieldname": "item_sub_grade",
+   "fieldtype": "Check",
+   "label": "Item Sub Grade"
+  },
+  {
+   "default": "0",
+   "fieldname": "item_grade_price",
+   "fieldtype": "Check",
+   "label": "Item Grade Price"
+  },
+  {
+   "default": "0",
+   "fieldname": "bale_status",
+   "fieldtype": "Check",
+   "label": "Bale Status"
+  },
+  {
+   "default": "0",
+   "fieldname": "reclassification_grade",
+   "fieldtype": "Check",
+   "label": "Reclassification Grade"
+  },
+  {
+   "default": "0",
+   "fieldname": "transport_type",
+   "fieldtype": "Check",
+   "label": "Transport Type"
+  },
+  {
+   "fieldname": "column_break_sjov",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "bale_registration",
+   "fieldtype": "Check",
+   "label": "Bale Registration"
+  },
+  {
+   "default": "0",
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Check",
+   "label": " Purchase Invoice"
+  },
+  {
+   "default": "0",
+   "fieldname": "stock_entry",
+   "fieldtype": "Check",
+   "label": "Stock Entry"
+  },
+  {
+   "fieldname": "sync_down",
+   "fieldtype": "Button",
+   "label": "Sync Down"
+  },
+  {
+   "fieldname": "sync_up",
+   "fieldtype": "Button",
+   "label": "Sync Up"
+  },
+  {
+   "fieldname": "section_break_bogd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "sync_down_select_all",
+   "fieldtype": "Check",
+   "label": "Select All"
+  },
+  {
+   "fieldname": "column_break_ctdr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_mjua",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "sync_up_select_all",
+   "fieldtype": "Check",
+   "label": "Select All"
+  },
+  {
+   "fieldname": "column_break_jefq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xxtu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "company_check",
+   "fieldtype": "Check",
+   "label": "Company"
+  },
+  {
+   "fieldname": "leaf_sync_detail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Leaf Sync Detail"
+  },
+  {
+   "fieldname": "leaf_sync_detail",
+   "fieldtype": "Table",
+   "label": "Leaf Sync Detail",
+   "options": "Leaf Sync Detail",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "supplier",
+   "fieldtype": "Check",
+   "label": "Supplier"
+  },
+  {
+   "default": "0",
+   "fieldname": "driver",
+   "fieldtype": "Check",
+   "label": "Driver"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-05-29 10:41:30.033104",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Leaf Procurement Sync Tool",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
