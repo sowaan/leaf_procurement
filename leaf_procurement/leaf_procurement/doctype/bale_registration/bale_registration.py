@@ -43,7 +43,7 @@ class BaleRegistration(Document):
         invalid_barcodes = []
 
         for row in self.bale_registration_detail:
-            if not row.bale_barcode.isdigit() or len(row.bale_barcode) != self.barcode_length:
+            if not row.bale_barcode.isdigit() or len(row.bale_barcode) != flt(self.barcode_length):
                 invalid_barcodes.append(row.bale_barcode)
 
         invalid_barcodes_list = "<br>".join(invalid_barcodes)
