@@ -49,8 +49,6 @@
    "fieldname": "bales_in_lot",
    "fieldtype": "Read Only",
    "hidden": 1,
-   "in_list_view": 1,
-   "in_preview": 1,
    "label": "Bales In Lot"
   },
   {
@@ -160,7 +158,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-30 12:01:26.899599",
+ "modified": "2025-05-31 14:37:11.162811",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

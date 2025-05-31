@@ -77,10 +77,6 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     invoice.rejected_warehouse = rejected_warehouse
     invoice.due_date = day_setup.due_date
 
-    item_weight = 0
-    item_grade = rejected_grade
-    item_sub_grade = rejected_sub_grade
-    item_rate = 0
 
     for detail in doc.detail_table:
         purchase_detail = frappe.db.get_value(
@@ -100,7 +96,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
                 .format(doc.item, detail.bale_barcode)
             )
             
-        if detail.item_grade == rejected_grade or  detail.item_grade != purchase_detail.item_grade or detail.item_sub_grade != purchase_detail.item_sub_grade:
+        if detail.item_grade == rejected_grade or detail.weight==0 or  detail.item_grade != purchase_detail.item_grade or detail.item_sub_grade != purchase_detail.item_sub_grade:
             ensure_batch_exists(detail.bale_barcode, doc.item, 0)
             invoice.append("custom_rejected_items", {
                 "item_code": doc.item,
@@ -137,9 +133,11 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             })   
             invoice_weight += detail.weight             
 
-
-        
-
+    if invoice_weight<=0:         
+        frappe.throw(
+            _("Cannot generate invoice, all items are rejected for lot {0}.")
+            .format(doc.bale_registration_code)
+        )
     invoice.append("items", {
         "item_code": transport_charges_item,
         "qty": invoice_weight,
