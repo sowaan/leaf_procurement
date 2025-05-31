@@ -8,7 +8,7 @@ from frappe import _, ValidationError 	#type: ignore
 
 
 class BaleRegistration(Document):
-    def validate(self):
+    def on_submit(self):
         # if check validations is false, no need to check validations
         # as this is a sync operation
         if not self.check_validations:

@@ -240,13 +240,13 @@ frappe.ui.form.on("Bale Weight Info", {
                 });
 
                 frm.refresh_field('detail_table');
-
+                d.hide();
                 if (frm.doc.total_bales <= frm.doc.detail_table.length) {
                     cleanupSerial();
                     if (document.activeElement) {
                         document.activeElement.blur();
                     }
-                    d.hide();
+
                 }
 
                 // Reset fields
