@@ -18,7 +18,8 @@ const sync_up_checkboxes = [
     "driver",
     "bale_registration",
     "purchase_invoice",
-    "stock_entry"
+    "goods_receiving_note",
+    "goods_transfer_note",
 ];
 
 frappe.ui.form.on("Leaf Procurement Sync Tool", {

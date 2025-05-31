@@ -110,7 +110,8 @@ def sync_up():
 			("driver", "Driver"),
 			("bale_registration", "Bale Registration"),
 			("purchase_invoice", "Purchase Invoice"),
-			("stock_entry", "Stock Entry")
+			("goods_receiving_note", "Goods Receiving Note"),
+			("goods_transfer_note", "Goods Transfer Note"),
 		]
 
 		for field, doctype in doctypes:

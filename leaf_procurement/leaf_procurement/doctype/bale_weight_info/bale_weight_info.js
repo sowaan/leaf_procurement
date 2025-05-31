@@ -463,6 +463,7 @@ frappe.ui.form.on("Bale Weight Info", {
 
     },
     onload: function (frm) {
+        if (!frm.is_new()) return;
 
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record

@@ -28,7 +28,8 @@
   "driver",
   "bale_registration",
   "purchase_invoice",
-  "stock_entry",
+  "goods_receiving_note",
+  "goods_transfer_note",
   "leaf_sync_detail_tab",
   "leaf_sync_detail"
  ],
@@ -96,12 +97,6 @@
    "fieldname": "purchase_invoice",
    "fieldtype": "Check",
    "label": " Purchase Invoice"
-  },
-  {
-   "default": "0",
-   "fieldname": "stock_entry",
-   "fieldtype": "Check",
-   "label": "Stock Entry"
   },
   {
    "fieldname": "sync_down",
@@ -174,12 +169,24 @@
    "fieldname": "driver",
    "fieldtype": "Check",
    "label": "Driver"
+  },
+  {
+   "default": "0",
+   "fieldname": "goods_receiving_note",
+   "fieldtype": "Check",
+   "label": "Goods Receiving Note"
+  },
+  {
+   "default": "0",
+   "fieldname": "goods_transfer_note",
+   "fieldtype": "Check",
+   "label": "Goods Transfer Note"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-29 10:41:30.033104",
+ "modified": "2025-05-31 19:18:05.301277",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Sync Tool",
