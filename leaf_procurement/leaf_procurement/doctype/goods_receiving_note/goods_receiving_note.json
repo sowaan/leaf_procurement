@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{location_short_code}-GRN-{YYYY}-{######}",
+ "autoname": "format:{location_shortcode}-GRN-{YYYY}-{######}",
  "creation": "2025-05-28 13:40:55.912026",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -128,7 +128,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-31 14:58:54.465121",
+ "modified": "2025-05-31 19:12:11.294750",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
