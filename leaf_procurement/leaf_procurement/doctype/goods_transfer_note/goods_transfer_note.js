@@ -57,9 +57,18 @@ frappe.ui.form.on("Goods Transfer Note", {
             }
         });
     },        
-    onload: function(frm){
-        if (!frm.is_new()) return;
+    onload(frm) {
+        // Disable click on grid rows to prevent popup
+        const grid = frm.fields_dict.detail_table?.grid;
+        if (grid && grid.wrapper) {
+            grid.wrapper.on('click', '.grid-row', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        }
         
+        if (!frm.is_new()) return;
+
         frappe.call({
             method: 'frappe.client.get',
             args: {
@@ -70,12 +79,11 @@ frappe.ui.form.on("Goods Transfer Note", {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
                     frm.set_value('location_warehouse', r.message.location_warehouse);    
-                    frm.set_value('default_item', r.message.default_item); 
                     frm.set_value('barcode_length', r.message.barcode_length);
+                    frm.set_value('default_item', r.message.default_item);
                 }   
             }
-        });  
-
+        });                
     },
     company(frm) {
         frm.set_value('receiving_location', null);  // Clear field
