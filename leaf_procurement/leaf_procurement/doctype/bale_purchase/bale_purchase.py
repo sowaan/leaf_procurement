@@ -49,8 +49,7 @@ class BalePurchase(Document):
 			# Raise with user-friendly HTML message and title
 			frappe.throw(
 				msg=message,
-				title=_("Unregistered Bale Barcodes"),
-				indicator='orange'
+				title=_("Unregistered Bale Barcodes")
 			)
 
         
