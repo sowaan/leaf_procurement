@@ -217,7 +217,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     label: 'Captured Weight',
                     fieldtype: 'Float',
                     reqd: 1,
-                    read_only: 0
+                    read_only: 1
                 },
                 {
                     fieldtype: 'Section Break'
