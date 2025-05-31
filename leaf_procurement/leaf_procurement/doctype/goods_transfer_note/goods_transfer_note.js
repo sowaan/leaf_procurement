@@ -2,10 +2,10 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Goods Transfer Note", {
-    refresh(frm) {
+	refresh(frm) {
 
-    },
-    scan_barcode: function (frm) {
+	},
+    scan_barcode: function(frm) {
         let barcode = frm.doc.scan_barcode;
         let itemcode = frm.doc.default_item
         let expected_length = parseInt(frm.doc.barcode_length);
@@ -26,7 +26,7 @@ frappe.ui.form.on("Goods Transfer Note", {
             return;
         }
 
-        // Check if barcode already exists in child table
+    // Check if barcode already exists in child table
         let exists_in_grid = frm.doc.bale_registration_detail.some(row => row.bale_barcode === barcode);
         if (exists_in_grid) {
             frappe.msgprint(__('This barcode already exists in the grid.'));
@@ -38,8 +38,8 @@ frappe.ui.form.on("Goods Transfer Note", {
         frappe.call({
             method: 'leaf_procurement.leaf_procurement.api.barcode.get_invoice_item_by_barcode',
             args: { itemcode: itemcode, barcode: barcode },
-            callback: function (r) {
-                if (r.message && r.message.exists) {
+            callback: function(r) {
+                if (r.message && r.message.exists ) {
                     let row = frm.add_child('bale_registration_detail', {
                         bale_barcode: barcode,
                         weight: r.message.qty,
@@ -56,34 +56,26 @@ frappe.ui.form.on("Goods Transfer Note", {
                 frm.set_value('scan_barcode', '');
             }
         });
-    },
-    onload(frm) {
-        // Disable click on grid rows to prevent popup
-        const grid = frm.fields_dict.detail_table?.grid;
-        if (grid && grid.wrapper) {
-            grid.wrapper.on('click', '.grid-row', function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-            });
-        }
-
+    },        
+    onload: function(frm){
         if (!frm.is_new()) return;
-
+        
         frappe.call({
             method: 'frappe.client.get',
             args: {
                 doctype: 'Leaf Procurement Settings',
                 name: 'Leaf Procurement Settings'
             },
-            callback: function (r) {
+            callback: function(r) {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
-                    frm.set_value('location_warehouse', r.message.location_warehouse);
+                    frm.set_value('location_warehouse', r.message.location_warehouse);    
+                    frm.set_value('default_item', r.message.default_item); 
                     frm.set_value('barcode_length', r.message.barcode_length);
-                    frm.set_value('default_item', r.message.default_item);
-                }
+                }   
             }
-        });
+        });  
+
     },
     company(frm) {
         frm.set_value('receiving_location', null);  // Clear field
@@ -94,5 +86,5 @@ frappe.ui.form.on("Goods Transfer Note", {
                 }
             };
         });
-    }
+    }    
 });
