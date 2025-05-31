@@ -117,7 +117,7 @@ def sync_up():
 			if doc.get(field):
 				print(f"Syncing from {doctype} to server...")
 				url = f'{settings.instance_url}/api/resource/{doctype}'
-				data = frappe.get_all(doctype, pluck='name')
+				data = frappe.get_all(doctype, filters={"custom_is_sync": 0}, pluck='name')
 				for name in data:
 					doc_data = frappe.get_doc(doctype, name)
 					if doctype == "Bale Registration":
@@ -126,9 +126,10 @@ def sync_up():
 					print(f"Syncing {doctype} record: {doc_data}")
 					response = requests.post(url, headers=headers, json=doc_data)
 					if response.status_code == 200 or response.status_code == 201:
-						frappe.db.set_value(doctype, doc_data['name'], 'custom_is_sync', 1)
+						print(doctype, name, 'custom_is_sync', "Want to check save record values")
+						frappe.db.set_value(doctype, name, 'custom_is_sync', 1)
 						frappe.msgprint(_(f"Synced record {doc_data['name']} for {doctype}."))
 					else:
-						frappe.throw(_("Failed to sync {0}: {1}").format(doc_data['name'], response.text))
+						frappe.throw(_("Failed to sync {0} {1}: {2}").format(doctype, doc_data['name'], response.text))
 	except Exception as e:
 		frappe.log_error(str(e), "Sync Up Error")

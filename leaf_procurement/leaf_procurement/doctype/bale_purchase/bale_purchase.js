@@ -353,6 +353,7 @@ d.show();
         validate_day_status(frm);
     },    
     onload: function(frm) {
+        if (!frm.is_new()) return;
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record
         frm.set_query('bale_registration_code', function() {

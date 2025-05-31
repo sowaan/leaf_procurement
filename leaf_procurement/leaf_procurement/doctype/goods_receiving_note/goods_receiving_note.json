@@ -15,6 +15,7 @@
   "column_break_tzax",
   "barcode_length",
   "column_break_waau",
+  "reconciled",
   "section_break_jbaj",
   "detail_table"
  ],
@@ -76,12 +77,20 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "reconciled",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Reconciled",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-28 14:08:51.820038",
+ "modified": "2025-05-31 11:26:39.026643",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
@@ -100,7 +109,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
