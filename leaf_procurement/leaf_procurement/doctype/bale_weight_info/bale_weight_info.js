@@ -240,13 +240,13 @@ frappe.ui.form.on("Bale Weight Info", {
                 });
 
                 frm.refresh_field('detail_table');
-
+                d.hide();
                 if (frm.doc.total_bales <= frm.doc.detail_table.length) {
                     cleanupSerial();
                     if (document.activeElement) {
                         document.activeElement.blur();
                     }
-                    d.hide();
+
                 }
 
                 // Reset fields
@@ -511,15 +511,21 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     const validBarcodes = frm.bale_registration_barcodes || [];
 
     if (!validBarcodes.includes(barcode)) {
-        frappe.msgprint(__('❌ Invalid Bale Barcode: {0}', [barcode]));
-        d.set_value('p_bale_registration_code', '');
+        frappe.show_alert({
+            message: __('❌ Invalid Bale Barcode: {0}', [barcode]),
+            indicator: 'red'
+        });
+                d.set_value('p_bale_registration_code', '');
          $barcode_input.focus();
         return;
     }
 
     const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
     if (already_scanned) {
-        frappe.msgprint(__('⚠️ This Bale Barcode is already scanned: {0}', [barcode]));
+        frappe.show_alert({
+            message: __('⚠️ This Bale Barcode is already scanned: {0}', [barcode]),
+            indicator: 'red'
+        }); 
         d.set_value('p_bale_registration_code', '');
         updateWeightDisplay("0.00");
         $barcode_input.focus();
