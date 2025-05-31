@@ -1,12 +1,14 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:bale_barcode",
  "creation": "2025-05-10 16:12:27.149420",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "bale_barcode"
+  "bale_barcode",
+  "delete_row"
  ],
  "fields": [
   {
@@ -14,17 +16,25 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Bale Barcode",
-   "reqd": 1
+   "read_only": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "delete_row",
+   "fieldtype": "Button",
+   "label": "Delete"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-17 15:04:00.491219",
+ "modified": "2025-05-30 13:04:07.546307",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration Detail",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",

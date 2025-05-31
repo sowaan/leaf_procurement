@@ -116,7 +116,7 @@ frappe.ui.form.on("Bale Weight Info", {
         const total = cint(frm.doc.total_bales || 0);
         const scanned = (frm.doc.detail_table || []).length;
 
-        if (scanned >= total) {
+        if (frm.doc.bale_registration_code && scanned >= total) {
             frappe.msgprint(__('⚠️ Weight completed for all bales in this lot, please remove a bale and press add weight again if you need to update a record.'));
             return;
         }
@@ -268,7 +268,7 @@ frappe.ui.form.on("Bale Weight Info", {
 
                 }, 300);
 
-                hide_grid_controls(frm);
+             
             }
 
         });
@@ -300,58 +300,57 @@ frappe.ui.form.on("Bale Weight Info", {
 
         const $barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input');
 
-        $barcode_input.on('keyup', function (e) {
-            const barcode = $(this).val();
-            const expectedLength = frm.doc.barcode_length || 0;
-            const validBarcodes = frm.bale_registration_barcodes || [];
+$barcode_input.on('keyup', function (e) {
+    const barcode = $(this).val();
+    const expectedLength = frm.doc.barcode_length || 0;
 
-            if (e.key === 'Enter' || barcode.length === expectedLength) {
-                if (!validBarcodes.includes(barcode)) {
-                    frappe.msgprint(__('❌ Invalid Bale Barcode: {0}', [barcode]));
-                    d.set_value('p_bale_registration_code', '');
-                    updateWeightDisplay("0.00");
-                    $barcode_input.focus();
-                    return;
-                }
+    if (e.key === 'Enter' || barcode.length === expectedLength) {
+        // If bale_registration_code already exists, skip fetching
+        if (frm.doc.bale_registration_code) {
+            proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+        } else {
+            // Step 1: Get bale_registration_code using barcode
+            frappe.call({
+                method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_bale_registration_code_by_barcode',
+                args: { barcode: barcode },
+                callback: function (r) {
+                    if (r.message) {
+                        const registration_code = r.message;
 
-                const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
-                if (already_scanned) {
-                    frappe.msgprint(__('⚠️ This Bale Barcode is already scanned: {0}', [barcode]));
-                    d.set_value('p_bale_registration_code', '');
-                    updateWeightDisplay("0.00");
-                    $barcode_input.focus();
-                    return;
-                }
-                // setTimeout(() => {
-                //     const $next_input = d.fields_dict.p_item_grade.$wrapper.find('input');
-                //     $next_input.focus();
-                // }, 100);
-                open_grade_selector_popup(function (grade, sub_grade) {
-                    selected_grade = grade;
-                    selected_sub_grade = sub_grade;
+                        // Step 2: Set bale_registration_code and load barcodes
+                        frm.set_value('bale_registration_code', registration_code);
 
-                    d.set_value('p_item_grade', grade);
-                    d.set_value('p_item_sub_grade', sub_grade);
+                        frappe.call({
+                            method: 'frappe.client.get',
+                            args: {
+                                doctype: 'Bale Registration',
+                                name: registration_code
+                            },
+                            callback: function (res) {
+                                if (res.message) {
+                                    const details = res.message.bale_registration_detail || [];
+                                    frm.bale_registration_barcodes = details
+                                        .map(row => row.bale_barcode)
+                                        .filter(barcode => !!barcode);
 
-                    // Fetch price
-                    frappe.call({
-                        method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
-                        args: {
-                            company: frm.doc.company,
-                            location_warehouse: frm.doc.location_warehouse,
-                            item: frm.doc.item,
-                            item_grade: grade,
-                            item_sub_grade: sub_grade
-                        },
-                        callback: function (r) {
-                            if (r.message !== undefined) {
-                                d.set_value("p_price", r.message);
+                                    // Step 3: Now validate
+                                    proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+                                } else {
+                                    frappe.msgprint(__('⚠️ No details found for Bale Registration {0}', [registration_code]));
+                                }
                             }
-                        }
-                    });
-                });
-            }
-        });
+                        });
+
+                    } else {
+                        frappe.msgprint(__('⚠️ Bale Registration not found for scanned barcode.'));
+                        d.set_value('p_bale_registration_code', '');
+                        $barcode_input.focus();
+                    }
+                }
+            });
+        }
+    }
+});
 
         const $footer = d.$wrapper.find('.modal-footer');
         const $weightDisplay = $(`
@@ -410,8 +409,9 @@ frappe.ui.form.on("Bale Weight Info", {
                 await cleanupSerial();
             }
         });
-    },
+    }
 
+    ,
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
 
@@ -434,10 +434,11 @@ frappe.ui.form.on("Bale Weight Info", {
                 }
             }
         });
-        hide_grid_controls(frm);
+       
     },
     refresh: function (frm) {
-    
+        
+
         if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
             frm.add_custom_button(__('Create Purchase Invoice'), function () {
                 frappe.call({
@@ -445,8 +446,6 @@ frappe.ui.form.on("Bale Weight Info", {
                     args: {
                         bale_weight_info_name: frm.doc.name
                     },
-                    freeze: true,
-                    freeze_message: __('Creating Purchase Invoice...'),
                     callback: function (r) {
                         if (r.message) {
                             frappe.msgprint(__('Purchase Invoice {0} created.', [r.message]));
@@ -456,17 +455,16 @@ frappe.ui.form.on("Bale Weight Info", {
                 });
             });
         }
-        hide_grid_controls(frm);
+        
     },
     date: function (frm) {
         validate_day_status(frm);
-        hide_grid_controls(frm);
+     
     },
     onload: function (frm) {
+        
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record
-        if (!frm.is_new()) return;
-        
         frm.set_query('bale_registration_code', function () {
             return {
                 query: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_available_bale_registrations'
@@ -482,6 +480,8 @@ frappe.ui.form.on("Bale Weight Info", {
                 }
             };
         };
+
+        if (!frm.is_new) return;
 
         //get company and location records from settings
         frappe.call({
@@ -507,10 +507,65 @@ frappe.ui.form.on("Bale Weight Info", {
 
     }
 });
+function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
+    const validBarcodes = frm.bale_registration_barcodes || [];
 
+    if (!validBarcodes.includes(barcode)) {
+        frappe.show_alert({
+            message: __('❌ Invalid Bale Barcode: {0}', [barcode]),
+            indicator: 'red'
+        });
+                d.set_value('p_bale_registration_code', '');
+         $barcode_input.focus();
+        return;
+    }
+
+    const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
+    if (already_scanned) {
+        frappe.show_alert({
+            message: __('⚠️ This Bale Barcode is already scanned: {0}', [barcode]),
+            indicator: 'red'
+        }); 
+        d.set_value('p_bale_registration_code', '');
+        updateWeightDisplay("0.00");
+        $barcode_input.focus();
+        return;
+    }
+
+    open_grade_selector_popup(function (grade, sub_grade) {
+        d.set_value('p_item_grade', grade);
+        d.set_value('p_item_sub_grade', sub_grade);
+
+        frappe.call({
+            method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
+            args: {
+                company: frm.doc.company,
+                location_warehouse: frm.doc.location_warehouse,
+                item: frm.doc.item,
+                item_grade: grade,
+                item_sub_grade: sub_grade
+            },
+            callback: function (r) {
+                if (r.message !== undefined) {
+                    d.set_value("p_price", r.message);
+                }
+            }
+        });
+    });
+}
 frappe.ui.form.on("Bale Weight Detail", {
 
+    delete_row(frm, cdt, cdn) {
+        frappe.model.clear_doc(cdt, cdn);  // delete the row
+        frm.refresh_field('detail_table');
 
+            if (cur_dialog) {
+                cur_dialog.hide();
+            }
+
+            // Remove any lingering modal backdrop
+            $('.modal-backdrop').remove();        
+    },
 
     refresh: function (frm) {
 
@@ -644,13 +699,13 @@ function check_day_open_status(frm) {
 
 
 
-function hide_grid_controls(frm) {
+// function hide_grid_controls(frm) {
 
-    const grid_field = frm.fields_dict.detail_table;
-    if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
-        grid_field.grid.wrapper
-            .find('.grid-add-row,  .btn-open-row')
-            //.find('.grid-add-row, .grid-remove-rows, .btn-open-row')
-            .hide();
-    }
-}
+//     const grid_field = frm.fields_dict.detail_table;
+//     if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
+//         grid_field.grid.wrapper
+//             .find('.grid-add-row,  .btn-open-row')
+//             //.find('.grid-add-row, .grid-remove-rows, .btn-open-row')
+//             .hide();
+//     }
+// }

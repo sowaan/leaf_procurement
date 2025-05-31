@@ -8,6 +8,7 @@
   "company",
   "supplier_grower",
   "date",
+  "custom_is_sync",
   "column_break_gtqf",
   "location_warehouse",
   "item",
@@ -48,6 +49,8 @@
    "fieldname": "bales_in_lot",
    "fieldtype": "Read Only",
    "hidden": 1,
+   "in_list_view": 1,
+   "in_preview": 1,
    "label": "Bales In Lot"
   },
   {
@@ -151,12 +154,22 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Check Validations"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "custom_is_sync",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "is sync",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-31 15:22:46.239601",
+ "modified": "2025-05-31 18:10:08.958072",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
