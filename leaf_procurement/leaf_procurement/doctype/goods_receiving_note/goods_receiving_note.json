@@ -1,14 +1,19 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{location_shortcode}-GRN-{YYYY}-{######}",
  "creation": "2025-05-28 13:40:55.912026",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "company",
   "gtn_number",
   "column_break_ydmp",
+  "location_warehouse",
   "date",
   "column_break_npwo",
+  "location_shortcode",
+  "default_item",
   "bale_registration_lot_no",
   "section_break_qxrp",
   "scan_barcode",
@@ -16,7 +21,8 @@
   "barcode_length",
   "column_break_waau",
   "section_break_jbaj",
-  "detail_table"
+  "detail_table",
+  "amended_from"
  ],
  "fields": [
   {
@@ -33,6 +39,7 @@
   {
    "fieldname": "bale_registration_lot_no",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Bale Registration (Lot No)"
   },
   {
@@ -76,15 +83,57 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "label": "Location (Warehouse)",
+   "options": "Warehouse",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "location_warehouse.custom_short_code",
+   "fieldname": "location_shortcode",
+   "fieldtype": "Read Only",
+   "label": "Shortcode",
+   "read_only": 1
+  },
+  {
+   "fieldname": "default_item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Goods Receiving Note",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-05-28 14:08:51.820038",
+ "modified": "2025-05-31 17:50:35.923431",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

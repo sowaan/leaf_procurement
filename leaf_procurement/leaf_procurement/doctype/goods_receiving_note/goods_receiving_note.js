@@ -11,6 +11,24 @@ frappe.ui.form.on("Goods Receiving Note", {
                 e.preventDefault();
             });
         }
+
+        if (!frm.is_new()) return;
+
+        frappe.call({
+            method: 'frappe.client.get',
+            args: {
+                doctype: 'Leaf Procurement Settings',
+                name: 'Leaf Procurement Settings'
+            },
+            callback: function(r) {
+                if (r.message) {
+                    frm.set_value('company', r.message.company_name);
+                    frm.set_value('location_warehouse', r.message.location_warehouse);    
+                    frm.set_value('barcode_length', r.message.barcode_length);
+                    frm.set_value('default_item', r.message.default_item);
+                }   
+            }
+        });                
     },  
     refresh(frm) {
         //hide_grid_controls(frm);
