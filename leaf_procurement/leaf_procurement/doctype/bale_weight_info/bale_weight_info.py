@@ -43,7 +43,7 @@ class BaleWeightInfo(Document):
 				message += f"<li>{code}</li>"
 			message += "</ul>"
         	# Show message without traceback
-			frappe.msgprint(msg=message, title=_("Unregistered Bale Barcodes"))
+			frappe.msgprint(msg=message, title=_("Unregistered Bale Barcodes"), indicator='orange')
 			
 			# Raise clean validation error to stop save
 			raise ValidationError
@@ -56,7 +56,7 @@ class BaleWeightInfo(Document):
 					entered_count, expected_count, self.bale_registration_code
 				)),
 				title=_("Mismatch in Bale Count"),
-				
+				indicator='orange'
 			)
 			raise ValidationError
 

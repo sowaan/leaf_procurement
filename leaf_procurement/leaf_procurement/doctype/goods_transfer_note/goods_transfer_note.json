@@ -30,8 +30,7 @@
   "barcode_length",
   "column_break_vomc",
   "section_break_sgpc",
-  "bale_registration_detail",
-  "amended_from"
+  "bale_registration_detail"
  ],
  "fields": [
   {
@@ -169,23 +168,12 @@
    "label": "Item",
    "options": "Item",
    "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Goods Transfer Note",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2025-05-30 14:50:09.310406",
+ "modified": "2025-05-23 16:01:20.557374",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",

@@ -20,6 +20,7 @@
   "column_break_tzax",
   "barcode_length",
   "column_break_waau",
+  "reconciled",
   "section_break_jbaj",
   "detail_table",
   "amended_from"
@@ -85,50 +86,19 @@
    "label": "Date"
   },
   {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "fieldname": "location_warehouse",
-   "fieldtype": "Link",
-   "label": "Location (Warehouse)",
-   "options": "Warehouse",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "fetch_from": "location_warehouse.custom_short_code",
-   "fieldname": "location_shortcode",
-   "fieldtype": "Read Only",
-   "label": "Shortcode"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
+   "default": "0",
+   "fieldname": "reconciled",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Reconciled",
    "no_copy": 1,
-   "options": "Goods Receiving Note",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "default_item",
-   "fieldtype": "Link",
-   "label": "Item",
-   "options": "Item",
    "read_only": 1
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-31 14:58:54.465121",
+ "modified": "2025-05-31 11:26:39.026643",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
@@ -148,7 +118,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
