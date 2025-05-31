@@ -208,7 +208,7 @@ frappe.ui.form.on("Bale Purchase", {
                 //     return;
                 // }
                 primary_action_function(frm, d, values);
-
+                d.hide();
             }
 
         });
@@ -375,7 +375,10 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     const validBarcodes = frm.bale_registration_barcodes || [];
 
     if (!validBarcodes.includes(barcode)) {
-        frappe.msgprint(__('❌ Invalid Bale Barcode: {0}', [barcode]));
+        frappe.show_alert({
+            message: __('❌ Invalid Bale Barcode: {0}', [barcode]),
+            indicator: 'red'
+        });
         d.set_value('p_bale_registration_code', '');
          $barcode_input.focus();
         return;
@@ -383,7 +386,10 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
 
     const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
     if (already_scanned) {
-        frappe.msgprint(__('⚠️ This Bale Barcode is already scanned: {0}', [barcode]));
+        frappe.show_alert({
+            message: __('⚠️ This Bale Barcode is already scanned: {0}', [barcode]),
+            indicator: 'red'
+        });        
         d.set_value('p_bale_registration_code', '');
         updateWeightDisplay("0.00");
         $barcode_input.focus();
@@ -548,7 +554,7 @@ function primary_action_function(frm,d,values)
         if (document.activeElement) {
             document.activeElement.blur();
         }
-        d.hide();
+
     }
 
     // Reset fields
