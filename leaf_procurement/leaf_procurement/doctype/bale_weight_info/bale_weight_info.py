@@ -4,7 +4,7 @@ from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BaleWeightInfo(Document):
-	def validate(self):
+	def on_submit(self):
 		if not self.bale_registration_code:
 			return
 
