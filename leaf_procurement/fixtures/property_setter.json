@@ -1,0 +1,18 @@
+[
+ {
+  "default_value": ".{custom_location_short_code}.-SUP-.YYYY.-",
+  "doc_type": "Supplier",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "naming_series",
+  "is_system_generated": 0,
+  "modified": "2025-05-31 17:15:57.503478",
+  "module": "Leaf Procurement",
+  "name": "Supplier-naming_series-options",
+  "property": "options",
+  "property_type": "Select",
+  "row_name": null,
+  "value": ".{custom_location_short_code}.-SUP-.YYYY.-"
+ }
+]

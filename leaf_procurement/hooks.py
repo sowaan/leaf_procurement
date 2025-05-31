@@ -29,7 +29,15 @@ fixtures = [
 				"name", "in", ("Leaf Buying Day Block")
 			]
 		]
-	}    
+	},
+    {
+        "doctype":"Property Setter",
+		"filters":[
+			[
+				"name", "in", ("Supplier-naming_series-options")
+			]
+		]
+	}      
 ]
 doc_events = {
     "Supplier": {
