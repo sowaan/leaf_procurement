@@ -113,7 +113,8 @@ frappe.ui.form.on("Bale Purchase", {
         const total = cint(frm.doc.total_bales || 0);
         const scanned = (frm.doc.detail_table || []).length;
 
-        if (scanned >= total) {
+        // Only apply this validation if bale_registration_code is set
+        if (frm.doc.bale_registration_code && scanned >= total) {
             frappe.msgprint(__('⚠️ Purchase completed for all bales in this lot, please remove a bale and press try again if you need to update a record.'));
             return;
         }        
