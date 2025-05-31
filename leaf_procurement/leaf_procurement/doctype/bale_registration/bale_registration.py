@@ -4,6 +4,7 @@
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
 from frappe import _, ValidationError 	#type: ignore
+from frappe.utils import flt
 
 
 
@@ -29,7 +30,7 @@ class BaleRegistration(Document):
 
         expected_count = self.lot_size
         entered_count = len(self.bale_registration_detail or [])
-        if entered_count > expected_count:
+        if flt(entered_count) > flt(expected_count):
             frappe.msgprint(
                 msg=_("⚠️ The number of bales entered is <b>{0}</b>, but the maximum number of bales allowed in a lot is <b>{1}</b> for Bale Registration.".format(
                     entered_count, expected_count
