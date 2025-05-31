@@ -12,6 +12,7 @@ frappe.ui.form.on("Goods Receiving Note", {
             });
         }
 
+        
         if (!frm.is_new()) return;
 
         frappe.call({
