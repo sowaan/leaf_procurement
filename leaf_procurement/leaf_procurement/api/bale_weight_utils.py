@@ -137,9 +137,11 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             })   
             invoice_weight += detail.weight             
 
-
-        
-
+    if invoice_weight <=0:
+        frappe.throw(
+            _("Unable to create invoice. The total weight of items is {0}. Probabily, all items are rejected or with 0 weight.")
+            .format(invoice_weight)
+        )        
     invoice.append("items", {
         "item_code": transport_charges_item,
         "qty": invoice_weight,
@@ -148,6 +150,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
         "description": f"Transport Charges for Invoice Weight {invoice_weight} Kg",
 
     })
+
 
     invoice.save()
     invoice.submit()

@@ -9,6 +9,7 @@ frappe.ui.form.on('Supplier', {
             },
             callback: function(r) {
                 if (r.message) {
+                    console.log('here supplier');
                     frm.set_value('custom_company', r.message.company_name);
                     frm.set_value('custom_location_warehouse', r.message.location_warehouse);
                 }

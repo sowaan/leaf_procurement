@@ -20,7 +20,9 @@ def create_stock_entry_from_gtn(gtn_doc):
     stock_entry.company = gtn_doc.company
     stock_entry.add_to_transit = True
     stock_entry.from_warehouse = gtn_doc.location_warehouse
-    stock_entry.to_warehouse = gtn_doc.receiving_location
+    stock_entry.to_warehouse = gtn_doc.transit_location
+    stock_entry.custom_receiving_warehouse = gtn_doc.receiving_location
+
     stock_entry.purpose = "Material Transfer"
     stock_entry.custom_gtn_number = gtn_doc.name  # custom field if needed
 
@@ -30,8 +32,8 @@ def create_stock_entry_from_gtn(gtn_doc):
             "item_code": gtn_doc.default_item,
             "qty": row.weight,
             "basic_rate": row.rate,
-            "s_warehouse": gtn_doc.location_warehouse,
-            "t_warehouse": gtn_doc.receiving_location,
+            # "s_warehouse": gtn_doc.location_warehouse,
+            # "t_warehouse": gtn_doc.receiving_location,
             "use_serial_batch_fields": 1,
             "batch_no": row.bale_barcode,
 			"lot_number": row.lot_number,

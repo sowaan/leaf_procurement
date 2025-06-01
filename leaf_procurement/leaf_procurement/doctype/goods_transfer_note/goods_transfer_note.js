@@ -86,5 +86,13 @@ frappe.ui.form.on("Goods Transfer Note", {
                 }
             };
         });
+        frm.set_value('transit_location', null);  // Clear field
+        frm.set_query('transit_location', () => {
+            return {
+                filters: {
+                    company: frm.doc.company
+                }
+            };
+        });        
     }    
 });
