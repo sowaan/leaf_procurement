@@ -33,7 +33,8 @@ frappe.ui.form.on("Bale Registration", {
         // Check if barcode already exists in child table
         let exists = frm.doc.bale_registration_detail.some(row => row.bale_barcode === barcode);
         if (exists) {
-            frappe.msgprint({ message: __('This barcode already exists.'), indicator: 'orange' });
+            frappe.show_alert({ message: __('This barcode already exists.'), indicator: 'red' });
+            return;
         } else {
             // Add new row to child table
             let row = frm.add_child('bale_registration_detail', {

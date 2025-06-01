@@ -34,7 +34,11 @@ fixtures = [
         "doctype":"Property Setter",
 		"filters":[
 			[
-				"name", "in", ("Supplier-naming_series-options", "Purchase Invoice-naming_series-options")
+				"name", "in", (
+                    "Supplier-naming_series-options", 
+                    "Purchase Invoice-naming_series-options",
+                    "Supplier-main-quick_entry"
+                    )
 			]
 		]
 	}      

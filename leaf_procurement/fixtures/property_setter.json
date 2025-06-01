@@ -30,5 +30,21 @@
   "property_type": "Text",
   "row_name": null,
   "value": ".{custom_short_code}.-.YYYY.-ACC-PINV-\n.{custom_short_code}.-.YYYY.-ACC-PINV-RET-"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Supplier",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocType",
+  "field_name": null,
+  "is_system_generated": 0,
+  "modified": "2025-06-01 16:05:14.846866",
+  "module": null,
+  "name": "Supplier-main-quick_entry",
+  "property": "quick_entry",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "0"
  }
 ]
