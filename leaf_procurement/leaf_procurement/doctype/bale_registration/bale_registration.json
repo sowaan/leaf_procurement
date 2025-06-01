@@ -1,6 +1,5 @@
 {
  "actions": [],
- "allow_rename": 1,
  "autoname": "format:{location_short_code}-{YYYY}-{MM}-{DD}-{######}",
  "creation": "2025-05-10 16:08:35.296718",
  "doctype": "DocType",
@@ -9,6 +8,7 @@
   "company",
   "supplier_grower",
   "date",
+  "custom_is_sync",
   "column_break_gtqf",
   "location_warehouse",
   "item",
@@ -154,13 +154,22 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Check Validations"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "custom_is_sync",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "is sync",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-30 12:01:26.899599",
+ "modified": "2025-05-31 18:10:08.958072",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
@@ -180,7 +189,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

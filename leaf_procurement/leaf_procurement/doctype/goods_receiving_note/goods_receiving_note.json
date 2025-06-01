@@ -7,11 +7,15 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
+  "company",
   "gtn_number",
   "column_break_ydmp",
   "location_warehouse",
+  "location_warehouse",
   "date",
   "column_break_npwo",
+  "location_shortcode",
+  "default_item",
   "location_shortcode",
   "default_item",
   "bale_registration_lot_no",
@@ -21,6 +25,8 @@
   "barcode_length",
   "column_break_waau",
   "section_break_jbaj",
+  "detail_table",
+  "amended_from"
   "detail_table",
   "amended_from"
  ],
@@ -39,6 +45,7 @@
   {
    "fieldname": "bale_registration_lot_no",
    "fieldtype": "Data",
+   "hidden": 1,
    "hidden": 1,
    "label": "Bale Registration (Lot No)"
   },
@@ -128,11 +135,13 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
+ "is_submittable": 1,
  "links": [],
  "modified": "2025-05-31 17:50:35.923431",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
+ "naming_rule": "Expression",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

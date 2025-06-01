@@ -14,7 +14,12 @@
   "rejected_item_grade",
   "rejected_location_warehouse",
   "transport_charges_item",
-  "barcode_length"
+  "barcode_length",
+  "sync_settings_tab",
+  "instance_url",
+  "column_break_yfay",
+  "api_key",
+  "api_secret"
  ],
  "fields": [
   {
@@ -72,13 +77,36 @@
    "fieldtype": "Link",
    "label": "Rejected Item Sub Grade",
    "options": "Item Sub Grade"
+  },
+  {
+   "fieldname": "sync_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Sync Settings"
+  },
+  {
+   "fieldname": "column_break_yfay",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Data",
+   "label": "API Secret"
+  },
+  {
+   "fieldname": "instance_url",
+   "fieldtype": "Data",
+   "label": "Instance URL"
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-21 14:08:38.559255",
+ "modified": "2025-05-28 14:40:35.771760",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",
@@ -95,7 +123,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

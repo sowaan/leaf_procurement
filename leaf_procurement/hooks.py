@@ -29,7 +29,15 @@ fixtures = [
 				"name", "in", ("Leaf Buying Day Block")
 			]
 		]
-	}    
+	},
+    {
+        "doctype":"Property Setter",
+		"filters":[
+			[
+				"name", "in", ("Supplier-naming_series-options", "Purchase Invoice-naming_series-options")
+			]
+		]
+	}      
 ]
 doc_events = {
     "Supplier": {
@@ -267,4 +275,3 @@ before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-

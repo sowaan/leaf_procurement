@@ -2,8 +2,7 @@ import requests
 import frappe # type: ignore
 
 MASTER_DOCTYPES = [
-    "Company", "Warehouse", "Item", "Item Grade", "Item Sub Grade", 
-    "Item Grade Price",
+    "Company", "Warehouse", "Item", "Item Grade", "Item Sub Grade", "Item Grade Price",
     "Bale Status", "Reclassification Grade", "Transport Type"
 ]
 

@@ -4,11 +4,12 @@
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
 from frappe import _, ValidationError 	#type: ignore
+from frappe.utils import flt
 
 
 
 class BaleRegistration(Document):
-    def validate(self):
+    def on_submit(self):
         # if check validations is false, no need to check validations
         # as this is a sync operation
         if not self.check_validations:
@@ -29,7 +30,7 @@ class BaleRegistration(Document):
 
         expected_count = self.lot_size
         entered_count = len(self.bale_registration_detail or [])
-        if entered_count > expected_count:
+        if flt(entered_count) > flt(expected_count):
             frappe.msgprint(
                 msg=_("⚠️ The number of bales entered is <b>{0}</b>, but the maximum number of bales allowed in a lot is <b>{1}</b> for Bale Registration.".format(
                     entered_count, expected_count
@@ -42,7 +43,7 @@ class BaleRegistration(Document):
         invalid_barcodes = []
 
         for row in self.bale_registration_detail:
-            if not row.bale_barcode.isdigit() or len(row.bale_barcode) != self.barcode_length:
+            if not row.bale_barcode.isdigit() or len(row.bale_barcode) != flt(self.barcode_length):
                 invalid_barcodes.append(row.bale_barcode)
 
         invalid_barcodes_list = "<br>".join(invalid_barcodes)

@@ -7,11 +7,10 @@ from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BalePurchase(Document):
-	def validate(self):
+	def on_submit(self):
 		if not self.bale_registration_code:
 			return
 
-	
 		day_open = frappe.get_all("Day Setup",
 			filters={
 				"date": self.date,
@@ -50,8 +49,7 @@ class BalePurchase(Document):
 			# Raise with user-friendly HTML message and title
 			frappe.throw(
 				msg=message,
-					title=_("Unregistered Bale Barcodes"),
-
+				title=_("Unregistered Bale Barcodes")
 			)
 
         
