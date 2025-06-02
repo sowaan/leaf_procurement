@@ -3,10 +3,21 @@
 
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
+from frappe.model.naming import make_autoname
+from erpnext.accounts.utils import get_fiscal_year
+from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BalePurchase(Document):
+	def autoname(self):
+		today = datetime.strptime(self.date, "%Y-%m-%d")
+		fy = get_fiscal_year(today)
+		fy_start_year_short = fy[1].strftime("%y")
+		fy_end_year_short = fy[2].strftime("%y")
+		prefix = f"{self.location_short_code}-{fy_start_year_short}-{fy_end_year_short}-BP-"
+		self.name = make_autoname(prefix + ".######")
+
 	def on_submit(self):
 		if not self.bale_registration_code:
 			return

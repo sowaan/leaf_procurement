@@ -37,7 +37,9 @@ fixtures = [
 				"name", "in", (
                     "Supplier-naming_series-options", 
                     "Purchase Invoice-naming_series-options",
-                    "Supplier-main-quick_entry"
+                    "Supplier-main-quick_entry",
+                    "Supplier-mobile_no-reqd",
+                    "Supplier-main-search_fields"
                     )
 			]
 		]
@@ -137,6 +139,11 @@ after_install = "leaf_procurement.install.after_install"
 before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 # after_uninstall = "leaf_procurement.uninstall.after_uninstall"
 
+after_migrate = [
+    "leaf_procurement.setup.setup_hooks.set_supplier_naming_series"
+]
+
+
 # Integration Setup
 # ------------------
 # To set up dependencies/integrations with other apps
@@ -215,6 +222,9 @@ before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "leaf_procurement.event.get_events"
 # }
+override_doctype_class = {
+    "Supplier": "leaf_procurement.leaf_procurement.overrides.supplier.CustomSupplier"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

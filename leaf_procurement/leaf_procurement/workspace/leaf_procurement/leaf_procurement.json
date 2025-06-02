@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"m0R5lm5ONt\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Leaf Procurement</span>\",\"col\":12}},{\"id\":\"nljq0EQ2M-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Leaf Buying Day Block\",\"col\":12}},{\"id\":\"d6HYVRPxHh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create a new Grower\",\"col\":4}},{\"id\":\"zSpuVUO9Ck\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create a new Day\",\"col\":4}},{\"id\":\"kVULT4634q\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"qg_RUpiNY0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Registration\",\"col\":3}},{\"id\":\"HLq8hbF8FV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Purchase\",\"col\":3}},{\"id\":\"4Fvr2KB47Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Weighment\",\"col\":3}},{\"id\":\"_YQrRw95oU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GTN\",\"col\":3}},{\"id\":\"bdf8I7YSn3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GRN\",\"col\":3}},{\"id\":\"Zu2GS2-B2B\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sync Tool\",\"col\":3}},{\"id\":\"dxT3ym0B0C\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Lx__SCWt2-\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"dqOrzvhmwF\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CCh1URUzh3\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
+ "content": "[{\"id\":\"m0R5lm5ONt\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Leaf Procurement</span>\",\"col\":12}},{\"id\":\"nljq0EQ2M-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Leaf Buying Day Block\",\"col\":12}},{\"id\":\"d6HYVRPxHh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create a new Grower\",\"col\":4}},{\"id\":\"zSpuVUO9Ck\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create a new Day\",\"col\":4}},{\"id\":\"kVULT4634q\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"qg_RUpiNY0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Registration\",\"col\":3}},{\"id\":\"HLq8hbF8FV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Purchase\",\"col\":3}},{\"id\":\"4Fvr2KB47Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Weighment\",\"col\":3}},{\"id\":\"_YQrRw95oU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GTN\",\"col\":3}},{\"id\":\"bdf8I7YSn3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"GRN\",\"col\":3}},{\"id\":\"-5z87a6-zF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Audit\",\"col\":3}},{\"id\":\"Zu2GS2-B2B\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sync Tool\",\"col\":3}},{\"id\":\"dxT3ym0B0C\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Lx__SCWt2-\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"dqOrzvhmwF\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CCh1URUzh3\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}},{\"id\":\"TnYomsvjY6\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit\",\"col\":4}},{\"id\":\"V8BapdsHJl\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-05-28 14:26:58.912035",
  "custom_blocks": [
   {
@@ -19,11 +19,10 @@
  "label": "Leaf Procurement",
  "links": [
   {
-   "description": "Master Setups",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Setups",
-   "link_count": 10,
+   "label": "Tools",
+   "link_count": 2,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -31,7 +30,37 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Supplier",
+   "label": "Leaf Procurement Settings",
+   "link_count": 0,
+   "link_to": "Leaf Procurement Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sync Tool",
+   "link_count": 0,
+   "link_to": "Leaf Procurement Sync Tool",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "description": "Master Setups",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setups",
+   "link_count": 11,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Grower",
    "link_count": 0,
    "link_to": "Supplier",
    "link_type": "DocType",
@@ -131,18 +160,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Tools",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Leaf Procurement Settings",
+   "label": "Transport Type",
    "link_count": 0,
-   "link_to": "Leaf Procurement Settings",
+   "link_to": "Transport Type",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -150,10 +170,49 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sync Tool",
-   "link_count": 0,
-   "link_to": "Leaf Procurement Sync Tool",
+   "label": "Reports",
+   "link_count": 4,
    "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Report Code Leaf 001",
+   "link_count": 0,
+   "link_to": "Report Code Leaf 001",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grade Wise Purchase Leaf 002",
+   "link_count": 0,
+   "link_to": "Grade Wise Purchase Leaf 002",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grower Wise Purchase Leaf 003",
+   "link_count": 0,
+   "link_to": "Grower Wise Purchase Leaf 003",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Depot Despatch Report",
+   "link_count": 0,
+   "link_to": "Depot Despatch Report",
+   "link_type": "Report",
    "onboard": 0,
    "type": "Link"
   },
@@ -161,7 +220,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Operations",
-   "link_count": 5,
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -215,9 +274,38 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Voucher",
+   "link_count": 0,
+   "link_to": "Purchase Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Audit",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bale Audit",
+   "link_count": 0,
+   "link_to": "Bale Audit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-06-01 14:03:28.560275",
+ "modified": "2025-06-02 21:27:48.945290",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement",
@@ -234,6 +322,15 @@
    "doc_view": "List",
    "label": "Sync Tool",
    "link_to": "Leaf Procurement Sync Tool",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "New",
+   "format": "{}",
+   "label": "Bale Audit",
+   "link_to": "Bale Audit",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {

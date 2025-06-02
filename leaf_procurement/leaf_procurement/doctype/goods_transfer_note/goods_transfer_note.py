@@ -5,6 +5,7 @@ import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 
 
+
 class GoodsTransferNote(Document):
 	def on_submit(self):
 		create_stock_entry_from_gtn(self)
