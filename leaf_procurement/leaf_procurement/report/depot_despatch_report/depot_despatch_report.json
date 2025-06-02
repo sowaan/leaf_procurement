@@ -10,14 +10,14 @@
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date",
-   "mandatory": 0,
+   "mandatory": 1,
    "wildcard_filter": 0
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date",
-   "mandatory": 0,
+   "mandatory": 1,
    "wildcard_filter": 0
   },
   {
@@ -32,9 +32,9 @@
  "idx": 0,
  "is_standard": "Yes",
  "json": "{}",
- "letter_head": "Orman Trading",
+ "letter_head": "",
  "letterhead": null,
- "modified": "2025-06-01 18:04:28.160793",
+ "modified": "2025-06-02 21:01:37.518640",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Depot Despatch Report",

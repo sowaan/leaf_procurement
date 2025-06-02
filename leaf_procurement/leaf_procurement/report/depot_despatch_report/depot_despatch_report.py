@@ -5,7 +5,6 @@ import frappe
 
 
 def execute(filters=None):
-	filters = get_filters(filters)
 	coloumns = get_coloumns()
 	data = get_data(filters)
 	return coloumns, data
@@ -32,48 +31,27 @@ def get_coloumns():
 
 
 def get_data(filters):
-	data = frappe.db.sql("""
-		SELECT 
-			gtn.date as date,
-			gtn.name as gtn_no,
-			gtn.tsa_number as tsa_number,
-			gtn.vehicle_number as veh_no,
-			COUNT(gtni.name) as bale,
-			gtn.receiving_location as receiving_whs,
-			SUM(gtni.weight) as kgs,
-			gtn.remarks as remarks
-			
-		FROM `tabGoods Transfer Note` gtn
-		LEFT JOIN `tabGoods Transfer Note Items` gtni ON gtni.parent = gtn.name
-		WHERE gtn.docstatus = 1
-			AND gtn.date BETWEEN %(from_date)s AND %(to_date)s
-			AND gtn.location_warehouse = %(depot)s
-	""", filters, as_dict=True)
+    conditions = "WHERE gtn.docstatus = 1"
+    if filters.get("from_date") and filters.get("to_date"):
+        conditions += " AND gtn.date BETWEEN %(from_date)s AND %(to_date)s"
+    if filters.get("depot"):
+        conditions += " AND gtn.location_warehouse = %(depot)s"
 
-	return data
+    query = f"""
+        SELECT 
+            gtn.date as date,
+            gtn.name as gtn_no,
+            gtn.tsa_number as tsa_number,
+            gtn.vehicle_number as veh_no,
+            COUNT(gtni.name) as bale,
+            SUM(gtni.weight) as kgs,
+            gtn.receiving_location as receiving_whs,
+            gtn.remarks as remarks
+        FROM `tabGoods Transfer Note` gtn
+        LEFT JOIN `tabGoods Transfer Note Items` gtni ON gtni.parent = gtn.name
+        {conditions}
+        GROUP BY gtn.name
+        ORDER BY gtn.date DESC
+    """
 
-
-
-
-
-
-
-
-
-
-
-
-
-def get_filters(filters):
-	conditions = ""
-	if filters.get("depot"):
-		conditions += " AND bwi.location_warehouse = %(depot)s"
-	if filters.get("from_date"):
-		conditions += " AND gtn.posting_date >= %(from_date)s"
-	if filters.get("to_date"):
-		conditions += " AND gtn.posting_date <= %(to_date)s"
-	
-	conditions += " AND gtn.docstatus = 1"
-
-
-	return filters
+    return frappe.db.sql(query, filters, as_dict=True)

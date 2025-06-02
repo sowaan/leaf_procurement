@@ -77,11 +77,11 @@ def execute(filters=None):
 		{"label": "% (Today)", "fieldname": "percentage_today", "fieldtype": "Percent", "width": 100},
 
 		# ToDate
-		{"label": "Bales", "fieldname": "bales_todate", "fieldtype": "Int", "width": 90},
-		{"label": "Kgs", "fieldname": "kgs_todate", "fieldtype": "Float", "width": 100},
-		{"label": "Amount", "fieldname": "amount_todate", "fieldtype": "Currency", "width": 100},
-		{"label": "Avg", "fieldname": "avg_todate", "fieldtype": "Currency", "width": 90},
-		{"label": "%", "fieldname": "percentage_todate", "fieldtype": "Percent", "width": 90},
+		{"label": "Bales (ToDate)", "fieldname": "bales_todate", "fieldtype": "Int", "width": 120},
+		{"label": "Kgs (ToDate)", "fieldname": "kgs_todate", "fieldtype": "Float", "width": 110},
+		{"label": "Amount (ToDate)", "fieldname": "amount_todate", "fieldtype": "Currency", "width": 120},
+		{"label": "Avg (ToDate)", "fieldname": "avg_todate", "fieldtype": "Currency", "width": 110},
+		{"label": "% (ToDate)", "fieldname": "percentage_todate", "fieldtype": "Percent", "width": 100},
 	]
 
 	return columns, data
