@@ -25,6 +25,7 @@
   "total_bales",
   "remaining_bales",
   "rejected_item_location",
+  "payment_mode",
   "section_break_zoru",
   "add_weight_information",
   "section_break_lrtu",
@@ -66,9 +67,11 @@
   {
    "fetch_from": "bale_registration_code.supplier_grower",
    "fieldname": "supplier_grower",
-   "fieldtype": "Read Only",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Supplier (Grower)"
+   "label": "Supplier (Grower)",
+   "options": "Supplier",
+   "read_only": 1
   },
   {
    "fetch_from": "bale_registration_code.bales_in_lot",
@@ -194,13 +197,18 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "payment_mode",
+   "fieldtype": "Link",
+   "label": "Payment Mode",
+   "options": "Mode of Payment"
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-29 13:31:48.914634",
+ "modified": "2025-06-02 10:53:32.139396",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
@@ -220,7 +228,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
