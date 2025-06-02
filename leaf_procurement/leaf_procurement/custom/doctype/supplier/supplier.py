@@ -11,6 +11,24 @@ def normalize_nic(nic):
 
 def validate_unique_nic(doc, method):
     normalized_nic = normalize_nic(doc.custom_nic_number)
+    if len(normalized_nic) != 13:
+        frappe.throw(
+            _("NIC must be 13 digits. Current value: {0}").format(doc.custom_nic_number),
+            title="Invalid NIC Number"
+        )
+    settings = frappe.get_doc("Leaf Procurement Settings", ["custom_company","custom_location_warehouse"])
+    
+    if not doc.custom_location_warehouse:
+        doc.custom_location_warehouse = settings.get("location_warehouse") if settings else None
+    if not doc.custom_company:
+        doc.custom_company = settings.get("company_name") if settings else None
+    if not doc.custom_location_short_code:
+        doc.custom_location_short_code = frappe.db.get_value(
+            "Warehouse",
+            doc.custom_location_warehouse,
+            "custom_short_code"
+        )
+
     location = doc.custom_location_warehouse
 
     if not normalized_nic or not location:
@@ -23,15 +41,23 @@ def validate_unique_nic(doc, method):
             "custom_location_warehouse": location,
             "name": ["!=", doc.name]  # Exclude current doc
         },
-        fields=["name", "custom_nic_number"]
+        fields=["name", "custom_nic_number", "mobile_no"]
     )
 
     for supplier in suppliers:
         existing_normalized_nic = normalize_nic(supplier.custom_nic_number)
         if normalized_nic == existing_normalized_nic:
             frappe.throw(
-                _("Supplier with NIC <b>{0}</b> already exists for warehouse <b>{1}</b> (Supplier: {2})").format(
+                _("Supplier with NIC <b>{0}</b> already exists for location <b>{1}</b> (Supplier: {2})").format(
                     doc.custom_nic_number, location, supplier.name
                 ),
                 title="Duplicate NIC Number"
             )
+        elif doc.mobile_no and doc.mobile_no == supplier.mobile_no:
+            frappe.throw(
+                _("Supplier with mobile number <b>{0}</b> already exists for location <b>{1}</b> (Supplier: {2})").format(
+                    doc.mobile_no, location, supplier.name
+                ),
+                title="Duplicate Mobile Number"
+            )
+
