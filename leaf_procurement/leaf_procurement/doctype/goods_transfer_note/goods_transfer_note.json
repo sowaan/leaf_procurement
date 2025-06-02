@@ -126,7 +126,10 @@
   {
    "fieldname": "tsa_number",
    "fieldtype": "Data",
-   "label": "TSA Number"
+   "in_list_view": 1,
+   "label": "TSA Number",
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "reverse_confirmation_mobile",
@@ -192,7 +195,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-01 14:05:29.939781",
+ "modified": "2025-06-03 00:27:24.647817",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",

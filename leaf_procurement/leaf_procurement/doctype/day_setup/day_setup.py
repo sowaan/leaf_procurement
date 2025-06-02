@@ -18,8 +18,9 @@ class DaySetup(Document):
                 frappe.throw(_("Due Date ({}) must be after Date ({}).").format(self.due_date, self.date))
 
         # Check if date is Sunday
-        if date_obj and date_obj.weekday() == 6:  # Sunday = 6
-            frappe.throw(_("Date cannot be a Sunday."))
+        if date_obj and date_obj.weekday() == 6 and not self.allow_sunday_open:  # Sunday = 6
+            frappe.throw(_("You cannot open day on Sunday as entry is not permitted on Sunday."))
+
 
         if self.date:
             existing = frappe.db.exists("Day Setup", {

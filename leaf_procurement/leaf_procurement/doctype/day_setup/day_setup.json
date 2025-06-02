@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:LP-DS-{date}",
+ "autoname": "format:LP-DS-{######}",
  "creation": "2025-05-10 15:47:22.473500",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -10,7 +10,7 @@
   "date",
   "payment_method",
   "day_open_time",
-  "status",
+  "allow_sunday_open",
   "column_break_iqnk",
   "location_warehouse",
   "due_date",
@@ -77,17 +77,18 @@
    "read_only": 1
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "\nOpened\nClosed",
+   "default": "0",
+   "fieldname": "allow_sunday_open",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Allow Day Open On Sunday",
    "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-28 15:57:27.436641",
+ "modified": "2025-06-02 22:51:23.172668",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",
@@ -110,14 +111,5 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [
-  {
-   "color": "Green",
-   "title": "Opened"
-  },
-  {
-   "color": "Orange",
-   "title": "Closed"
-  }
- ]
+ "states": []
 }

@@ -9,17 +9,13 @@
   "default_item",
   "rejected_item_sub_grade",
   "lot_size",
+  "allow_sunday_open",
   "column_break_omrn",
   "location_warehouse",
   "rejected_item_grade",
   "rejected_location_warehouse",
   "transport_charges_item",
-  "barcode_length",
-  "sync_settings_tab",
-  "instance_url",
-  "column_break_yfay",
-  "api_key",
-  "api_secret"
+  "barcode_length"
  ],
  "fields": [
   {
@@ -79,34 +75,17 @@
    "options": "Item Sub Grade"
   },
   {
-   "fieldname": "sync_settings_tab",
-   "fieldtype": "Tab Break",
-   "label": "Sync Settings"
-  },
-  {
-   "fieldname": "column_break_yfay",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "api_key",
-   "fieldtype": "Data",
-   "label": "API Key"
-  },
-  {
-   "fieldname": "api_secret",
-   "fieldtype": "Data",
-   "label": "API Secret"
-  },
-  {
-   "fieldname": "instance_url",
-   "fieldtype": "Data",
-   "label": "Instance URL"
+   "default": "0",
+   "fieldname": "allow_sunday_open",
+   "fieldtype": "Check",
+   "label": "Allow Day Open On Sunday"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-28 14:40:35.771760",
+ "modified": "2025-06-02 22:06:40.093794",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",
@@ -123,6 +102,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

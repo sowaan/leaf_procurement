@@ -21,7 +21,7 @@ frappe.ui.form.on("Day Setup", {
             frm.add_custom_button(__('Day Open'), function() {
                 const now = frappe.datetime.now_datetime();
                 frm.set_value('day_open_time', now);
-                frm.set_value('status', "Opened");
+                //frm.set_value('status', "Opened");
 
                 frm.save().then(() => {
                     frappe.msgprint(__('Day opened at: ') + now);
@@ -31,18 +31,44 @@ frappe.ui.form.on("Day Setup", {
         }
 
         if (frm.doc.day_open_time && !frm.doc.day_close_time) {
-            // Show Day Close button only if day is open and not yet closed
-            frm.add_custom_button(__('Day Close'), function() {
-                const now = frappe.datetime.now_datetime();
-                frm.set_value('day_close_time', now);
-                frm.set_value('status', "Closed");
+            frm.add_custom_button(__('Day Close'), async function () {
+                try {
+                    const result = await frappe.call({
+                        method: "leaf_procurement.leaf_procurement.api.day_close_utils.check_gtn_and_grade_difference",
+                        args: {
+                            date: frm.doc.date  // or relevant filter to narrow down bales for the day
+                        }
+                    });
 
-                frm.save().then(() => {
-                    frappe.msgprint(__('Day closed at: ') + now);
-                    frm.reload_doc();
-                });
+                    if (result.message && result.message.length > 0) {
+                        const mismatched_bales = result.message.map(d => {
+                            const purchase_grade = d.purchase_grade || "Not Found";
+                            const weight_grade = d.weight_grade || "Not Found";
+                            return `Bale: ${d.bale_id}, Purchase Grade: ${purchase_grade}, Weight Grade: ${weight_grade}`;
+                        }).join("<br>");
+                        frappe.msgprint({
+                            title: __("No Goods Transfer Note (GTN) record found for following bales:"),
+                            indicator: "orange",
+                            message: mismatched_bales
+                        });
+                        return;  // prevent day closing if mismatch exists
+                    }
+
+                    const now = frappe.datetime.now_datetime();
+                    frm.set_value('day_close_time', now);
+                    //frm.set_value('status', "Closed");
+
+                    frm.save().then(() => {
+                        frappe.msgprint(__('Day closed at: ') + now);
+                        frm.reload_doc();
+                    });
+                } catch (err) {
+                    frappe.msgprint(__('Error checking GTN and grade differences.'));
+                    console.error(err);
+                }
             }, __('Actions'));
         }
+
 	},
     date: function (frm) {
         frm.events.set_due_date_min(frm);
@@ -70,6 +96,7 @@ frappe.ui.form.on("Day Setup", {
                     if (r.message) {
                         frm.set_value('company', r.message.company_name);
                         frm.set_value('location_warehouse', r.message.location_warehouse);
+                        frm.set_value('allow_sunday_open', r.message.allow_sunday_open)
                     }
                 }
             });

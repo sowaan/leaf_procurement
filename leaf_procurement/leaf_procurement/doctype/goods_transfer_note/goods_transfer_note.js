@@ -29,16 +29,18 @@ frappe.ui.form.on("Goods Transfer Note", {
     // Check if barcode already exists in child table
         let exists_in_grid = frm.doc.bale_registration_detail.some(row => row.bale_barcode === barcode);
         if (exists_in_grid) {
-            frappe.msgprint(__('This barcode already exists in the grid.'));
+            frappe.show_alert({ message: __('This Bale Barcode is already scanned'), indicator: 'orange' });
             frm.set_value('scan_barcode', '');
             return;
         }
 
+        
         // Now check if barcode already exists in Batch table (invoice generated)
         frappe.call({
             method: 'leaf_procurement.leaf_procurement.api.barcode.get_invoice_item_by_barcode',
             args: { itemcode: itemcode, barcode: barcode },
             callback: function(r) {
+                
                 if (r.message && r.message.exists ) {
                     let row = frm.add_child('bale_registration_detail', {
                         bale_barcode: barcode,
@@ -50,7 +52,8 @@ frappe.ui.form.on("Goods Transfer Note", {
                     });
                     frm.refresh_field('bale_registration_detail');
                 } else {
-                    frappe.msgprint(__('This barcode has not been invoiced or has been rejected during invoice generation.'));
+                    frappe.show_alert({ message: __('This barcode has not been invoiced or has been rejected during invoice generation.'), indicator: 'orange' });
+                    //frappe.msgprint(__('This barcode has not been invoiced or has been rejected during invoice generation.'));
                 }
 
                 frm.set_value('scan_barcode', '');
