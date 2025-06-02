@@ -1,6 +1,5 @@
 {
  "actions": [],
- "autoname": "format:{location_short_code}-{YYYY}-{MM}-{DD}-{######}",
  "creation": "2025-05-10 16:08:35.296718",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -169,11 +168,10 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-31 18:10:08.958072",
+ "modified": "2025-06-02 20:18:27.294035",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
- "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -189,6 +187,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

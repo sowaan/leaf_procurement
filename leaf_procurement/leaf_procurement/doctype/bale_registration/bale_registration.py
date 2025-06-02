@@ -4,11 +4,24 @@
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
 from frappe import _, ValidationError 	#type: ignore
-from frappe.utils import flt
+from frappe.model.naming import make_autoname
+from frappe.utils import flt, nowdate
+from erpnext.accounts.utils import get_fiscal_year
+from datetime import datetime
 
 
 
 class BaleRegistration(Document):
+    def autoname(self):
+        today = datetime.strptime(self.date, "%Y-%m-%d")
+        date_part = today.strftime("%d%m%Y")
+        current_year_short = today.strftime("%y")
+        fy = get_fiscal_year(today)
+        fy_start_year_short = fy[1].strftime("%y")
+        fy_end_year_short = fy[2].strftime("%y")
+        prefix = f"{self.location_short_code}-{date_part}-{fy_start_year_short}-{fy_end_year_short}-"
+        self.name = make_autoname(prefix + ".######")
+          
     def on_submit(self):
         # if check validations is false, no need to check validations
         # as this is a sync operation
