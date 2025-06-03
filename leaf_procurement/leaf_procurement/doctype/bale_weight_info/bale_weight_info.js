@@ -286,28 +286,26 @@ frappe.ui.form.on("Bale Weight Info", {
             primary_action: async function (values) {
                 const weight = values.p_weight;
                 if (weight) {
-                    await frappe.call({
+                    const r = await frappe.call({
                         method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.quota_weight",
                         args: {
                             location: frm.doc.location_warehouse,
-                        },
-                        callback: function (r) {
-                            if (r.message) {
-                                const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
-                                if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
-                                    frappe.msgprint({
-                                        title: __('Weight Out of Range'),
-                                        message: __('The captured weight {0} kg is outside the allowed range of {1} kg to {2} kg for this location. Please check the weight and try again.', [weight, bale_minimum_weight_kg, bal_maximum_weight_kg]),
-                                        indicator: 'red'
-                                    });
-                                    d.set_value('p_weight', '');
-                                    updateWeightDisplay("0.00");
-                                    return;
-                                }
-                            }
                         }
                     });
-                    return;
+
+                    if (r.message) {
+                        const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
+                        if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
+                            frappe.msgprint({
+                                title: __('Weight Out of Range'),
+                                message: __('The captured weight {0} kg is outside the allowed range of {1} kg to {2} kg for this location. Please check the weight and try again.', [weight, bale_minimum_weight_kg, bal_maximum_weight_kg]),
+                                indicator: 'red'
+                            });
+                            d.set_value('p_weight', '');
+                            updateWeightDisplay("0.00");
+                            return; // 💡 this now properly stops the rest of the code
+                        }
+                    }
                 }
 
 
