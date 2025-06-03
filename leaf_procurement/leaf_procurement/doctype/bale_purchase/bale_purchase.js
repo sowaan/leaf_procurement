@@ -1,7 +1,7 @@
 // Copyright (c) 2025, Sowaan and contributors
 // For license information, please see license.txt
 let suppress_focus = false;
-
+let is_grade_popup_open = false;
 function open_grade_selector_popup(callback) {
     let selected_grade = null;
     let selected_sub_grade = null;
@@ -27,17 +27,18 @@ function open_grade_selector_popup(callback) {
 
         primary_action_label: 'Select',
         primary_action: function () {
-            
+
             if (!selected_grade || !selected_sub_grade) {
                 frappe.msgprint('Please select both grade and sub grade');
                 return;
             }
 
-            dialog.hide();
             callback(selected_grade, selected_sub_grade);
+
+            dialog.hide();
         }
     });
-dialog.onhide = function () {
+    dialog.onhide = function () {
         is_grade_popup_open = false;
     };
     function render_grade_buttons() {
@@ -199,7 +200,6 @@ frappe.ui.form.on("Bale Purchase", {
             primary_action: function (values) {
                 primary_action_function(frm, d, values);
                 render_pending_bales_list();
-                ///update_price_grade_labels(d);
                 $('#price-label').text('');
                 $('#grade-label').text('');
 
@@ -208,6 +208,7 @@ frappe.ui.form.on("Bale Purchase", {
         });
         d.onhide = function () {
             //console.log('on hide');
+            is_grade_popup_open = false;
             if (document.activeElement) {
                 document.activeElement.blur();
             }
@@ -228,7 +229,7 @@ frappe.ui.form.on("Bale Purchase", {
             }
         }, 100);
         d.show();
-
+        is_grade_popup_open = false;
 
 
         function render_pending_bales_list() {
@@ -253,16 +254,16 @@ frappe.ui.form.on("Bale Purchase", {
 
             const remaining_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
-                const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
-                    
+            const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
-                if (pending_barcodes.length === 2) {
-                        $('#message-label').text('The next bale is the last one for this lot!');
- 
-                }
-                else{
-                    $('#message-label').text('');
-                }
+
+            if (pending_barcodes.length === 2) {
+                $('#message-label').text('The next bale is the last one for this lot!');
+
+            }
+            else {
+                $('#message-label').text('');
+            }
             frm.bale_registration_barcodes.forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
                 const statusText = is_processed ? 'Added' : 'Pending';
@@ -316,46 +317,51 @@ frappe.ui.form.on("Bale Purchase", {
         // Call after dialog shows
         render_pending_bales_list();
 
-        // Also, update labels whenever the dialog fields change
-        // d.fields_dict.p_price.$input.on('change', () => update_price_grade_labels(d));
-        // d.fields_dict.p_item_grade.$input.on('change', () => update_price_grade_labels(d));
         const $barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input');
 
         $barcode_input.on('keyup', function (e) {
             const barcode = $(this).val();
             const expectedLength = frm.doc.barcode_length || 0;
 
-            if (e.key === 'Enter' || barcode.length === expectedLength) {              
+            if (e.key === 'Enter' || barcode.length === expectedLength) {
                 // If bale_registration_code already exists, skip fetching
                 if (!frm.doc.bale_registration_code) {
-                         // Step 1: Get bale_registration_code using barcode
+                    // Step 1: Get bale_registration_code using barcode
                     frappe.call({
                         method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_bale_registration_code_by_barcode',
                         args: { barcode: barcode },
                         callback: function (r) {
                             if (r.message) {
                                 frm.set_value('bale_registration_code', r.message);
- 
+                                render_pending_bales_list();
+                                setTimeout(() => {
+                                    render_pending_bales_list();
+                                }, 200);
+                                setTimeout(() => {
+
+                                    //if (!is_grade_popup_open)
+                                    proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+                                    //$barcode_input.focus();
+                                }, 200);
                             }
-                            else{
-                                                
+                            else {
+
                                 frappe.msgprint(__('⚠️ Bale Registration not found for scanned barcode.'));
                                 d.set_value('p_bale_registration_code', '');
-                               // $barcode_input.focus();
-                                                                                
+                                // $barcode_input.focus();
+
                             }
                         }
                     });
                 }
+                else {
+                    //render_pending_bales_list();
+                    //if (!is_grade_popup_open)
+                    proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+                }
 
-                setTimeout(() => {
-                    render_pending_bales_list();
-                    if (!is_grade_popup_open)
-                        proceedWithBarcodeValidationAndGrade(frm, barcode, d);                    
-                    //$barcode_input.focus();
-                }, 200);
-                
-            } 
+
+            }
 
         })
 
@@ -423,7 +429,7 @@ frappe.ui.form.on("Bale Purchase", {
         }
     }
 });
-let is_grade_popup_open = false;
+
 function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     const validBarcodes = frm.bale_registration_barcodes || [];
 
@@ -443,12 +449,14 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
         //$barcode_input.focus();
         return;
     }
+
+    if (is_grade_popup_open) return;
+
     is_grade_popup_open = true;
 
     open_grade_selector_popup(function (grade, sub_grade) {
         d.set_value('p_item_grade', grade);
         d.set_value('p_item_sub_grade', sub_grade);
-
         frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
             args: {
@@ -459,16 +467,18 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
                 item_sub_grade: sub_grade
             },
             callback: function (r) {
+
                 if (r.message !== undefined) {
                     d.set_value("p_price", r.message);
-
                     setTimeout(() => {
-                        update_price_grade_labels(grade, r.message);
+                        update_price_grade_labels(d, grade, r.message);
                     }, 100);
 
 
+
+
                 }
-                is_grade_popup_open=false;
+                is_grade_popup_open = false;
             }
 
 
@@ -661,11 +671,7 @@ function hide_grid_controls(frm) {
             .hide();
     }
 }
-function update_price_grade_labels(grade, price) {
-    // Get values from dialog fields and update the labels
-    // const price = dialog.get_value('p_price') || '-';
-    // const grade = dialog.get_value('p_item_grade') || '-';
-
-    $('#price-label').text(price);
-    $('#grade-label').text(grade);
+function update_price_grade_labels(d, grade, price) {
+    d.fields_dict.p_grade_label.$wrapper.find('#grade-label').text(grade || '-');
+    d.fields_dict.p_price_label.$wrapper.find('#price-label').text(flt(price || 0).toFixed(2));
 }
