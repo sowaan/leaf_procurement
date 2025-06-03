@@ -27,15 +27,19 @@ function open_grade_selector_popup(callback) {
 
         primary_action_label: 'Select',
         primary_action: function () {
+            
             if (!selected_grade || !selected_sub_grade) {
                 frappe.msgprint('Please select both grade and sub grade');
                 return;
             }
+
             dialog.hide();
             callback(selected_grade, selected_sub_grade);
         }
     });
-
+dialog.onhide = function () {
+        is_grade_popup_open = false;
+    };
     function render_grade_buttons() {
         frappe.call({
             method: 'frappe.client.get_list',
@@ -106,6 +110,7 @@ function open_grade_selector_popup(callback) {
     dialog.show();
     render_grade_buttons();
 }
+
 
 
 frappe.ui.form.on("Bale Purchase", {
@@ -181,7 +186,14 @@ frappe.ui.form.on("Bale Purchase", {
                     label: 'Pending Bales',
                     options: `<div id="pending-bales-container" 
                 style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace;"></div>`
-                }
+                },
+                {
+                    fieldname: 'p_message_label',
+                    fieldtype: 'HTML',
+                    options: `<div style="font-size: 1.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
+                <span id="message-label"></span>
+            </div>`
+                },
             ],
             primary_action_label: 'Add Item',
             primary_action: function (values) {
@@ -191,15 +203,7 @@ frappe.ui.form.on("Bale Purchase", {
                 $('#price-label').text('');
                 $('#grade-label').text('');
 
-                const processed_barcodes = (frm.doc.detail_table || []).map(row => row.bale_barcode);
-                const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
-                if (pending_barcodes.length === 2) {
-                    frappe.show_alert({
-                        message: 'The next bale is the last one for this lot!',
-                        indicator: 'orange'
-                    }, 5);
-                }
             }
         });
         d.onhide = function () {
@@ -249,6 +253,16 @@ frappe.ui.form.on("Bale Purchase", {
 
             const remaining_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
+                const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
+                    
+
+                if (pending_barcodes.length === 2) {
+                        $('#message-label').text('The next bale is the last one for this lot!');
+ 
+                }
+                else{
+                    $('#message-label').text('');
+                }
             frm.bale_registration_barcodes.forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
                 const statusText = is_processed ? 'Added' : 'Pending';
@@ -327,7 +341,7 @@ frappe.ui.form.on("Bale Purchase", {
                                                 
                                 frappe.msgprint(__('⚠️ Bale Registration not found for scanned barcode.'));
                                 d.set_value('p_bale_registration_code', '');
-                                $barcode_input.focus();
+                               // $barcode_input.focus();
                                                                                 
                             }
                         }
@@ -338,7 +352,7 @@ frappe.ui.form.on("Bale Purchase", {
                     render_pending_bales_list();
                     if (!is_grade_popup_open)
                         proceedWithBarcodeValidationAndGrade(frm, barcode, d);                    
-                    $barcode_input.focus();
+                    //$barcode_input.focus();
                 }, 200);
                 
             } 
@@ -426,7 +440,7 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
         frappe.show_alert({ message: __('This Bale Barcode is already scanned'), indicator: 'orange' });
         d.set_value('p_bale_registration_code', '');
         //updateWeightDisplay("0.00");
-        $barcode_input.focus();
+        //$barcode_input.focus();
         return;
     }
     is_grade_popup_open = true;
