@@ -261,32 +261,6 @@ frappe.ui.form.on("Bale Weight Info", {
                     fieldtype: 'Float',
                     reqd: 1,
                     read_only: 0,
-                    change: async function () {
-                        const weight = d.get_value('p_weight');
-                        if (weight) {
-                            await frappe.call({
-                                method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.quota_weight",
-                                args: {
-                                    location: frm.doc.location_warehouse,
-                                },
-                                callback: function (r) {
-                                    if (r.message) {
-                                        const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
-                                        if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
-                                            frappe.msgprint({
-                                                title: __('Weight Out of Range'),
-                                                message: __('The captured weight {0} kg is outside the allowed range of {1} kg to {2} kg for this location. Please check the weight and try again.', [weight, bale_minimum_weight_kg, bal_maximum_weight_kg]),
-                                                indicator: 'red'
-                                            });
-                                            d.set_value('p_weight', '');
-                                            updateWeightDisplay("0.00");
-                                            return;
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
                 },
                 { fieldtype: 'Column Break' }, // Right column
                 // Price label
@@ -309,11 +283,33 @@ frappe.ui.form.on("Bale Weight Info", {
                 }
             ],
             primary_action_label: 'Add Weight',
-            primary_action: function (values) {
-                // if (!values.p_weight) {
-                //     frappe.msgprint(__('Please capture weight first.'));
-                //     return;
-                // }
+            primary_action: async function (values) {
+                const weight = values.p_weight;
+                if (weight) {
+                    await frappe.call({
+                        method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.quota_weight",
+                        args: {
+                            location: frm.doc.location_warehouse,
+                        },
+                        callback: function (r) {
+                            if (r.message) {
+                                const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
+                                if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
+                                    frappe.msgprint({
+                                        title: __('Weight Out of Range'),
+                                        message: __('The captured weight {0} kg is outside the allowed range of {1} kg to {2} kg for this location. Please check the weight and try again.', [weight, bale_minimum_weight_kg, bal_maximum_weight_kg]),
+                                        indicator: 'red'
+                                    });
+                                    d.set_value('p_weight', '');
+                                    updateWeightDisplay("0.00");
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                    return;
+                }
+
 
                 frm.add_child('detail_table', {
                     bale_barcode: values.p_bale_registration_code,
