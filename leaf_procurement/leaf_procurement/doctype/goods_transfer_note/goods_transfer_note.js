@@ -2,10 +2,14 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Goods Transfer Note", {
-	refresh(frm) {
-
-	},
-    scan_barcode: function(frm) {
+    refresh(frm) {
+        if (frm.doc.docstatus === 1) {
+            frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
+                'delete_row', 'hidden', 1
+            );
+        }
+    },
+    scan_barcode: function (frm) {
         let barcode = frm.doc.scan_barcode;
         let itemcode = frm.doc.default_item
         let expected_length = parseInt(frm.doc.barcode_length);
@@ -26,7 +30,7 @@ frappe.ui.form.on("Goods Transfer Note", {
             return;
         }
 
-    // Check if barcode already exists in child table
+        // Check if barcode already exists in child table
         let exists_in_grid = frm.doc.bale_registration_detail.some(row => row.bale_barcode === barcode);
         if (exists_in_grid) {
             frappe.show_alert({ message: __('This Bale Barcode is already scanned'), indicator: 'orange' });
@@ -34,14 +38,14 @@ frappe.ui.form.on("Goods Transfer Note", {
             return;
         }
 
-        
+
         // Now check if barcode already exists in Batch table (invoice generated)
         frappe.call({
             method: 'leaf_procurement.leaf_procurement.api.barcode.get_invoice_item_by_barcode',
             args: { itemcode: itemcode, barcode: barcode },
-            callback: function(r) {
-                
-                if (r.message && r.message.exists ) {
+            callback: function (r) {
+
+                if (r.message && r.message.exists) {
                     let row = frm.add_child('bale_registration_detail', {
                         bale_barcode: barcode,
                         weight: r.message.qty,
@@ -59,25 +63,30 @@ frappe.ui.form.on("Goods Transfer Note", {
                 frm.set_value('scan_barcode', '');
             }
         });
-    },        
-    onload: function(frm){
+    },
+    onload: function (frm) {
+        if (frm.doc.docstatus === 1) {
+            frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
+                'delete_row', 'hidden', 1
+            );
+        }
         if (!frm.is_new()) return;
-        
+
         frappe.call({
             method: 'frappe.client.get',
             args: {
                 doctype: 'Leaf Procurement Settings',
                 name: 'Leaf Procurement Settings'
             },
-            callback: function(r) {
+            callback: function (r) {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
-                    frm.set_value('location_warehouse', r.message.location_warehouse);    
-                    frm.set_value('default_item', r.message.default_item); 
+                    frm.set_value('location_warehouse', r.message.location_warehouse);
+                    frm.set_value('default_item', r.message.default_item);
                     frm.set_value('barcode_length', r.message.barcode_length);
-                }   
+                }
             }
-        });  
+        });
 
     },
     company(frm) {
@@ -96,6 +105,6 @@ frappe.ui.form.on("Goods Transfer Note", {
                     company: frm.doc.company
                 }
             };
-        });        
-    }    
+        });
+    }
 });

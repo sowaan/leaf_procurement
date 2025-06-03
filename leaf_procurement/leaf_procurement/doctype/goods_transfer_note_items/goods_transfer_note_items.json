@@ -8,6 +8,8 @@
   "bale_barcode",
   "weight",
   "rate",
+  "delete_row",
+  "column_break_vuup",
   "lot_number",
   "item_grade",
   "item_sub_grade"
@@ -46,19 +48,26 @@
    "fieldname": "rate",
    "fieldtype": "Read Only",
    "label": "Rate"
+  },
+  {
+   "fieldname": "delete_row",
+   "fieldtype": "Button",
+   "label": "Delete Row"
+  },
+  {
+   "fieldname": "column_break_vuup",
+   "fieldtype": "Column Break"
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-23 16:17:11.186789",
+ "modified": "2025-06-03 16:52:31.076903",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",
  "owner": "Administrator",
  "permissions": [],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
