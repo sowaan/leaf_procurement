@@ -128,6 +128,7 @@ frappe.ui.form.on("Bale Purchase", {
 
         const d = new frappe.ui.Dialog({
             title: 'Capture Grade Information',
+            size: 'extra-large',
             fields: [
                 { fieldtype: 'Section Break' },
                 { fieldtype: 'Column Break' }, // Left column
@@ -168,30 +169,39 @@ frappe.ui.form.on("Bale Purchase", {
                     read_only: 1,
                 },
 
-                { fieldtype: 'Column Break' }, // Right column
-                 // Grade label
-                {
-                    fieldname: 'p_grade_label',
-                    fieldtype: 'HTML',
-                    options: `<div style="font-size: 3.5rem; font-weight: 700; color: #28a745; margin-bottom: 16px;">
-                Grade: <span id="grade-label">-</span>
-            </div>`
-                },
-                // Price label
-                {
-                    fieldname: 'p_price_label',
-                    fieldtype: 'HTML',
-                    options: `<div style="font-size: 3.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
-                Price: <span id="price-label">-</span>
-            </div>`
-                },
+                { fieldtype: 'Column Break' }, // Middle column
                 {
                     fieldname: 'pending_bales_html',
                     fieldtype: 'HTML',
                     label: 'Pending Bales',
                     options: `<div id="pending-bales-container" 
                 style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace;"></div>`
-                }
+                },
+                { fieldtype: 'Column Break' }, // Right column
+                 // Grade label
+                 {
+                    fieldname: 'p_grade_label',
+                    fieldtype: 'HTML',
+                    options: `<div style="font-size: 2.5rem; font-weight: 700; color: #28a745; margin-bottom: 16px;">
+                                Grade: <span id="grade-label">-</span>
+                            </div>`
+                },
+                // Sub Grade label
+                {
+                    fieldname: 'p_subgrade_label',
+                    fieldtype: 'HTML',
+                    options: `<div style="font-size: 2.5rem; font-weight: 700; color: #28a745; margin-bottom: 16px;">
+                                Sub-Grade: <span id="subgrade-label">-</span>
+                            </div>`
+                },
+                // Price label
+                {
+                    fieldname: 'p_price_label',
+                    fieldtype: 'HTML',
+                    options: `<div style="font-size: 2.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
+                                Price: <span id="price-label">-</span>
+                            </div>`
+                },
             ],
             primary_action_label: 'Add Item',
             primary_action: function (values) {
@@ -199,6 +209,7 @@ frappe.ui.form.on("Bale Purchase", {
                 render_pending_bales_list();
                 $('#price-label').text('');
                 $('#grade-label').text('');
+                $('#subgrade-label').text('');
 
 
             }
@@ -472,7 +483,7 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
                 if (r.message !== undefined) {
                     d.set_value("p_price", r.message);
                     setTimeout(() => {
-                        update_price_grade_labels(d, grade, r.message);
+                        update_price_grade_labels(d, grade, sub_grade, r.message);
                     }, 100);
 
 
@@ -669,7 +680,8 @@ function hide_grid_controls(frm) {
             .hide();
     }
 }
-function update_price_grade_labels(d, grade, price) {
+function update_price_grade_labels(d, grade, subgrade, price) {
     d.fields_dict.p_grade_label.$wrapper.find('#grade-label').text(grade || '-');
+    d.fields_dict.p_subgrade_label.$wrapper.find('#subgrade-label').text(subgrade || '-');
     d.fields_dict.p_price_label.$wrapper.find('#price-label').text(flt(price || 0).toFixed(2));
 }
