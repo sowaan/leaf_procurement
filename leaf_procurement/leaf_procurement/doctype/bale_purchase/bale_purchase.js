@@ -191,7 +191,7 @@ frappe.ui.form.on("Bale Purchase", {
                 {
                     fieldname: 'p_message_label',
                     fieldtype: 'HTML',
-                    options: `<div style="font-size: 1.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
+                    options: `<div style="font-size: 1.0rem; font-weight: 500; color:rgb(240, 132, 8); margin-top: 8px;">
                 <span id="message-label"></span>
             </div>`
                 },
@@ -257,7 +257,7 @@ frappe.ui.form.on("Bale Purchase", {
             const message_label = d.fields_dict.p_message_label.$wrapper.find('#message-label');
 
             if (pending_barcodes.length === 2) {
-                message_label.text('The next bale is the last one for this lot!');
+                message_label.text('⚠️ The next bale is the last one for this lot!');
             } else {
                 message_label.text('');
             }
@@ -265,7 +265,7 @@ frappe.ui.form.on("Bale Purchase", {
 
             frm.bale_registration_barcodes.forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
-                const statusText = is_processed ? 'Added' : 'Pending';
+                const statusText = is_processed ? '✅' : '';
                 const statusBgColor = is_processed ? '#d4edda' : '#fff3cd';
                 const statusTextColor = is_processed ? '#155724' : '#856404';
 
@@ -286,7 +286,6 @@ frappe.ui.form.on("Bale Purchase", {
             text-align: center;
             font-weight: 700;
             color: ${statusTextColor};
-            background-color: ${statusBgColor};
             border-radius: 3px;
             padding: 2px 4px;
             user-select: none;
