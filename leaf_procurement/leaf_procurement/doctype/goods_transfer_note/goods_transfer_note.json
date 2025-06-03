@@ -161,7 +161,8 @@
   {
    "fieldname": "bale_registration_detail",
    "fieldtype": "Table",
-   "options": "Goods Transfer Note Items"
+   "options": "Goods Transfer Note Items",
+   "read_only": 1
   },
   {
    "fieldname": "scan_barcode",
@@ -200,7 +201,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-03 00:27:24.647817",
+ "modified": "2025-06-03 16:51:16.368074",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
