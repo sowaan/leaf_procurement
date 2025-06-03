@@ -125,9 +125,6 @@ frappe.ui.form.on("Bale Purchase", {
             fields: [
                 { fieldtype: 'Section Break' },
                 { fieldtype: 'Column Break' }, // Left column
-
-
-
                 // Grade label
                 {
                     fieldname: 'p_grade_label',
@@ -311,24 +308,24 @@ frappe.ui.form.on("Bale Purchase", {
             const barcode = $(this).val();
             const expectedLength = frm.doc.barcode_length || 0;
 
-            if (e.key === 'Enter' || barcode.length === expectedLength) {              
+            if (e.key === 'Enter' || barcode.length === expectedLength) {
                 // If bale_registration_code already exists, skip fetching
                 if (!frm.doc.bale_registration_code) {
-                         // Step 1: Get bale_registration_code using barcode
+                    // Step 1: Get bale_registration_code using barcode
                     frappe.call({
                         method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_bale_registration_code_by_barcode',
                         args: { barcode: barcode },
                         callback: function (r) {
                             if (r.message) {
                                 frm.set_value('bale_registration_code', r.message);
- 
+
                             }
-                            else{
-                                                
+                            else {
+
                                 frappe.msgprint(__('⚠️ Bale Registration not found for scanned barcode.'));
                                 d.set_value('p_bale_registration_code', '');
                                 $barcode_input.focus();
-                                                                                
+
                             }
                         }
                     });
@@ -337,11 +334,11 @@ frappe.ui.form.on("Bale Purchase", {
                 setTimeout(() => {
                     render_pending_bales_list();
                     if (!is_grade_popup_open)
-                        proceedWithBarcodeValidationAndGrade(frm, barcode, d);                    
+                        proceedWithBarcodeValidationAndGrade(frm, barcode, d);
                     $barcode_input.focus();
                 }, 200);
-                
-            } 
+
+            }
 
         })
 
@@ -447,18 +444,12 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
             callback: function (r) {
                 if (r.message !== undefined) {
                     d.set_value("p_price", r.message);
-
                     setTimeout(() => {
                         update_price_grade_labels(grade, r.message);
                     }, 100);
-
-
                 }
-                is_grade_popup_open=false;
+                is_grade_popup_open = false;
             }
-
-
-
         });
     });
 }
