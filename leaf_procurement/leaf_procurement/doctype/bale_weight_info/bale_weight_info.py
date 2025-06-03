@@ -71,6 +71,14 @@ class BaleWeightInfo(Document):
 			)
 			raise ValidationError
 
+		self.make_purchase_invoice()
+
+	
+	def make_purchase_invoice(self):
+		from leaf_procurement.leaf_procurement.api.bale_weight_utils import create_purchase_invoice
+
+		create_purchase_invoice(self.name)
+
 	# def autoname(self):
 	# 	cached_prefix = get_cached_prefix()
 
@@ -92,3 +100,10 @@ class BaleWeightInfo(Document):
 	# 		next_number = 1
 
 	# 	self.name = f"{prefix}-{next_number:05d}"
+
+
+@frappe.whitelist()
+def match_grade_with_bale_purchase(barcode):
+	bale_purchase_detail = frappe.db.get_value('Bale Purchase Detail', {'bale_barcode': barcode}, ['bale_barcode', 'item_grade', 'item_sub_grade'], as_dict=1)
+
+	return bale_purchase_detail

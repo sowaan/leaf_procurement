@@ -37,6 +37,7 @@ function open_grade_selector_popup(callback) {
             }
             dialog.hide();
             callback(selected_grade, selected_sub_grade);
+            dialog.hide();
         }
     });
 
@@ -67,6 +68,7 @@ function open_grade_selector_popup(callback) {
                         $btn.on('click', function () {
                             selected_grade = grade.name;
                             selected_sub_grade = null;
+                            
                             render_sub_grade_buttons(grade.name);
                             $('.grade-btn').removeClass('btn-success').addClass('btn-primary');
                             $(this).removeClass('btn-primary').addClass('btn-success');
@@ -107,8 +109,8 @@ function open_grade_selector_popup(callback) {
         });
     }
 
-    dialog.show();
     render_grade_buttons();
+    dialog.show();
 }
 
 frappe.ui.form.on("Bale Weight Info", {
@@ -142,32 +144,32 @@ frappe.ui.form.on("Bale Weight Info", {
                     options: 'Item Sub Grade',
                     reqd: 1,
                     read_only: 1,
-                    // change: function () {
-                    //     const grade = d.get_value('p_item_grade');
-                    //     const sub_grade = d.get_value('p_item_sub_grade');
-                    //     if (grade && sub_grade) {
-                    //         frappe.call({
-                    //             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
-                    //             args: {
-                    //                 company: frm.doc.company,
-                    //                 location_warehouse: frm.doc.location_warehouse,
-                    //                 item: frm.doc.item,
-                    //                 item_grade: grade,
-                    //                 item_sub_grade: sub_grade
-                    //             },
-                    //             callback: function (r) {
-                    //                 if (r.message !== undefined) {
-                    //                     d.set_value("p_price", r.message);
-                    //                 }
-                    //             }
-                    //         });
-                    //         if (suppress_focus) return;
-                    //         setTimeout(() => {
-                    //             const $barcode_input = d.fields_dict.p_reclassification_grade.$wrapper.find('input');
-                    //             $barcode_input.focus();
-                    //         }, 20);
-                    //     }
-                    // }
+                    change: function () {
+                        const sub_grade = d.get_value('p_item_sub_grade');
+                        const barcode = d.get_value('p_bale_registration_code');
+                        if (sub_grade) {
+                            frappe.call({
+                                method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.match_grade_with_bale_purchase",
+                                args: {
+                                    barcode: barcode
+                                },
+                                callback: function (r) {
+                                    if (r.message) {
+                                        const { item_grade, item_sub_grade } = r.message;
+                                        if (item_sub_grade !== sub_grade) {
+                                            frappe.msgprint({
+                                                title: __('Grade Mismatch'),
+                                                message: __('The selected Bale Barcode does not match the selected Item Sub Grade. Please check the barcode or select the correct grade.'),
+                                                indicator: 'red'
+                                            });
+                                            d.set_value('p_item_sub_grade', '');
+                                            return;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
                 },
                 {
                     fieldname: 'p_price',
@@ -185,21 +187,32 @@ frappe.ui.form.on("Bale Weight Info", {
                     options: 'Item Grade',
                     reqd: 1,
                     read_only: 1,
-                    // change: function () {
-                    //     d.set_value('p_item_sub_grade', null);
-                    //     d.fields_dict.p_item_sub_grade.get_query = function () {
-                    //         return {
-                    //             filters: {
-                    //                 item_grade: d.get_value('p_item_grade')
-                    //             }
-                    //         };
-                    //     };
-                    //     if (suppress_focus) return;
-                    //     setTimeout(() => {
-                    //         const $barcode_input = d.fields_dict.p_item_sub_grade.$wrapper.find('input');
-                    //         $barcode_input.focus();
-                    //     }, 20);
-                    // }
+                    change: function () {
+                        const grade = d.get_value('p_item_grade');
+                        const barcode = d.get_value('p_bale_registration_code');
+                        if (grade) {
+                            frappe.call({
+                                method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.match_grade_with_bale_purchase",
+                                args: {
+                                    barcode: barcode
+                                },
+                                callback: function (r) {
+                                    if (r.message) {
+                                        const { item_grade, item_sub_grade } = r.message;
+                                        if (item_grade !== grade) {
+                                            frappe.msgprint({
+                                                title: __('Grade Mismatch'),
+                                                message: __('The selected Bale Barcode does not match the selected Item Grade. Please check the barcode or select the correct grade.'),
+                                                indicator: 'red'
+                                            });
+                                            d.set_value('p_item_grade', '');
+                                            return;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
                 },
                 {
                     fieldname: 'p_reclassification_grade',
@@ -442,22 +455,22 @@ frappe.ui.form.on("Bale Weight Info", {
             );
         }
 
-        if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
-            frm.add_custom_button(__('Create Purchase Invoice'), function () {
-                frappe.call({
-                    method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.create_purchase_invoice',
-                    args: {
-                        bale_weight_info_name: frm.doc.name
-                    },
-                    callback: function (r) {
-                        if (r.message) {
-                            frappe.msgprint(__('Purchase Invoice {0} created.', [r.message]));
-                            frm.reload_doc();
-                        }
-                    }
-                });
-            });
-        }
+        // if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
+        //     frm.add_custom_button(__('Create Purchase Invoice'), function () {
+        //         frappe.call({
+        //             method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.create_purchase_invoice',
+        //             args: {
+        //                 bale_weight_info_name: frm.doc.name
+        //             },
+        //             callback: function (r) {
+        //                 if (r.message) {
+        //                     frappe.msgprint(__('Purchase Invoice {0} created.', [r.message]));
+        //                     frm.reload_doc();
+        //                 }
+        //             }
+        //         });
+        //     });
+        // }
 
     },
     date: function (frm) {
