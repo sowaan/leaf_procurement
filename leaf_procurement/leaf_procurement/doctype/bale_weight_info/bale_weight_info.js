@@ -37,7 +37,6 @@ function open_grade_selector_popup(callback) {
             }
             dialog.hide();
             callback(selected_grade, selected_sub_grade);
-            dialog.hide();
         }
     });
 
@@ -68,7 +67,7 @@ function open_grade_selector_popup(callback) {
                         $btn.on('click', function () {
                             selected_grade = grade.name;
                             selected_sub_grade = null;
-                            
+
                             render_sub_grade_buttons(grade.name);
                             $('.grade-btn').removeClass('btn-success').addClass('btn-primary');
                             $(this).removeClass('btn-primary').addClass('btn-success');
@@ -144,10 +143,26 @@ frappe.ui.form.on("Bale Weight Info", {
                     options: 'Item Sub Grade',
                     reqd: 1,
                     read_only: 1,
-                    change: function () {
+                    change: async function () {
+                        const grade = d.get_value('p_item_grade');
+                        let rejected_grade = false;
+                        if (grade) {
+                            await frappe.call({
+                                method: 'frappe.client.get',
+                                args: {
+                                    doctype: 'Item Grade',
+                                    name: grade
+                                },
+                                callback: function (r) {
+                                    if (r.message) {
+                                        rejected_grade = r.message.rejected_grade == 1 ? true : false;
+                                    }
+                                }
+                            });
+                        }
                         const sub_grade = d.get_value('p_item_sub_grade');
                         const barcode = d.get_value('p_bale_registration_code');
-                        if (sub_grade) {
+                        if (!rejected_grade && sub_grade) {
                             frappe.call({
                                 method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.match_grade_with_bale_purchase",
                                 args: {
@@ -187,10 +202,26 @@ frappe.ui.form.on("Bale Weight Info", {
                     options: 'Item Grade',
                     reqd: 1,
                     read_only: 1,
-                    change: function () {
+                    change: async function () {
                         const grade = d.get_value('p_item_grade');
-                        const barcode = d.get_value('p_bale_registration_code');
+                        let rejected_grade = false;
                         if (grade) {
+                            await frappe.call({
+                                method: 'frappe.client.get',
+                                args: {
+                                    doctype: 'Item Grade',
+                                    name: grade
+                                },
+                                callback: function (r) {
+                                    if (r.message) {
+                                        rejected_grade = r.message.rejected_grade == 1 ? true : false;
+                                    }
+                                }
+                            });
+                        }
+
+                        const barcode = d.get_value('p_bale_registration_code');
+                        if (!rejected_grade && grade) {
                             frappe.call({
                                 method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.match_grade_with_bale_purchase",
                                 args: {
@@ -230,7 +261,33 @@ frappe.ui.form.on("Bale Weight Info", {
                     label: 'Captured Weight',
                     fieldtype: 'Float',
                     reqd: 1,
-                    read_only: 0
+                    read_only: 0,
+                    change: async function () {
+                        const weight = d.get_value('p_weight');
+                        if (weight) {
+                            await frappe.call({
+                                method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.quota_weight",
+                                args: {
+                                    location: frm.doc.location_warehouse,
+                                },
+                                callback: function (r) {
+                                    if (r.message) {
+                                        const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
+                                        if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
+                                            frappe.msgprint({
+                                                title: __('Weight Out of Range'),
+                                                message: __('The captured weight {0} kg is outside the allowed range of {1} kg to {2} kg for this location. Please check the weight and try again.', [weight, bale_minimum_weight_kg, bal_maximum_weight_kg]),
+                                                indicator: 'red'
+                                            });
+                                            d.set_value('p_weight', '');
+                                            updateWeightDisplay("0.00");
+                                            return;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
                 },
                 {
                     fieldtype: 'Section Break'
