@@ -251,19 +251,18 @@ frappe.ui.form.on("Bale Purchase", {
             container.append($header);
 
             const processed_barcodes = (frm.doc.detail_table || []).map(row => row.bale_barcode);
-
-            const remaining_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
-
             const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
+            console.log(pending_barcodes);
+            const message_label = d.fields_dict.p_message_label.$wrapper.find('#message-label');
 
             if (pending_barcodes.length === 2) {
-                $('#message-label').text('The next bale is the last one for this lot!');
+                message_label.text('The next bale is the last one for this lot!');
+            } else {
+                message_label.text('');
+            }
 
-            }
-            else {
-                $('#message-label').text('');
-            }
+
             frm.bale_registration_barcodes.forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
                 const statusText = is_processed ? 'Added' : 'Pending';
@@ -333,16 +332,15 @@ frappe.ui.form.on("Bale Purchase", {
                         callback: function (r) {
                             if (r.message) {
                                 frm.set_value('bale_registration_code', r.message);
-                                render_pending_bales_list();
-                                setTimeout(() => {
-                                    render_pending_bales_list();
-                                }, 200);
+ 
                                 setTimeout(() => {
 
                                     //if (!is_grade_popup_open)
+                                    
                                     proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+                                    render_pending_bales_list();
                                     //$barcode_input.focus();
-                                }, 200);
+                                }, 300);
                             }
                             else {
 
