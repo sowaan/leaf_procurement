@@ -263,14 +263,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     read_only: 0,
                 },
                 { fieldtype: 'Column Break' }, // Right column
-                // Price label
-                {
-                    fieldname: 'p_price_label',
-                    fieldtype: 'HTML',
-                    options: `<div style="font-size: 1.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
-                Bale List: <span id="price-label">-</span>
-            </div>`
-                },
+               
                 {
                     fieldname: 'pending_bales_html',
                     fieldtype: 'HTML',
@@ -413,7 +406,7 @@ frappe.ui.form.on("Bale Weight Info", {
 
             frm.bale_registration_barcodes.forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
-                const statusText = is_processed ? 'Added' : 'Pending';
+                const statusText = is_processed ? '✅' : '';
                 const statusBgColor = is_processed ? '#d4edda' : '#fff3cd';
                 const statusTextColor = is_processed ? '#155724' : '#856404';
 
@@ -434,7 +427,6 @@ frappe.ui.form.on("Bale Weight Info", {
             text-align: center;
             font-weight: 700;
             color: ${statusTextColor};
-            background-color: ${statusBgColor};
             border-radius: 3px;
             padding: 2px 4px;
             user-select: none;
@@ -527,6 +519,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 text-align: center;
                 padding: 20px;
                 margin-bottom: 15px;
+                margin: 10px;
                 border: 2px solid #007bff;
                 border-radius: 10px;
             ">
