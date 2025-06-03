@@ -336,7 +336,8 @@ frappe.ui.form.on("Bale Purchase", {
 
                 setTimeout(() => {
                     render_pending_bales_list();
-                    proceedWithBarcodeValidationAndGrade(frm, barcode, d);                    
+                    if (!is_grade_popup_open)
+                        proceedWithBarcodeValidationAndGrade(frm, barcode, d);                    
                     $barcode_input.focus();
                 }, 200);
                 
@@ -408,6 +409,7 @@ frappe.ui.form.on("Bale Purchase", {
         }
     }
 });
+let is_grade_popup_open = false;
 function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     const validBarcodes = frm.bale_registration_barcodes || [];
 
@@ -423,10 +425,11 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     if (already_scanned) {
         frappe.show_alert({ message: __('This Bale Barcode is already scanned'), indicator: 'orange' });
         d.set_value('p_bale_registration_code', '');
-        updateWeightDisplay("0.00");
+        //updateWeightDisplay("0.00");
         $barcode_input.focus();
         return;
     }
+    is_grade_popup_open = true;
 
     open_grade_selector_popup(function (grade, sub_grade) {
         d.set_value('p_item_grade', grade);
@@ -451,6 +454,7 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
 
 
                 }
+                is_grade_popup_open=false;
             }
 
 
