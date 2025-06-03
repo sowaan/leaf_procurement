@@ -417,11 +417,12 @@ frappe.ui.form.on("Bale Purchase", {
                         }
                     });
                 }
-            } else {
-                frappe.msgprint(__('⚠️ Bale Registration not found for scanned barcode.'));
-                d.set_value('p_bale_registration_code', '');
-                $barcode_input.focus();
             }
+            // else {
+            //     frappe.msgprint(__('⚠️ Bale Registration not found for scanned barcode.'));
+            //     d.set_value('p_bale_registration_code', '');
+            //     $barcode_input.focus();
+            // }
         })
         //                     });
         //     }
