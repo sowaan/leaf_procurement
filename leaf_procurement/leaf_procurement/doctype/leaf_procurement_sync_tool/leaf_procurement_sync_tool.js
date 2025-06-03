@@ -4,6 +4,7 @@
 const sync_down_checkboxes = [
     "company_check",
     "warehouse",
+    "quota_setup",
     "item",
     "item_grade",
     "item_sub_grade",

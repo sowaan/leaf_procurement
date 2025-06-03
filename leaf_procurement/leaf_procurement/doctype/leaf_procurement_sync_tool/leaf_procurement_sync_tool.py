@@ -44,6 +44,7 @@ def sync_down():
 		doctypes = [
 			("company_check", "Company"),
 			("warehouse", "Warehouse"),
+			("quota_setup", "Quota Setup"),
 			("item", "Item"),
 			("item_grade", "Item Grade"),
 			("item_sub_grade", "Item Sub Grade"),

@@ -410,9 +410,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 await cleanupSerial();
             }
         });
-    }
-
-    ,
+    },
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
 
@@ -438,7 +436,11 @@ frappe.ui.form.on("Bale Weight Info", {
 
     },
     refresh: function (frm) {
-
+        if (frm.doc.docstatus === 1) {
+            frm.fields_dict['detail_table'].grid.update_docfield_property(
+                'delete_row', 'hidden', 1
+            );
+        }
 
         if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
             frm.add_custom_button(__('Create Purchase Invoice'), function () {
@@ -463,6 +465,12 @@ frappe.ui.form.on("Bale Weight Info", {
 
     },
     onload: function (frm) {
+        if (frm.doc.docstatus === 1) {
+            frm.fields_dict['detail_table'].grid.update_docfield_property(
+                'delete_row', 'hidden', 1
+            );
+        }
+
         if (!frm.is_new()) return;
 
         //override bale_registration_code query to load 

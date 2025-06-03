@@ -78,6 +78,8 @@ def create_letterHead(settings, headers, name):
 
 def create_warehouse(settings, headers, data):
 	"""Update warehouse records with the received data."""
+	created = []
+	skipped = []
 	errors = []
 
 	for item in data:
@@ -94,17 +96,58 @@ def create_warehouse(settings, headers, data):
 						doc.custom_short_code = item.get('custom_short_code', '')
 						doc.company = item.get('company', 'Default Company')
 						doc.insert(ignore_permissions=True)
+						created.append(doc.name)
 				else:
 					frappe.throw(_("Failed to fetch data for Warehouse: {0}").format(response.text))
 			except Exception as e:
 				errors.append(f"Error creating Warehouse {item['name']}: {e}")
+		else:
+			skipped.append(item['name'])
+	message = f"Warehouse records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
+
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Warehouse Sync Errors")
 
+	frappe.msgprint(_(message))
+
+
+def create_quota_setup(settings, headers, data):
+	"""Update quota setup records with the received data."""
+	created = []
+	skipped = []
+	errors = []
+
+	for item in data:
+		if not frappe.db.exists("Quota Setup", item['name']):
+			try:
+				url = f'{settings.instance_url}/api/resource/Quota Setup?fields=["*"]'
+				response = requests.get(url, headers=headers)
+				if response.status_code == 200:
+					data = response.json().get("data", [])
+					if data:
+						doc = frappe.new_doc("Quota Setup")
+						doc.update(item)
+						doc.insert(ignore_permissions=True)
+						created.append(doc.name)
+				else:
+					frappe.throw(_("Failed to fetch data for Quota Setup: {0}").format(response.text))
+			except Exception as e:
+				errors.append(f"Error creating Quota Setup {item['name']}: {e}")
+		else:
+			skipped.append(item['name'])
+	message = f"Quota Setup records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
+
+	if errors:
+		frappe.log_error("\n".join(errors), "Quota Setup Sync Errors")
+
+	frappe.msgprint(_(message))
+
 
 def create_item(settings, headers, data):
 	"""Update item records with the received data."""
+	created = []
+	skipped = []
 	errors = []
 
 	for item in data:
@@ -119,13 +162,19 @@ def create_item(settings, headers, data):
 						doc = frappe.new_doc("Item")
 						doc.update(item)
 						doc.insert(ignore_permissions=True)
+						created.append(doc.name)
 				else:
 					frappe.throw(_("Failed to fetch data for Item: {0}").format(response.text))
 			except Exception as e:
 				errors.append(f"Error creating Item {item['name']}: {e}")
+		else:
+			skipped.append(item['name'])
+	message = f"Item records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Item Sync Errors")
+
+	frappe.msgprint(_(message))
 
 
 def create_item_grade(settings, headers, data):

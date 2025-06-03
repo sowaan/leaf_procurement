@@ -3,7 +3,11 @@
 
 frappe.ui.form.on("Bale Registration", {
     refresh(frm) {
-
+        if (frm.doc.docstatus === 1) {
+            frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
+                'delete_row', 'hidden', 1
+            );
+        }
     },
     scan_barcode: function (frm) {
         let barcode = frm.doc.scan_barcode;
@@ -49,6 +53,12 @@ frappe.ui.form.on("Bale Registration", {
         frm.set_value('scan_barcode', '');
     },
     onload: function (frm) {
+        if (frm.doc.docstatus === 1) {
+            frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
+                'delete_row', 'hidden', 1
+            );
+        }
+        
         if (!frm.is_new()) return;
 
         //validate_day_status(frm);        

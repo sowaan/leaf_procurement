@@ -16,6 +16,7 @@
   "section_break_xxtu",
   "company_check",
   "warehouse",
+  "quota_setup",
   "item",
   "item_grade",
   "item_sub_grade",
@@ -181,12 +182,18 @@
    "fieldname": "goods_transfer_note",
    "fieldtype": "Check",
    "label": "Goods Transfer Note"
+  },
+  {
+   "default": "0",
+   "fieldname": "quota_setup",
+   "fieldtype": "Check",
+   "label": "Quota Setup"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-05-31 19:18:05.301277",
+ "modified": "2025-06-03 08:43:37.084453",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Sync Tool",
