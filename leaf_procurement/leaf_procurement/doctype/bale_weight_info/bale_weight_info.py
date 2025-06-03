@@ -107,3 +107,12 @@ def match_grade_with_bale_purchase(barcode):
 	bale_purchase_detail = frappe.db.get_value('Bale Purchase Detail', {'bale_barcode': barcode}, ['bale_barcode', 'item_grade', 'item_sub_grade'], as_dict=1)
 
 	return bale_purchase_detail
+
+@frappe.whitelist()
+def quota_weight(location):
+	"""
+	Get the quota weight for a given location.
+	"""
+	location_quota = frappe.db.get_value('Quota Setup', {'location_warehouse': location}, ['bale_minimum_weight_kg', 'bal_maximum_weight_kg'], as_dict=1)
+
+	return location_quota
