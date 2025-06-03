@@ -316,8 +316,9 @@ frappe.ui.form.on("Bale Purchase", {
 
         $barcode_input.on('keyup', function (e) {
             const barcode = $(this).val();
-            const expectedLength = frm.doc.barcode_length || 0;
-
+            const expectedLength = parseInt(frm.doc.barcode_length || 0, 10);
+console.log('in the function: ', expectedLength, ' - ', barcode.length);
+            console.log('true or false: ', e.key === 'Enter' , barcode.length === expectedLength)
             if (e.key === 'Enter' || barcode.length === expectedLength) {
                 // If bale_registration_code already exists, skip fetching
                 if (!frm.doc.bale_registration_code) {
@@ -355,12 +356,12 @@ frappe.ui.form.on("Bale Purchase", {
                     proceedWithBarcodeValidationAndGrade(frm, barcode, d);
                 }
 
-                setTimeout(() => {
-                    render_pending_bales_list();
-                    if (!is_grade_popup_open)
-                        proceedWithBarcodeValidationAndGrade(frm, barcode, d);
-                    $barcode_input.focus();
-                }, 200);
+                // setTimeout(() => {
+                //     render_pending_bales_list();
+                //     if (!is_grade_popup_open)
+                //         proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+                //     $barcode_input.focus();
+                // }, 200);
 
             }
 
@@ -433,7 +434,7 @@ frappe.ui.form.on("Bale Purchase", {
 
 function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     const validBarcodes = frm.bale_registration_barcodes || [];
-
+console.log('barcode: ', barcode);
     if (!validBarcodes.includes(barcode)) {
         frappe.show_alert({ message: __('This Bale Barcode is not part of this lot.'), indicator: 'orange' });
         //frappe.msgprint(__('❌ Invalid Bale Barcode: {0}', [barcode]));
