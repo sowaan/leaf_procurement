@@ -133,16 +133,13 @@ frappe.ui.form.on("Bale Purchase", {
                 { fieldtype: 'Column Break' }, // Left column
 
 
-
-                // Grade label
                 {
-                    fieldname: 'p_grade_label',
+                    fieldname: 'p_message_label',
                     fieldtype: 'HTML',
-                    options: `<div style="font-size: 1.5rem; font-weight: 700; color: #28a745; margin-bottom: 16px;">
-                Grade: <span id="grade-label">-</span>
+                    options: `<div style="font-size: 1.0rem; font-weight: 500; color:rgb(240, 132, 8); margin-bottom: 8px;">
+                <span id="message-label"></span>
             </div>`
                 },
-
                 {
                     fieldname: 'p_bale_registration_code',
                     label: 'Bale Barcode',
@@ -173,11 +170,19 @@ frappe.ui.form.on("Bale Purchase", {
                 },
 
                 { fieldtype: 'Column Break' }, // Right column
+                 // Grade label
+                {
+                    fieldname: 'p_grade_label',
+                    fieldtype: 'HTML',
+                    options: `<div style="font-size: 3.5rem; font-weight: 700; color: #28a745; margin-bottom: 16px;">
+                Grade: <span id="grade-label">-</span>
+            </div>`
+                },
                 // Price label
                 {
                     fieldname: 'p_price_label',
                     fieldtype: 'HTML',
-                    options: `<div style="font-size: 1.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
+                    options: `<div style="font-size: 3.5rem; font-weight: 700; color: #007bff; margin-bottom: 8px;">
                 Price: <span id="price-label">-</span>
             </div>`
                 },
@@ -187,14 +192,7 @@ frappe.ui.form.on("Bale Purchase", {
                     label: 'Pending Bales',
                     options: `<div id="pending-bales-container" 
                 style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace;"></div>`
-                },
-                {
-                    fieldname: 'p_message_label',
-                    fieldtype: 'HTML',
-                    options: `<div style="font-size: 1.0rem; font-weight: 500; color:rgb(240, 132, 8); margin-top: 8px;">
-                <span id="message-label"></span>
-            </div>`
-                },
+                }
             ],
             primary_action_label: 'Add Item',
             primary_action: function (values) {
