@@ -1,6 +1,58 @@
 import frappe 	#type: ignore
 
 @frappe.whitelist()
+def get_bale_record_status(bale_barcode):
+    def get_status_and_name(child_table, parent_doctype, filter_field="bale_barcode", batch=False):
+        # Handle special case for Purchase Invoice using batch_no
+        field = "batch_no" if batch else filter_field
+        records = frappe.db.get_all(
+            child_table,
+            filters={field: bale_barcode},
+            fields=["parent"],
+            distinct=True
+        )
+        if not records:
+            return "No Record Found", ""
+
+        for docstatus in [1, 0, 2]:  # Priority: Submitted > Draft > Cancelled
+            for r in records:
+                doc = frappe.db.get_value(parent_doctype, r.parent, ["name", "docstatus"])
+                if doc and doc[1] == docstatus:
+                    status_map = {0: "Draft", 1: "Submitted", 2: "Cancelled"}
+                    return status_map[docstatus], doc[0]
+
+        return "Unknown", ""
+
+    status = {}
+
+    status["in_bale_registration"], status["bale_registration_name"] = get_status_and_name(
+        "Bale Registration Detail", "Bale Registration"
+    )
+
+    status["in_bale_purchase"], status["bale_purchase_name"] = get_status_and_name(
+        "Bale Purchase Detail", "Bale Purchase"
+    )
+
+    status["in_bale_weight"], status["bale_weight_info_name"] = get_status_and_name(
+        "Bale Weight Detail", "Bale Weight Info"
+    )
+
+    status["in_purchase_invoice"], status["purchase_invoice_name"] = get_status_and_name(
+        "Purchase Invoice Item", "Purchase Invoice", batch=True
+    )
+
+    status["in_gtn"], status["goods_transfer_note_name"] = get_status_and_name(
+        "Goods Transfer Note Items", "Goods Transfer Note"
+    )
+
+    status["in_grn"], status["goods_receiving_note_name"] = get_status_and_name(
+        "Goods Receiving Detail", "Goods Receiving Note"
+    )
+
+    return status
+
+
+@frappe.whitelist()
 def get_batch_by_barcode(itemcode, barcode):
     batch = frappe.db.get_value(
         "Batch",
