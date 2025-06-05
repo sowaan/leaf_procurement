@@ -262,17 +262,14 @@ frappe.ui.form.on("Bale Weight Info", {
                     read_only: 0,
                 },
                 { fieldtype: 'Column Break' }, // Right column
-               
                 {
                     fieldname: 'pending_bales_html',
                     fieldtype: 'HTML',
                     label: 'Pending Bales',
                     options: `<div id="pending-bales-container" 
-                style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace;"></div>`
+                                style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace; border-radius: 10px;"></div>`
                 },
-                {
-                    fieldtype: 'Section Break'
-                }
+                { fieldtype: 'Section Break' }
             ],
             primary_action_label: 'Add Weight',
             primary_action: async function (values) {
@@ -392,11 +389,11 @@ frappe.ui.form.on("Bale Weight Info", {
 
             // Header row with two columns: Barcode and Status
             const $header = $(`
-        <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
-            <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
-            <div style="flex: 0 0 8ch; text-align: center;">Status</div>
-        </div>
-    `);
+                <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
+                    <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
+                    <div style="flex: 0 0 8ch; text-align: center;">Status</div>
+                </div>
+            `);
             container.append($header);
 
             const processed_barcodes = (frm.doc.detail_table || []).map(row => row.bale_barcode);

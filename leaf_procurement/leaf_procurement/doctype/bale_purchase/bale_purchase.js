@@ -175,11 +175,11 @@ frappe.ui.form.on("Bale Purchase", {
                     fieldtype: 'HTML',
                     label: 'Pending Bales',
                     options: `<div id="pending-bales-container" 
-                style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace;"></div>`
+                style="max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace; border-radius: 10px;"></div>`
                 },
                 { fieldtype: 'Column Break' }, // Right column
-                 // Grade label
-                 {
+                // Grade label
+                {
                     fieldname: 'p_grade_label',
                     fieldtype: 'HTML',
                     options: `<div style="font-size: 2.5rem; font-weight: 700; color: #28a745; margin-bottom: 16px;">
@@ -205,6 +205,7 @@ frappe.ui.form.on("Bale Purchase", {
             ],
             primary_action_label: 'Add Item',
             primary_action: function (values) {
+                frm.save();
                 primary_action_function(frm, d, values);
                 render_pending_bales_list();
                 $('#price-label').text('');
@@ -240,7 +241,7 @@ frappe.ui.form.on("Bale Purchase", {
         is_grade_popup_open = false;
 
 
-        function render_pending_bales_list() {
+        async function render_pending_bales_list() {
             const container = d.fields_dict.pending_bales_html.$wrapper.find('#pending-bales-container');
             container.empty();
 
@@ -249,19 +250,26 @@ frappe.ui.form.on("Bale Purchase", {
                 return;
             }
 
+            if (frm.bale_registration_barcodes.length === frm.doc.total_bales) return;
+
             // Header row with two columns: Barcode and Status
             const $header = $(`
-        <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
-            <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
-            <div style="flex: 0 0 8ch; text-align: center;">Status</div>
-        </div>
-    `);
+                <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
+                    <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
+                    <div style="flex: 0 0 8ch; text-align: center;">Status</div>
+                </div>
+            `);
             container.append($header);
+            let already_processed = [];
 
-            const processed_barcodes = (frm.doc.detail_table || []).map(row => row.bale_barcode);
+            already_processed = await already_processed_bale(frm);
+            const detail_barcodes = (frm.doc.detail_table || [])
+                .map(row => row.bale_barcode)
+                .filter(barcode => !!barcode);
+
+            const processed_barcodes = Array.from(new Set([...detail_barcodes, ...already_processed]));
             const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
-            console.log(pending_barcodes);
             const message_label = d.fields_dict.p_message_label.$wrapper.find('#message-label');
 
             if (pending_barcodes.length === 2) {
@@ -270,8 +278,7 @@ frappe.ui.form.on("Bale Purchase", {
                 message_label.text('');
             }
 
-
-            frm.bale_registration_barcodes.forEach(barcode => {
+            Array.from(new Set(frm.bale_registration_barcodes)).forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
                 const statusText = is_processed ? '✅' : '';
                 const statusBgColor = is_processed ? '#d4edda' : '#fff3cd';
@@ -279,26 +286,26 @@ frappe.ui.form.on("Bale Purchase", {
 
                 // Barcode cell
                 const $barcodeCell = $(`<div style="
-            flex: 1 1 13ch;
-            min-width: 13ch;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: monospace;
-            padding: 4px 6px;
-        ">${barcode}</div>`);
+                                        flex: 1 1 13ch;
+                                        min-width: 13ch;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        font-family: monospace;
+                                        padding: 4px 6px;
+                                    ">${barcode}</div>`);
 
                 // Status cell
                 const $statusCell = $(`<div style="
-            flex: 0 0 8ch;
-            text-align: center;
-            font-weight: 700;
-            color: ${statusTextColor};
-            border-radius: 3px;
-            padding: 2px 4px;
-            user-select: none;
-            margin-left: 6px;
-        ">${statusText}</div>`);
+                            flex: 0 0 8ch;
+                            text-align: center;
+                            font-weight: 700;
+                            color: ${statusTextColor};
+                            border-radius: 3px;
+                            padding: 2px 4px;
+                            user-select: none;
+                            margin-left: 6px;
+                        ">${statusText}</div>`);
 
                 // Row container
                 const $row = $('<div style="display: flex; align-items: center; margin: 2px 0;"></div>');
@@ -328,8 +335,6 @@ frappe.ui.form.on("Bale Purchase", {
         $barcode_input.on('keyup', function (e) {
             const barcode = $(this).val();
             const expectedLength = parseInt(frm.doc.barcode_length || 0, 10);
-console.log('in the function: ', expectedLength, ' - ', barcode.length);
-            console.log('true or false: ', e.key === 'Enter' , barcode.length === expectedLength)
             if (e.key === 'Enter' || barcode.length === expectedLength) {
                 // If bale_registration_code already exists, skip fetching
                 if (!frm.doc.bale_registration_code) {
@@ -341,11 +346,11 @@ console.log('in the function: ', expectedLength, ' - ', barcode.length);
                             if (r.message) {
                                 frm.set_value('bale_registration_code', r.message);
 
- 
+
                                 setTimeout(() => {
 
                                     //if (!is_grade_popup_open)
-                                    
+
                                     proceedWithBarcodeValidationAndGrade(frm, barcode, d);
                                     render_pending_bales_list();
                                     //$barcode_input.focus();
@@ -362,17 +367,9 @@ console.log('in the function: ', expectedLength, ' - ', barcode.length);
                     });
                 }
                 else {
-                    //render_pending_bales_list();
                     //if (!is_grade_popup_open)
                     proceedWithBarcodeValidationAndGrade(frm, barcode, d);
                 }
-
-                // setTimeout(() => {
-                //     render_pending_bales_list();
-                //     if (!is_grade_popup_open)
-                //         proceedWithBarcodeValidationAndGrade(frm, barcode, d);
-                //     $barcode_input.focus();
-                // }, 200);
 
             }
 
@@ -443,23 +440,25 @@ console.log('in the function: ', expectedLength, ' - ', barcode.length);
     }
 });
 
-function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
-    const validBarcodes = frm.bale_registration_barcodes || [];
-console.log('barcode: ', barcode);
+async function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
+    const validBarcodes = Array.from(new Set(frm.bale_registration_barcodes || [])); // Ensure uniqueness
+
     if (!validBarcodes.includes(barcode)) {
         frappe.show_alert({ message: __('This Bale Barcode is not part of this lot.'), indicator: 'orange' });
-        //frappe.msgprint(__('❌ Invalid Bale Barcode: {0}', [barcode]));
         d.set_value('p_bale_registration_code', '');
-        //$barcode_input.focus();
         return;
     }
 
-    const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
-    if (already_scanned) {
+    const already_processed = await already_processed_bale(frm); // Assume this returns a clean array
+    const detail_barcodes = (frm.doc.detail_table || [])
+        .map(row => row.bale_barcode)
+        .filter(b => !!b);
+
+    const all_scanned = new Set([...already_processed, ...detail_barcodes]);
+
+    if (all_scanned.has(barcode)) {
         frappe.show_alert({ message: __('This Bale Barcode is already scanned'), indicator: 'orange' });
         d.set_value('p_bale_registration_code', '');
-        //updateWeightDisplay("0.00");
-        //$barcode_input.focus();
         return;
     }
 
@@ -467,10 +466,11 @@ console.log('barcode: ', barcode);
 
     is_grade_popup_open = true;
 
-    open_grade_selector_popup(function (grade, sub_grade) {
+    open_grade_selector_popup(async function (grade, sub_grade) {
         d.set_value('p_item_grade', grade);
         d.set_value('p_item_sub_grade', sub_grade);
-        frappe.call({
+
+        const r = await frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
             args: {
                 company: frm.doc.company,
@@ -478,24 +478,20 @@ console.log('barcode: ', barcode);
                 item: frm.doc.item,
                 item_grade: grade,
                 item_sub_grade: sub_grade
-            },
-            callback: function (r) {
-
-                if (r.message !== undefined) {
-                    d.set_value("p_price", r.message);
-                    setTimeout(() => {
-                        update_price_grade_labels(d, grade, sub_grade, r.message);
-                    }, 100);
-
-
-
-
-                }
-                is_grade_popup_open = false;
             }
         });
+
+        if (r.message !== undefined) {
+            d.set_value("p_price", r.message);
+            setTimeout(() => {
+                update_price_grade_labels(d, grade, sub_grade, r.message);
+            }, 100);
+        }
+
+        is_grade_popup_open = false;
     });
 }
+
 
 frappe.ui.form.on("Bale Purchase Detail", {
     delete_row(frm, cdt, cdn) {
@@ -649,6 +645,27 @@ function load_bale_barcodes(frm) {
         return;
     }
 
+    // frappe.call({
+    //     method: "leaf_procurement.leaf_procurement.doctype.bale_purchase.bale_purchase.get_unpurchase_bales",
+    //     args: {
+    //         name: frm.doc.bale_registration_code
+    //     },
+    //     callback: function (r) {
+    //         if (r.message) {
+    //             const details = r.message || [];
+
+    //             // Extract bale barcodes and store them in a custom property on the form
+    //             frm.bale_registration_barcodes = details
+    //                 .map(row => row.bale_barcode)
+    //                 .filter(barcode => !!barcode);  // Filter out any empty/null values
+
+    //             //console.log("✅ Loaded Barcodes:", frm.bale_registration_barcodes);
+    //         } else {
+    //             frm.bale_registration_barcodes = [];
+    //             frappe.msgprint(__('⚠️ No details found for this Bale Registration.'));
+    //         }
+    //     }
+    // });
 
     frappe.call({
         method: 'frappe.client.get',
@@ -673,6 +690,7 @@ function load_bale_barcodes(frm) {
         }
     });
 }
+
 function hide_grid_controls(frm) {
     const grid_field = frm.fields_dict.detail_table;
     if (grid_field && grid_field.grid && grid_field.grid.wrapper) {
@@ -685,4 +703,20 @@ function update_price_grade_labels(d, grade, subgrade, price) {
     d.fields_dict.p_grade_label.$wrapper.find('#grade-label').text(grade || '-');
     d.fields_dict.p_subgrade_label.$wrapper.find('#subgrade-label').text(subgrade || '-');
     d.fields_dict.p_price_label.$wrapper.find('#price-label').text(flt(price || 0).toFixed(2));
+}
+
+
+async function already_processed_bale(frm) {
+    const response = await frappe.call({
+        method: "leaf_procurement.leaf_procurement.doctype.bale_purchase.bale_purchase.get_purchase_bales",
+        args: {
+            name: frm.doc.bale_registration_code
+        },
+    });
+
+    if (response && response.message) {
+        return await response.message.filter(barcode => !!barcode) || [];
+    }
+
+    return [];
 }
