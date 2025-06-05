@@ -254,7 +254,6 @@ frappe.ui.form.on("Bale Weight Info", {
 
                     }
                 },
-
                 {
                     fieldname: 'p_weight',
                     label: 'Captured Weight',
