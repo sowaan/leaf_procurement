@@ -163,6 +163,16 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
 
     return invoice.name
 
+# In your `bale_weight_utils.py` or similar file
+
+@frappe.whitelist()
+def get_processed_bale_barcodes(parent_name):
+    return frappe.db.get_all(
+        "Bale Weight Detail",  # child table name
+        filters={"parent": parent_name},
+        fields=["bale_barcode"]
+    )
+
 
 def ensure_batch_exists(batch_no: str, item_code: str, batch_qty: float) -> None:
     """
@@ -201,14 +211,15 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
             WHERE bwi.bale_registration_code = br.name
         )
         AND br.name LIKE %(txt)s
-        and br.docstatus=1 and bp.docstatus=1
-        ORDER BY br.name
+        AND br.docstatus = 1 AND bp.docstatus = 1
+        ORDER BY br.creation ASC
         LIMIT %(start)s, %(page_len)s
     """, {
         "txt": f"%{txt}%",
-        "start": start,
-        "page_len": page_len
+        "start": int(start),
+        "page_len": int(page_len)
     })
+
 
 
 @frappe.whitelist()

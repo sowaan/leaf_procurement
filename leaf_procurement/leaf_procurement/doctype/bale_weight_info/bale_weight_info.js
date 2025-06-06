@@ -48,7 +48,7 @@ async function connectToScale(frm) {
         }
 
         await port.open({ baudRate: 9600 });
-     
+
         //await port.open({ baudRate: 9600 });
 
         const textDecoder = new TextDecoderStream();
@@ -147,9 +147,9 @@ async function cleanupSerial(frm) {
 
         // Show connect, hide disconnect
 
-            frm.fields_dict.connect_scale.$wrapper.show();
-            frm.fields_dict.disconnect_scale.$wrapper.hide();
-            updateScaleStatus(frm, "Disconnected");
+        frm.fields_dict.connect_scale.$wrapper.show();
+        frm.fields_dict.disconnect_scale.$wrapper.hide();
+        updateScaleStatus(frm, "Disconnected");
 
     } catch (e) {
         console.error("Error during serial cleanup:", e);
@@ -179,13 +179,18 @@ window.addEventListener('beforeunload', async () => {
     }
 });
 frappe.ui.form.on("Bale Weight Info", {
-    add_weight_information: function (frm) {
+    add_weight_information: async function (frm) {
         const total = cint(frm.doc.total_bales || 0);
         const scanned = (frm.doc.detail_table || []).length;
 
         if (frm.doc.bale_registration_code && scanned >= total) {
             frappe.msgprint(__('⚠️ Weight completed for all bales in this lot, please remove a bale and press add weight again if you need to update a record.'));
             return;
+        }
+
+        if (frm.doc.bale_registration_code && (!frm.doc.name || frm.doc.__islocal)) {
+
+            await frm.save(); // Save parent if not already saved
         }
         const d = new frappe.ui.Dialog({
             title: 'Capture Weight Information',
@@ -369,24 +374,33 @@ frappe.ui.form.on("Bale Weight Info", {
                 }
 
 
-                frm.add_child('detail_table', {
-                    bale_barcode: values.p_bale_registration_code,
-                    item_grade: values.p_item_grade,
-                    item_sub_grade: values.p_item_sub_grade,
-                    weight: values.p_weight,
-                    rate: values.p_price,
-                    reclassification_grade: values.p_reclassification_grade
+                await frappe.call({
+                    method: "frappe.client.insert",
+                    args: {
+                        doc: {
+                            doctype: "Bale Weight Detail",  // Replace with your actual child Doctype name
+                            parent: frm.doc.name,
+                            parenttype: "Bale Weight Info",
+                            parentfield: "detail_table", // Make sure this matches the fieldname in the parent
+                            bale_barcode: values.p_bale_registration_code,
+                            item_grade: values.p_item_grade,
+                            item_sub_grade: values.p_item_sub_grade,
+                            weight: values.p_weight,
+                            rate: values.p_price,
+                            reclassification_grade: values.p_reclassification_grade
+                        }
+                    },
+                    callback: function (r) {
+                        if (!r.exc) {
+                            // Refresh the grid to show newly saved row
+                            frm.reload_doc();
+                    render_pending_bales_list();                            
+                        }
+                    }
                 });
 
-                frm.refresh_field('detail_table');
-                if (frm.doc.total_bales <= frm.doc.detail_table.length) {
-                    d.hide();
-                    active_weight_dialog = null;
-                    if (document.activeElement) {
-                        document.activeElement.blur();
-                    }
 
-                }
+
 
                 // Reset fields
                 d.set_value('p_bale_registration_code', '');
@@ -405,8 +419,15 @@ frappe.ui.form.on("Bale Weight Info", {
                     const $barcode_input = d.fields_dict.p_bale_registration_code.$wrapper.find('input');
                     $barcode_input.focus();
 
+                    if (frm.doc.total_bales <= frm.doc.detail_table.length) {
+                        d.hide();
+                        active_weight_dialog = null;
+                        if (document.activeElement) {
+                            document.activeElement.blur();
+                        }
+                    }                    
                 }, 300);
-                render_pending_bales_list();
+
                 ///update_price_grade_labels(d);
                 $('#price-label').text('');
                 $('#grade-label').text('');
@@ -442,7 +463,7 @@ frappe.ui.form.on("Bale Weight Info", {
             }
         }, 100);
         d.show();
-        
+
         active_weight_dialog = d;
 
         d.onhide = function () {
@@ -462,65 +483,67 @@ frappe.ui.form.on("Bale Weight Info", {
                 return;
             }
 
-            // Header row with two columns: Barcode and Status
-            const $header = $(`
-        <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
-            <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
-            <div style="flex: 0 0 8ch; text-align: center;">Status</div>
-        </div>
-    `);
-            container.append($header);
+            // 🔄 Fetch processed barcodes from the database
+            frappe.call({
+                method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_processed_bale_barcodes',
+                args: {
+                    parent_name: frm.doc.name
+                },
+                callback: function (r) {
+                    const processed_barcodes = (r.message || []).map(row => row.bale_barcode);
 
-            const processed_barcodes = (frm.doc.detail_table || []).map(row => row.bale_barcode);
+                    // Header row
+                    const $header = $(`
+                <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
+                    <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
+                    <div style="flex: 0 0 8ch; text-align: center;">Status</div>
+                </div>
+            `);
+                    container.append($header);
 
-            const remaining_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
+                    // Loop through all known barcodes
+                    frm.bale_registration_barcodes.forEach(barcode => {
+                        const is_processed = processed_barcodes.includes(barcode);
+                        const statusText = is_processed ? '✅' : '';
+                        const statusTextColor = is_processed ? '#155724' : '#856404';
 
-            frm.bale_registration_barcodes.forEach(barcode => {
-                const is_processed = processed_barcodes.includes(barcode);
-                const statusText = is_processed ? '✅' : '';
-                const statusBgColor = is_processed ? '#d4edda' : '#fff3cd';
-                const statusTextColor = is_processed ? '#155724' : '#856404';
+                        const $barcodeCell = $(`<div style="
+                    flex: 1 1 13ch;
+                    min-width: 13ch;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    font-family: monospace;
+                    padding: 4px 6px;
+                ">${barcode}</div>`);
 
-                // Barcode cell
-                const $barcodeCell = $(`<div style="
-            flex: 1 1 13ch;
-            min-width: 13ch;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: monospace;
-            padding: 4px 6px;
-        ">${barcode}</div>`);
+                        const $statusCell = $(`<div style="
+                    flex: 0 0 8ch;
+                    text-align: center;
+                    font-weight: 700;
+                    color: ${statusTextColor};
+                    border-radius: 3px;
+                    padding: 2px 4px;
+                    user-select: none;
+                    margin-left: 6px;
+                ">${statusText}</div>`);
 
-                // Status cell
-                const $statusCell = $(`<div style="
-            flex: 0 0 8ch;
-            text-align: center;
-            font-weight: 700;
-            color: ${statusTextColor};
-            border-radius: 3px;
-            padding: 2px 4px;
-            user-select: none;
-            margin-left: 6px;
-        ">${statusText}</div>`);
+                        const $row = $('<div style="display: flex; align-items: center; margin: 2px 0;"></div>');
+                        $row.append($barcodeCell, $statusCell);
 
-                // Row container
-                const $row = $('<div style="display: flex; align-items: center; margin: 2px 0;"></div>');
-                $row.append($barcodeCell, $statusCell);
+                        if (!is_processed) {
+                            $row.css('cursor', 'pointer');
+                            $row.on('click', () => {
+                                d.set_value('p_bale_registration_code', barcode);
+                                proceedWithBarcodeValidationAndGrade(frm, barcode, d);
+                            });
+                        } else {
+                            $row.css('cursor', 'default');
+                        }
 
-                if (!is_processed) {
-                    $row.css('cursor', 'pointer');
-
-                    $row.on('click', () => {
-                        d.set_value('p_bale_registration_code', barcode);
-                        proceedWithBarcodeValidationAndGrade(frm, barcode, d);
-
+                        container.append($row);
                     });
-                } else {
-                    $row.css('cursor', 'default');
                 }
-
-                container.append($row);
             });
         }
 
@@ -670,6 +693,23 @@ frappe.ui.form.on("Bale Weight Info", {
         };
 
         if (!frm.is_new) return;
+        frappe.call({
+            method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_available_bale_registrations',
+            args: {
+                doctype: 'Bale Registration',
+                txt: '',
+                searchfield: 'name',
+                start: 0,
+                page_len: 1,
+                filters: {}
+            },
+            callback: function (r) {
+                if (r.message && r.message.length > 0) {
+                    frm.set_value('bale_registration_code', r.message[0][0]);
+                }
+            }
+        });
+
 
         //get company and location records from settings
         frappe.call({
@@ -692,6 +732,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 }
             }
         });
+
 
     }
 });
@@ -747,17 +788,39 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
 }
 frappe.ui.form.on("Bale Weight Detail", {
 
-    delete_row(frm, cdt, cdn) {
-        frappe.model.clear_doc(cdt, cdn);  // delete the row
-        frm.refresh_field('detail_table');
+delete_row(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
 
-        if (cur_dialog) {
-            cur_dialog.hide();
+    // Ask for confirmation before deleting
+    frappe.confirm(
+        `Are you sure you want to delete this row: ${row.bale_barcode}?`,
+        function () {
+            // Call server method to delete the child record
+            frappe.call({
+                method: "frappe.client.delete",
+                args: {
+                    doctype: row.doctype,
+                    name: row.name
+                },
+                callback: function (response) {
+                    if (!response.exc) {
+                        frappe.msgprint(__("Row deleted successfully"));
+
+                        // Remove from form UI
+                        frappe.model.clear_doc(cdt, cdn);
+                        frm.refresh_field('detail_table');
+
+                        if (cur_dialog) {
+                            cur_dialog.hide();
+                        }
+                        $('.modal-backdrop').remove();
+                    }
+                }
+            });
         }
+    );
+},
 
-        // Remove any lingering modal backdrop
-        $('.modal-backdrop').remove();
-    },
 
     refresh: function (frm) {
 
@@ -922,13 +985,21 @@ function validate_day_status(frm) {
     // If registration_date is set, validate it matches doc.date
     if (frm.doc.registration_date) {
         if (frm.doc.date !== frm.doc.registration_date) {
-            frappe.msgprint({
-                title: __("Date Mismatch"),
-                message: __("⚠️ The selected Bale Registration was created on <b>{0}</b>, which does not match this document's date <b>{1}</b>.")
-                    .replace('{0}', frm.doc.registration_date)
-                    .replace('{1}', frm.doc.date),
-                indicator: 'red'
-            });
+        let baleDate = '2025-06-01';
+        let docDate = '2025-06-06';
+
+        frappe.show_alert({
+            message: __('The selected Bale Registration was created on <b>{0}</b>, which does not match this document\'s date <b>{1}</b>', [frm.doc.registration_date, frm.doc.date]),
+            indicator: 'orange'
+        }, 5);
+  
+            // frappe.msgprint({
+            //     title: __("Date Mismatch"),
+            //     message: __("⚠️ The selected Bale Registration was created on <b>{0}</b>, which does not match this document's date <b>{1}</b>.")
+            //         .replace('{0}', frm.doc.registration_date)
+            //         .replace('{1}', frm.doc.date),
+            //     indicator: 'red'
+            // });
             return;
         }
     }
@@ -953,11 +1024,15 @@ function check_day_open_status(frm) {
 
 
             if (!is_day_open) {
-                frappe.msgprint({
-                    title: __("Day Not Open"),
-                    message: __("⚠️ You cannot register or purchase bales because the day is either not opened or already closed."),
-                    indicator: 'red'
-                });
+                frappe.show_alert({
+                    message: 'Day is not open for selected date.',
+                    indicator: 'orange'
+                }, 5);                
+                // frappe.msgprint({
+                //     title: __("Day Not Open"),
+                //     message: __("⚠️ You cannot register or purchase bales because the day is either not opened or already closed."),
+                //     indicator: 'red'
+                // });
             }
         }
     });
