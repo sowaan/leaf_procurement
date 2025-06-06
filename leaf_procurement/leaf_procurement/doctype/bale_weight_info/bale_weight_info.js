@@ -5,112 +5,179 @@ let scalePort = null;
 let lastWeight = null;
 let stopReading = false;
 let suppress_focus = false;
+let active_weight_dialog = null; // global reference
+let scaleConnected = 'Disconnected';
 
+function updateMainWeightDisplay(frm, weight) {
+    // $weightDisplay.text(weight + " kg");
+    frm.set_value('weight_display', weight);
 
-function open_grade_selector_popup(callback) {
-    let selected_grade = null;
-    let selected_sub_grade = null;
+    // update the dialog's field if visible
+    if (active_weight_dialog) {
+        active_weight_dialog.set_value('p_weight', weight);
 
-    const dialog = new frappe.ui.Dialog({
-        title: 'Select Item Grade & Sub Grade',
-        fields: [
-            {
-                fieldname: 'grade_html',
-                fieldtype: 'HTML',
-                options: '<div id="grade-buttons" style="margin-bottom: 1rem;"></div>'
-            },
-            {
-                fieldtype: 'HTML',
-                options: `<hr style="margin: 0.5rem 0; border-top: 1px solid #ddd;">`
-            },
-            {
-                fieldname: 'sub_grade_html',
-                fieldtype: 'HTML',
-                options: '<div id="sub-grade-buttons"></div>'
-            }
-        ],
-        primary_action_label: 'Select',
-        primary_action: function () {
-            if (!selected_grade || !selected_sub_grade) {
-                frappe.msgprint('Please select both grade and sub grade');
-                return;
-            }
-            dialog.hide();
-            callback(selected_grade, selected_sub_grade);
+        const $customDisplay = active_weight_dialog.$wrapper.find('.weight-display-box');
+        console.log('found', $customDisplay);
+        if ($customDisplay.length) {
+            console.log('display...');
+            $customDisplay.text(`${weight} kg`);
         }
-    });
-
-    function render_grade_buttons() {
-        frappe.call({
-            method: 'frappe.client.get_list',
-            args: {
-                doctype: 'Item Grade',
-                fields: ['name', 'rejected_grade']
-            },
-            callback: function (r) {
-                if (r.message) {
-
-                    const sortedGrades = r.message.sort((a, b) => {
-                        return a.rejected_grade - b.rejected_grade;
-                    });
-                    const container = dialog.fields_dict.grade_html.$wrapper;
-                    container.empty();
-
-                    sortedGrades.forEach(grade => {
-                        const colorClass = grade.rejected_grade ? 'indicator-pill red' : 'indicator-pill green';
-                        const $btn = $(`
-                            <button class="btn btn-sm grade-btn m-1 ${colorClass}" style="
-                                min-width: 98px;
-                                text-align: center;
-                            ">${grade.name}</button>
-                        `);
-                        $btn.on('click', function () {
-                            selected_grade = grade.name;
-                            selected_sub_grade = null;
-                            render_sub_grade_buttons(grade.name);
-                            $('.grade-btn').removeClass('btn-success').addClass('btn-primary');
-                            $(this).removeClass('btn-primary').addClass('btn-success');
-                        });
-                        container.append($btn);
-                    });
-                }
-            }
-        });
     }
-
-    function render_sub_grade_buttons(grade) {
-        frappe.call({
-            method: 'frappe.client.get_list',
-            args: {
-                doctype: 'Item Sub Grade',
-                fields: ['name'],
-                filters: { item_grade: grade }
-            },
-            callback: function (r) {
-                const container = dialog.fields_dict.sub_grade_html.$wrapper;
-                container.empty();
-                r.message.forEach(sub_grade => {
-                    const $btn = $(`
-                        <button class="btn btn-sm indicator-pill orange m-1 sub-grade-btn" style="
-                            min-width: 100px;
-                            text-align: center;
-                        ">${sub_grade.name}</button>
-                    `);
-                    $btn.on('click', function () {
-                        selected_sub_grade = sub_grade.name;
-                        $('.sub-grade-btn').removeClass('btn-success').addClass('btn-outline-secondary');
-                        $(this).removeClass('btn-outline-secondary').addClass('btn-success');
-                    });
-                    container.append($btn);
-                });
-            }
-        });
-    }
-
-    dialog.show();
-    render_grade_buttons();
 }
 
+// Define globally if not already defined
+if (!window._scaleConnection) {
+    window._scaleConnection = {
+        port: null,
+        reader: null,
+        lastWeight: null,
+        stopReading: false
+    };
+}
+async function connectToScale(frm) {
+    try {
+        //const port = await navigator.serial.requestPort();
+        let port;
+
+        if (window.savedPort) {
+            port = window.savedPort;
+        } else {
+            // Otherwise, prompt user to select one
+            port = await navigator.serial.requestPort();
+            window.savedPort = port;
+        }
+
+        await port.open({ baudRate: 9600 });
+     
+        //await port.open({ baudRate: 9600 });
+
+        const textDecoder = new TextDecoderStream();
+        const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+        const reader = textDecoder.readable.getReader();
+
+        window._scaleConnection = {
+            port,
+            reader,
+            readableStreamClosed,
+            stopReading: false,
+            lastWeight: null
+        };
+
+        scaleConnected = "Connected";
+
+        // 👇 Hide connect, show disconnect
+        frm.fields_dict.connect_scale.$wrapper.hide();
+        frm.fields_dict.disconnect_scale.$wrapper.show();
+        updateScaleStatus(frm, "Connected");
+
+        // Begin reading data
+        while (!window._scaleConnection.stopReading) {
+            const { value, done } = await reader.read();
+            if (done || window._scaleConnection.stopReading) break;
+            if (value) {
+                const weight = parseFloat(value.trim());
+                if (!isNaN(weight)) {
+                    window._scaleConnection.lastWeight = weight.toFixed(2);
+                    updateMainWeightDisplay(frm, weight.toFixed(2)); // Your custom method
+                }
+            }
+        }
+
+    } catch (err) {
+        console.error('Serial connection failed:', err);
+        frappe.msgprint(__('Failed to connect to the weighing scale.'));
+        await cleanupSerial(frm);
+    }
+}
+function updateScaleStatus(frm, status) {
+    let color = status === "Connected" ? "#007bff" : "red";
+    let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${status}</h2>`;
+    frm.fields_dict.scale_status.$wrapper.html(html);
+}
+
+async function readScaleContinuously(frm) {
+    const { reader } = window._scaleConnection;
+    while (!window._scaleConnection.stopReading) {
+        try {
+            const { value, done } = await reader.read();
+            if (done || window._scaleConnection.stopReading) break;
+            if (value) {
+                const weight = parseFloat(value.trim());
+                if (!isNaN(weight)) {
+                    window._scaleConnection.lastWeight = weight.toFixed(2);
+                    updateMainWeightDisplayWeightDisplay(frm, window._scaleConnection.lastWeight);
+                }
+            }
+        } catch (e) {
+            console.error('Error while reading:', e);
+            break;
+        }
+    }
+}
+
+async function cleanupSerial(frm) {
+    try {
+        if (window._scaleConnection?.reader) {
+            try {
+                await window._scaleConnection.reader.cancel();
+                await window._scaleConnection.readableStreamClosed;
+            } catch (err) {
+                console.warn("Error while cancelling reader or closing stream:", err);
+            }
+        }
+
+        if (window._scaleConnection?.port && window._scaleConnection.port.readable) {
+            try {
+                await window._scaleConnection.port.close();
+                console.log("Serial port closed.");
+            } catch (err) {
+                console.warn("Error while closing port:", err);
+            }
+        }
+
+        window._scaleConnection = {
+            port: null,
+            reader: null,
+            readableStreamClosed: null,
+            stopReading: true,
+            lastWeight: null
+        };
+
+        scaleConnected = "Disconnected";
+
+        // Show connect, hide disconnect
+
+            frm.fields_dict.connect_scale.$wrapper.show();
+            frm.fields_dict.disconnect_scale.$wrapper.hide();
+            updateScaleStatus(frm, "Disconnected");
+
+    } catch (e) {
+        console.error("Error during serial cleanup:", e);
+    }
+}
+
+function addConnectButton(frm) {
+    const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
+    frm.page.clear_primary_action();
+    frm.page.set_primary_action('Submit', () => frm.save('Submit'));
+
+    // Optional: place your button in the footer or toolbar
+    frm.page.add_inner_button('Connect Scale', async function () {
+        await connectToScale(frm);
+    });
+}
+
+
+window.addEventListener('beforeunload', async () => {
+    if (window._scaleConnection?.port) {
+        try {
+            await window._scaleConnection.reader?.cancel();
+            await window._scaleConnection.port?.close();
+        } catch (e) {
+            console.warn("Error closing port on unload:", e);
+        }
+    }
+});
 frappe.ui.form.on("Bale Weight Info", {
     add_weight_information: function (frm) {
         const total = cint(frm.doc.total_bales || 0);
@@ -263,7 +330,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     read_only: 0,
                 },
                 { fieldtype: 'Column Break' }, // Right column
-               
+
                 {
                     fieldname: 'pending_bales_html',
                     fieldtype: 'HTML',
@@ -295,7 +362,7 @@ frappe.ui.form.on("Bale Weight Info", {
                                 indicator: 'red'
                             });
                             d.set_value('p_weight', '');
-                            updateWeightDisplay("0.00");
+                            //updateWeightDisplay("0.00");
                             return; // 💡 this now properly stops the rest of the code
                         }
                     }
@@ -314,7 +381,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 frm.refresh_field('detail_table');
                 if (frm.doc.total_bales <= frm.doc.detail_table.length) {
                     d.hide();
-                    cleanupSerial();
+                    active_weight_dialog = null;
                     if (document.activeElement) {
                         document.activeElement.blur();
                     }
@@ -330,7 +397,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 d.set_value('p_weight', '');
 
                 // Reset weight display
-                updateWeightDisplay("0.00");
+                // updateWeightDisplay("0.00");
 
                 // Focus barcode field again
                 setTimeout(() => {
@@ -358,13 +425,7 @@ frappe.ui.form.on("Bale Weight Info", {
 
         });
 
-        d.onhide = function () {
-            //console.log('on hide');
-            if (document.activeElement) {
-                document.activeElement.blur();
-            }
-            cleanupSerial();
-        };
+
 
         // Prevent Enter key from submitting dialog
         setTimeout(() => {
@@ -381,6 +442,16 @@ frappe.ui.form.on("Bale Weight Info", {
             }
         }, 100);
         d.show();
+        
+        active_weight_dialog = d;
+
+        d.onhide = function () {
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+            active_weight_dialog = null;
+        };
+
 
         function render_pending_bales_list() {
             const container = d.fields_dict.pending_bales_html.$wrapper.find('#pending-bales-container');
@@ -512,7 +583,7 @@ frappe.ui.form.on("Bale Weight Info", {
 
         const $footer = d.$wrapper.find('.modal-footer');
         const $weightDisplay = $(`
-            <div style="
+            <div class="weight-display-box" style="
                 font-size: 50px;
                 font-weight: bold;
                 color: #007bff;
@@ -523,73 +594,17 @@ frappe.ui.form.on("Bale Weight Info", {
                 border: 2px solid #007bff;
                 border-radius: 10px;
             ">
-            0.00 kg
+                0.00 kg
             </div>
         `);
         $footer.before($weightDisplay);
 
-        function updateWeightDisplay(weight) {
-            $weightDisplay.text(weight + " kg");
-            d.set_value('p_weight', weight);
-        }
-
-        const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
-        $footer.prepend(connectBtn);
-
-        connectBtn.on('click', async () => {
-            try {
-                scalePort = await navigator.serial.requestPort();
-                await scalePort.open({ baudRate: 9600 });
-
-                const textDecoder = new TextDecoderStream();
-                const readableStreamClosed = scalePort.readable.pipeTo(textDecoder.writable);
-                const reader = textDecoder.readable.getReader();
-
-                scaleReader = reader;
-                window._readableStreamClosed = readableStreamClosed;
-                stopReading = false;
-
-                while (!stopReading) {
-                    const { value, done } = await reader.read();
-                    if (done || stopReading) break;
-                    if (value) {
-                        const weight = parseFloat(value.trim());
-                        if (!isNaN(weight)) {
-                            lastWeight = weight.toFixed(2);
-                            updateWeightDisplay(lastWeight);
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('Serial error:', err);
-                frappe.msgprint(__('Failed to connect or read from scale.'));
-                await cleanupSerial();
-            }
-        });
     },
     bale_registration_code(frm) {
         if (!frm.doc.bale_registration_code) return;
 
         validate_day_status(frm);
         load_bale_barcodes(frm);
-        // let count = parseInt(frm.doc.total_bales);
-        // frm.clear_table('detail_table'); // optional: clear before add
-        // frm.refresh_field('detail_table');
-
-        // frappe.call({
-        //     method: 'frappe.client.get',
-        //     args: {
-        //         doctype: 'Bale Registration',
-        //         name: frm.doc.bale_registration_code
-        //     },
-        //     callback: function (r) {
-        //         if (r.message) {
-        //             const details = r.message.bale_registration_detail || [];
-        //             // Store barcodes in a temporary variable
-        //             frm.bale_registration_barcodes = details.map(row => row.bale_barcode);
-        //         }
-        //     }
-        // });
 
     },
     refresh: function (frm) {
@@ -599,29 +614,33 @@ frappe.ui.form.on("Bale Weight Info", {
             );
         }
 
-        // if (!frm.is_new() && frm.doc.docstatus === 1 && !frm.doc.purchase_receipt_created) {
-        //     frm.add_custom_button(__('Create Purchase Invoice'), function () {
-        //         frappe.call({
-        //             method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.create_purchase_invoice',
-        //             args: {
-        //                 bale_weight_info_name: frm.doc.name
-        //             },
-        //             callback: function (r) {
-        //                 if (r.message) {
-        //                     frappe.msgprint(__('Purchase Invoice {0} created.', [r.message]));
-        //                     frm.reload_doc();
-        //                 }
-        //             }
-        //         });
-        //     });
-        // }
-
     },
     date: function (frm) {
         validate_day_status(frm);
 
     },
+    onUnload: function (frm) {
+        // Optional: if you want to close on leaving the module
+        cleanupSerial(frm);
+    },
+    connect_scale: async function (frm) {
+        if (!window._scaleConnection.port) {
+            await connectToScale(frm);
+        } else {
+            frappe.msgprint(__('Scale already connected.'));
+        }
+    },
+    disconnect_scale: async function (frm) {
+        await cleanupSerial(frm);
+        //frappe.msgprint(__('Scale disconnected.'));
+    },
     onload: function (frm) {
+        scaleConnected = "Disconnected";
+        updateScaleStatus(frm, "Disconnected");
+
+        frm.fields_dict.connect_scale.$wrapper.show();
+        frm.fields_dict.disconnect_scale.$wrapper.hide();
+
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['detail_table'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
@@ -698,7 +717,7 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
             indicator: 'red'
         });
         d.set_value('p_bale_registration_code', '');
-        updateWeightDisplay("0.00");
+        //updateWeightDisplay("0.00");
         $barcode_input.focus();
         return;
     }
@@ -785,36 +804,111 @@ frappe.ui.form.on("Bale Weight Detail", {
     //     update_bale_counter(frm);
     // }        
 });
-async function cleanupSerial() {
-    try {
-        if (scaleReader) {
-            await scaleReader.cancel();  // triggers done
-            scaleReader.releaseLock();   // unlocks stream
-            scaleReader = null;
+
+
+function open_grade_selector_popup(callback) {
+    let selected_grade = null;
+    let selected_sub_grade = null;
+
+    const dialog = new frappe.ui.Dialog({
+        title: 'Select Item Grade & Sub Grade',
+        fields: [
+            {
+                fieldname: 'grade_html',
+                fieldtype: 'HTML',
+                options: '<div id="grade-buttons" style="margin-bottom: 1rem;"></div>'
+            },
+            {
+                fieldtype: 'HTML',
+                options: `<hr style="margin: 0.5rem 0; border-top: 1px solid #ddd;">`
+            },
+            {
+                fieldname: 'sub_grade_html',
+                fieldtype: 'HTML',
+                options: '<div id="sub-grade-buttons"></div>'
+            }
+        ],
+        primary_action_label: 'Select',
+        primary_action: function () {
+            if (!selected_grade || !selected_sub_grade) {
+                frappe.msgprint('Please select both grade and sub grade');
+                return;
+            }
+            dialog.hide();
+            callback(selected_grade, selected_sub_grade);
         }
-    } catch (e) {
-        console.warn('Reader cleanup error:', e);
+    });
+
+    function render_grade_buttons() {
+        frappe.call({
+            method: 'frappe.client.get_list',
+            args: {
+                doctype: 'Item Grade',
+                fields: ['name', 'rejected_grade']
+            },
+            callback: function (r) {
+                if (r.message) {
+
+                    const sortedGrades = r.message.sort((a, b) => {
+                        return a.rejected_grade - b.rejected_grade;
+                    });
+                    const container = dialog.fields_dict.grade_html.$wrapper;
+                    container.empty();
+
+                    sortedGrades.forEach(grade => {
+                        const colorClass = grade.rejected_grade ? 'indicator-pill red' : 'indicator-pill green';
+                        const $btn = $(`
+                            <button class="btn btn-sm grade-btn m-1 ${colorClass}" style="
+                                min-width: 98px;
+                                text-align: center;
+                            ">${grade.name}</button>
+                        `);
+                        $btn.on('click', function () {
+                            selected_grade = grade.name;
+                            selected_sub_grade = null;
+                            render_sub_grade_buttons(grade.name);
+                            $('.grade-btn').removeClass('btn-success').addClass('btn-primary');
+                            $(this).removeClass('btn-primary').addClass('btn-success');
+                        });
+                        container.append($btn);
+                    });
+                }
+            }
+        });
     }
 
-    try {
-        if (window._readableStreamClosed) {
-            await window._readableStreamClosed;
-            window._readableStreamClosed = null;
-        }
-    } catch (e) {
-        console.warn('Readable stream close error:', e);
+    function render_sub_grade_buttons(grade) {
+        frappe.call({
+            method: 'frappe.client.get_list',
+            args: {
+                doctype: 'Item Sub Grade',
+                fields: ['name'],
+                filters: { item_grade: grade }
+            },
+            callback: function (r) {
+                const container = dialog.fields_dict.sub_grade_html.$wrapper;
+                container.empty();
+                r.message.forEach(sub_grade => {
+                    const $btn = $(`
+                        <button class="btn btn-sm indicator-pill orange m-1 sub-grade-btn" style="
+                            min-width: 100px;
+                            text-align: center;
+                        ">${sub_grade.name}</button>
+                    `);
+                    $btn.on('click', function () {
+                        selected_sub_grade = sub_grade.name;
+                        $('.sub-grade-btn').removeClass('btn-success').addClass('btn-outline-secondary');
+                        $(this).removeClass('btn-outline-secondary').addClass('btn-success');
+                    });
+                    container.append($btn);
+                });
+            }
+        });
     }
 
-    try {
-        if (scalePort) {
-            await scalePort.close();
-            scalePort = null;
-        }
-    } catch (e) {
-        console.warn('Port close error:', e);
-    }
+    dialog.show();
+    render_grade_buttons();
 }
-
 
 function update_bale_counter(frm) {
     let total = frm.doc.total_bales;  // increment before recounting
