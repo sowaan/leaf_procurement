@@ -21,6 +21,8 @@
   "transport_charges_item",
   "barcode_length",
   "weight_display",
+  "connect_scale",
+  "disconnect_scale",
   "column_break_ceqy",
   "location_short_code",
   "registration_date",
@@ -30,11 +32,18 @@
   "payment_mode",
   "scale_status",
   "section_break_zoru",
+  "scan_barcode",
+  "reclassification_grade",
   "add_weight_information",
   "column_break_bunv",
+  "item_grade",
+  "bale_weight",
   "column_break_uzxd",
-  "connect_scale",
-  "disconnect_scale",
+  "item_sub_grade",
+  "price",
+  "save_weight",
+  "column_break_jjvd",
+  "bale_list",
   "section_break_lrtu",
   "detail_table",
   "amended_from"
@@ -193,6 +202,7 @@
   {
    "fieldname": "add_weight_information",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Add Weight Information"
   },
   {
@@ -215,7 +225,8 @@
   {
    "fieldname": "weight_display",
    "fieldtype": "Read Only",
-   "label": "Weight Display"
+   "label": "Weight Display",
+   "precision": "2"
   },
   {
    "fieldname": "column_break_bunv",
@@ -244,12 +255,59 @@
    "fieldname": "scale_status",
    "fieldtype": "HTML",
    "label": "Scale Status"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Barcode"
+  },
+  {
+   "fieldname": "item_grade",
+   "fieldtype": "Read Only",
+   "label": "Item Grade"
+  },
+  {
+   "fieldname": "item_sub_grade",
+   "fieldtype": "Read Only",
+   "label": "Item Sub Grade"
+  },
+  {
+   "fieldname": "reclassification_grade",
+   "fieldtype": "Read Only",
+   "label": "Reclassification Grade"
+  },
+  {
+   "fieldname": "bale_list",
+   "fieldtype": "HTML",
+   "label": "Bale List"
+  },
+  {
+   "default": "0.00",
+   "fieldname": "bale_weight",
+   "fieldtype": "Float",
+   "label": "Bale Weight",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "price",
+   "fieldtype": "Read Only",
+   "label": "Price"
+  },
+  {
+   "fieldname": "save_weight",
+   "fieldtype": "Button",
+   "label": "Save Weight"
+  },
+  {
+   "fieldname": "column_break_jjvd",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-06 20:06:02.214285",
+ "modified": "2025-06-08 19:29:15.027010",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

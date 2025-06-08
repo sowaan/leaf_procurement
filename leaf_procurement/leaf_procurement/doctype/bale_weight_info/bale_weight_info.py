@@ -7,6 +7,14 @@ from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BaleWeightInfo(Document):
+	def before_save(self):
+		self.scan_barcode = ""
+		self.item_grade = ""
+		self.item_sub_grade = ""
+		self.reclassification_grade = ""
+		self.price = 0
+		self.bale_weight = 0
+
 	def autoname(self):
 		today = datetime.strptime(self.date, "%Y-%m-%d")
 		fy = get_fiscal_year(today)
