@@ -60,7 +60,6 @@ async function proceedWithBarcodeValidationAndGradeMainPage(frm, barcode) {
     });
 }
 async function render_main_pending_bales_list(frm) {
-    console.log('counter for render....');
     const container = frm.fields_dict.bale_list.$wrapper;
     container.empty();
 
@@ -76,7 +75,6 @@ async function render_main_pending_bales_list(frm) {
         },
         callback: function (r) {
             const processed_barcodes = (r.message || []).map(row => row.bale_barcode);
-
             const $header = $(`
                 <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
                     <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
@@ -299,62 +297,87 @@ window.addEventListener('beforeunload', async () => {
 
 });
 
+async function validate_bale_data(frm) {
+    const values = frm.doc;
+    const weight = values.bale_weight;
+
+    if (!values.scan_barcode) {
+        frappe.show_alert({ message: __("Please scan a barcode before saving detail."), indicator: "orange" });
+        return { valid: false };
+    }
+
+    const existing = values.detail_table.find(row => row.bale_barcode === values.scan_barcode);
+    if (existing) {
+        frappe.show_alert({
+            message: `Bale with barcode ${values.scan_barcode} already exists in the table.`,
+            indicator: 'red'
+        });
+        return { valid: false };
+    }
+
+    const r = await frappe.call({
+        method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.quota_weight",
+        args: { location: values.location_warehouse }
+    });
+
+    if (r.message) {
+        const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
+
+        if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
+            frappe.show_alert({
+                message: `The captured weight ${weight} kg is outside the allowed range of ${bale_minimum_weight_kg} kg to ${bal_maximum_weight_kg} kg for this location.`,
+                indicator: 'red'
+            });
+            return { valid: false };
+        }
+    }
+
+    if (!values.item_grade || !values.item_sub_grade || !values.reclassification_grade) {
+        frappe.show_alert({
+            message: `Please select Grade, Sub-Grade and Reclassification Grade to save weight information.`,
+            indicator: 'red'
+        });
+        return { valid: false };
+    }
+    return { valid: true };
+}
+
 frappe.ui.form.on("Bale Weight Info", {
     save_weight: async function (frm) {
-        await frm.events.update_bale_weight_details(frm, true);
-    },
-    after_save: async function (frm) {
-        await frm.events.update_bale_weight_details(frm, false);
-    },
-    // Call this after grade popup closes too
-    update_bale_weight_details: async function (frm, reload = true) {
-        const values = frm.doc;
-        const weight = values.bale_weight;
-
-        if (!values.scan_barcode) {
-            //frappe.show_alert({ message: __("Please scan a barcode before saving detail."), indicator: "orange" });
+        const result = await validate_bale_data(frm);
+        if (!result.valid) {
+            frappe.validated = false;
             return;
         }
+        await frm.events.update_bale_weight_details(frm, true);
+    },
+    after_save: function (frm) {
+        render_main_pending_bales_list(frm);
+    },
+    validate: async function (frm) {
 
-        // Ensure parent is saved first
-        if (!frm.doc.name || frm.doc.__islocal) {
-            await frm.save(); // Save the parent doc if it's new
+        const result = await validate_bale_data(frm);
+        if (!result.valid) {
+            frappe.validated = false;
+            return;
         }
+        const values = frm.doc;
 
+        frm.add_child("detail_table", {
+            bale_barcode: values.scan_barcode,
+            item_grade: values.item_grade,
+            item_sub_grade: values.item_sub_grade,
+            weight: values.bale_weight,
+            rate: values.price,
+            reclassification_grade: values.reclassification_grade
+        });
+    },
+
+    // Call this after grade popup closes too
+    update_bale_weight_details: async function (frm, reload = true) {
         try {
-            // 1. Check if the barcode already exists in the child table
-            const existing = frm.doc.detail_table.find(row => row.bale_barcode === values.scan_barcode);
+            const values = frm.doc;
 
-            if (existing) {
-                frappe.show_alert({
-                    message: `Bale with barcode ${values.scan_barcode} already exists in the table.`,
-                    indicator: 'red'
-                });
-                return;
-            }
-
-            // 2. Get quota limits
-            const r = await frappe.call({
-                method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.quota_weight",
-                args: {
-                    location: frm.doc.location_warehouse,
-                }
-            });
-
-            if (r.message) {
-                const { bale_minimum_weight_kg, bal_maximum_weight_kg } = r.message;
-
-                if (weight < bale_minimum_weight_kg || weight > bal_maximum_weight_kg) {
-                    frappe.show_alert({
-                        message: `The captured weight ${weight} kg is outside the allowed range of ${bale_minimum_weight_kg} kg to ${bal_maximum_weight_kg} kg for this location.`,
-                        indicator: 'red'
-                    });
-                    return;
-                }
-            }
-
-
-            // 3. Insert new child row via Frappe API
             const insert_response = await frappe.call({
                 method: "frappe.client.insert",
                 args: {
@@ -450,12 +473,8 @@ frappe.ui.form.on("Bale Weight Info", {
     ,
 
     bale_registration_code(frm) {
-        if (!frm.doc.bale_registration_code) return;
-
         validate_day_status(frm);
         load_bale_barcodes(frm);
-
-
     },
     refresh: function (frm) {
         if (frm.doc.docstatus === 1) {
@@ -820,11 +839,11 @@ function open_grade_selector_popup(callback) {
                             ">${grade.name}</button>
                         `);
                         $btn.on('click', function () {
-                            if (grade.rejected_grade) 
+                            if (grade.rejected_grade)
                                 is_rejected_grade = true;
-                            else 
-                            is_rejected_grade = false;
-                        
+                            else
+                                is_rejected_grade = false;
+
                             selected_grade = grade.name;
                             selected_sub_grade = null;
                             render_sub_grade_buttons(grade.name);
@@ -839,10 +858,10 @@ function open_grade_selector_popup(callback) {
             }
         });
     }
-        function update_selected_summary() {
-    const $grade = dialog.$wrapper.find('#selected-grade');
-    const $subGrade = dialog.$wrapper.find('#selected-sub-grade');
-    const $reGrade = dialog.$wrapper.find('#selected-reclassification-grade');
+    function update_selected_summary() {
+        const $grade = dialog.$wrapper.find('#selected-grade');
+        const $subGrade = dialog.$wrapper.find('#selected-sub-grade');
+        const $reGrade = dialog.$wrapper.find('#selected-reclassification-grade');
 
         // Handle Grade with rejection suffix
         if (selected_grade && is_rejected_grade) {
@@ -953,7 +972,7 @@ function update_bale_counter(frm) {
 
 function validate_day_status(frm) {
     if (!frm.doc.date) return;
-
+    if (!frm.doc.bale_registration_code) return;
     // If registration_date is set, validate it matches doc.date
     if (frm.doc.registration_date) {
         if (frm.doc.date !== frm.doc.registration_date) {
