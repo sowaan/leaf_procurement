@@ -132,14 +132,12 @@ async function render_main_pending_bales_list(frm) {
 
 function updateMainWeightDisplay(frm, weight) {
     // $weightDisplay.text(weight + " kg");
-    frm.set_value('weight_display', weight);
     frm.set_value('bale_weight', weight);
 
-    // update the dialog's field if visible
-    if (active_weight_dialog) {
-        active_weight_dialog.set_value('p_weight', weight);
+    let color = scaleConnected === "Connected" ? "#007bff" : "red";
+    let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
+    frm.fields_dict.scale_status.$wrapper.html(html);
 
-    }
 }
 
 // Define globally if not already defined
@@ -164,6 +162,7 @@ async function connectToScale(frm) {
             window.savedPort = port;
         }
 
+   
         await port.open({ baudRate: 9600 });
 
         //await port.open({ baudRate: 9600 });
@@ -510,11 +509,19 @@ frappe.ui.form.on("Bale Weight Info", {
         //frappe.msgprint(__('Scale disconnected.'));
     },
     onload: function (frm) {
-        scaleConnected = "Disconnected";
-        updateScaleStatus(frm, "Disconnected");
+        //scaleConnected = "Disconnected";
+        updateScaleStatus(frm, scaleConnected);
 
-        frm.fields_dict.connect_scale.$wrapper.show();
-        frm.fields_dict.disconnect_scale.$wrapper.hide();
+        if(scaleConnected=='Connected') 
+        {
+            frm.fields_dict.connect_scale.$wrapper.hide();
+            frm.fields_dict.disconnect_scale.$wrapper.show();
+        }
+        else
+{            
+    frm.fields_dict.connect_scale.$wrapper.show();
+            frm.fields_dict.disconnect_scale.$wrapper.hide();
+        }
 
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['detail_table'].grid.update_docfield_property(
