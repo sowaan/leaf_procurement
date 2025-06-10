@@ -66,7 +66,7 @@ class BalePurchase(Document):
         
 		# Check for incorrect number of bales
 		entered_count = len(self.detail_table or [])
-		if entered_count != expected_count:
+		if entered_count > expected_count:
 			frappe.throw(
 				msg=_("⚠️ The number of bales entered is <b>{0}</b>, but the expected number of bales is <b>{1}</b> from Bale Registration '{2}'.".format(
 					entered_count, expected_count, self.bale_registration_code
@@ -98,3 +98,46 @@ class BalePurchase(Document):
 
 	# 	self.name = f"{prefix}-{next_number:05d}"
 
+@frappe.whitelist()
+def get_purchase_bales(name):
+	bale_registration_list = frappe.get_all(
+		"Bale Registration Detail",
+		filters={"parent": name},
+		fields=["bale_barcode"],
+		pluck="bale_barcode"
+	)
+	get_purchase = frappe.db.exists("Bale Purchase", {"bale_registration_code": name, "docstatus": ["<", 2]})
+	if not get_purchase:
+		return bale_registration_list
+
+	bale_purchase_details = frappe.get_all(
+			"Bale Purchase Detail",
+			filters={"parent": ["in", frappe.get_all(
+				"Bale Purchase",
+				filters={"bale_registration_code": name, "docstatus": ["<", 2]},
+				fields=["name"],
+				pluck="name"
+			)]},
+			fields=["bale_barcode"],
+			pluck="bale_barcode"
+		)
+	
+	print("Bale Purchase Details:", bale_purchase_details)
+	# bale_code = frappe.get_all(
+	# 	"Bale Registration Detail",
+	# 	filters={'parent': name, 'bale_barcode': ['not in', bale_purchase_details]},
+	# 	fields=["bale_barcode"]
+	# )
+
+	# print("Bale Code:", bale_code, "\n\n\n\n\n\n")
+
+	return bale_purchase_details
+
+	# if len(bale_registration_list) > 0:
+	# 	return frappe.get_all(
+	# 		"Bale Purchase Detail",
+	# 		filters={"bale_barcode": ["not in", bale_registration_list]},
+	# 		fields=["bale_barcode"]
+	# 	)
+	# else:
+	# 	return []
