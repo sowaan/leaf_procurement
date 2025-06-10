@@ -31,42 +31,67 @@ frappe.ui.form.on("Day Setup", {
         }
 
         if (frm.doc.day_open_time && !frm.doc.day_close_time) {
-            frm.add_custom_button(__('Day Close'), async function () {
-                try {
-                    const result = await frappe.call({
-                        method: "leaf_procurement.leaf_procurement.api.day_close_utils.check_gtn_and_grade_difference",
-                        args: {
-                            date: frm.doc.date  // or relevant filter to narrow down bales for the day
-                        }
-                    });
+frm.add_custom_button(__('Day Close'), async function () {
+    try {
+        const result = await frappe.call({
+            method: "leaf_procurement.leaf_procurement.api.day_close_utils.check_gtn_and_grade_difference",
+            args: {
+                date: frm.doc.date  // filter by selected date
+            }
+        });
 
-                    if (result.message && result.message.length > 0) {
-                        const mismatched_bales = result.message.map(d => {
-                            const purchase_grade = d.purchase_grade || "Not Found";
-                            const weight_grade = d.weight_grade || "Not Found";
-                            return `Bale: ${d.bale_id}, Purchase Grade: ${purchase_grade}, Weight Grade: ${weight_grade}`;
-                        }).join("<br>");
-                        frappe.msgprint({
-                            title: __("No Goods Transfer Note (GTN) record found for following bales:"),
-                            indicator: "orange",
-                            message: mismatched_bales
-                        });
-                        return;  // prevent day closing if mismatch exists
-                    }
+        if (result.message && result.message.length > 0) {
+            const tableRows = result.message.map(d => {
+                return `
+                    <tr>
+                        <td>${d.bale_id || ""}</td>
+                        <td>${d.item_grade || ""}</td>
+                        <td>${d.rate || ""}</td>
+                        <td>${d.weight || ""}</td>
+                    </tr>
+                `;
+            }).join("");
 
-                    const now = frappe.datetime.now_datetime();
-                    frm.set_value('day_close_time', now);
-                    //frm.set_value('status', "Closed");
+            const tableHtml = `
+                <table class="table table-bordered" style="width:100%">
+                    <thead style="color: rgb(255, 255, 255); background-color:rgb(33, 82, 206); font-weight: bold;">
+                        <tr>
+                            <th>${__("Bale Barcode")}</th>
+                            <th>${__("Item Grade")}</th>
+                            <th>${__("Rate")}</th>
+                            <th>${__("Weight")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            `;
 
-                    frm.save().then(() => {
-                        frappe.msgprint(__('Day closed at: ') + now);
-                        frm.reload_doc();
-                    });
-                } catch (err) {
-                    frappe.msgprint(__('Error checking GTN and grade differences.'));
-                    console.error(err);
-                }
-            }, __('Actions'));
+            frappe.msgprint({
+                title: __("Bales Not Dispatched Yet!"),
+                indicator: "orange",
+                message: tableHtml
+            });
+
+            return; // stop execution if mismatches found
+        }
+
+        // No mismatches, proceed with day close
+        const now = frappe.datetime.now_datetime();
+        frm.set_value('day_close_time', now);
+        // frm.set_value('status', "Closed"); // Uncomment if needed
+
+        await frm.save();
+        frappe.msgprint(__('Day closed at: ') + now);
+        frm.reload_doc();
+
+    } catch (err) {
+        frappe.msgprint(__('Error checking GTN and grade differences.'));
+        console.error(err);
+    }
+}, __('Actions'));
+
         }
 
 	},

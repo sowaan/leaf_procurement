@@ -26,27 +26,28 @@ def check_gtn_and_grade_difference(date):
 
     for bale_id in bales_missing_gtn:
         purchase_grade = frappe.db.get_value("Bale Purchase Detail", {"bale_barcode": bale_id}, "item_grade")
-        weight_grade = frappe.db.get_value("Bale Weight Detail", {"bale_barcode": bale_id}, "item_grade")
+        result = frappe.db.get_value(
+            "Bale Weight Detail",
+            {"bale_barcode": bale_id},
+            ["item_grade", "rate", "weight"]
+        )
 
-        # Skip if grade data is incomplete
-        if not purchase_grade or not weight_grade:
-            mismatches.append({
-                "bale_id": bale_id,
-                "purchase_grade": purchase_grade,
-                "weight_grade": weight_grade,
-                "gtn_status": "Missing",
-                "note": "GTN missing and grade is not rejected or grades differ"
-            })
-            continue
-
+        if result:
+            item_grade, rate, weight = result
+        else:
+            # Set defaults or handle missing data
+            item_grade, rate, weight = None, None, None
+            
         # Get rejection status from Item Grade
-        is_rejected = frappe.db.get_value("Item Grade", {"item_grade_name": weight_grade}, "rejected_grade")
+        is_rejected = frappe.db.get_value("Item Grade", {"item_grade_name": item_grade}, "rejected_grade")
 
-        if not is_rejected and  purchase_grade == weight_grade:
+        if not is_rejected :
             mismatches.append({
                 "bale_id": bale_id,
-                "purchase_grade": purchase_grade or "Not Found",
-                "weight_grade": weight_grade or "Not Found",
+                "purchase_grade": purchase_grade or "-",
+                "item_grade": item_grade or "-",
+                "weight": weight or "-",
+                "rate": rate or "-",
                 "gtn_status": "Missing",
                 "note": "GTN missing and grade is not rejected or grades differ"
             })
