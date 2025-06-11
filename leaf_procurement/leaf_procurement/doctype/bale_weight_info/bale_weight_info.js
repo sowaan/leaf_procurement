@@ -35,7 +35,7 @@ async function proceedWithBarcodeValidationAndGradeMainPage(frm, barcode) {
     }
     is_grade_popup_open = true;
     frm.set_value('scan_barcode', barcode);
-    open_grade_selector_popup(async function (grade, sub_grade, reclassification_grade) {
+    open_grade_selector_popup(barcode, async function (grade, sub_grade, reclassification_grade) {
         frm.set_value('item_grade', grade);
         frm.set_value('item_sub_grade', sub_grade);
         frm.set_value('reclassification_grade', reclassification_grade);
@@ -529,7 +529,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 'delete_row', 'hidden', 1
             );
         }
-
+        load_bale_barcodes(frm);
         // frm.set_value('scan_barcode', '');
         // frm.set_value('item_grade', '');
         // frm.set_value('item_sub_grade', '');
@@ -583,7 +583,7 @@ frappe.ui.form.on("Bale Weight Info", {
             );
         }
 
-        load_bale_barcodes(frm);
+        
         //console.log('before: ',frm);
         setTimeout(() => {
             const $input = frm.fields_dict.scan_barcode.$wrapper.find('input');
@@ -685,7 +685,7 @@ function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
     }
     is_grade_popup_open = true;
 
-    open_grade_selector_popup(function (grade, sub_grade) {
+    open_grade_selector_popup(barcode, function (grade, sub_grade) {
         d.set_value('p_item_grade', grade);
         d.set_value('p_item_sub_grade', sub_grade);
 
@@ -792,7 +792,7 @@ frappe.ui.form.on("Bale Weight Detail", {
 });
 
 
-function open_grade_selector_popup(callback) {
+function open_grade_selector_popup(barcode, callback) {
     let selected_grade = null;
     let selected_sub_grade = null;
     let selected_reclassification_grade = null;
@@ -875,8 +875,39 @@ function open_grade_selector_popup(callback) {
                 frappe.msgprint('Please select grade, sub grade and reclassification grade');
                 return;
             }
-            dialog.hide();
-            callback(selected_grade, selected_sub_grade, selected_reclassification_grade);
+
+            console.log('data:',barcode, is_rejected_grade, selected_grade, selected_sub_grade);
+            let gradeNotSame = false;
+
+            if (!is_rejected_grade && selected_grade) {
+                frappe.call({
+                    method: "leaf_procurement.leaf_procurement.doctype.bale_weight_info.bale_weight_info.match_grade_with_bale_purchase",
+                    args: {
+                        barcode: barcode
+                    },
+                    callback: function (r) {
+                        if (r.message) {
+                            const { bale_barcode, item_grade, item_sub_grade } = r.message;
+                            if (item_sub_grade != selected_sub_grade) {
+                                frappe.show_alert({
+                                    title: __('Grade Mismatch'),
+                                    message: __('The selected Bale Barcode does not match the selected Item Grade. Please check the barcode or select the correct grade.'),
+                                    indicator: 'red'
+                                });
+                                gradeNotSame = true;
+                                return;
+                            }
+                            else{
+                                dialog.hide();
+                                callback(selected_grade, selected_sub_grade, selected_reclassification_grade);
+
+                            }
+                        }
+                    }
+                });
+            }
+
+
         }
     });
 
@@ -1096,6 +1127,7 @@ function check_day_open_status(frm) {
 }
 
 function load_bale_barcodes(frm) {
+    render_main_pending_bales_list(frm);
     if (!frm.doc.bale_registration_code) {
         frm.bale_registration_barcodes = [];  // Clear any old data
         return;

@@ -29,6 +29,26 @@ class DaySetup(Document):
             })
             if existing:
                 frappe.throw(_("A record already exists for the date {}. Only one record per day is allowed.").format(self.date))
+        # Find all open days (with open time but no close time), excluding current date
+        
+        open_days = frappe.db.get_all(
+            "Day Setup",
+            filters={
+                "day_open_time": ["is", "set"],
+                "day_close_time": ["is", "not set"],
+                "date": ["!=", self.date]
+            },
+            fields=["date"]
+        )
+
+        if open_days:
+            # Format open dates with line breaks
+            open_dates = '<br>'.join(f"- {day.date}" for day in open_days)
+            frappe.throw(
+                _("There are already open day(s):<br>{0}").format(open_dates),
+                title=_("Open Days Found")
+            )
+
           		
     def _parse_date(self, value):
         """Convert string to date if necessary."""

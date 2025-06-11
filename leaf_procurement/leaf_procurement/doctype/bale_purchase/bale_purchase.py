@@ -3,8 +3,8 @@
 
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
-from frappe.model.naming import make_autoname
-from erpnext.accounts.utils import get_fiscal_year
+from frappe.model.naming import make_autoname # type: ignore
+from erpnext.accounts.utils import get_fiscal_year # type: ignore
 from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
@@ -114,7 +114,7 @@ def get_purchase_bales(name):
 	)
 	get_purchase = frappe.db.exists("Bale Purchase", {"bale_registration_code": name, "docstatus": ["<", 2]})
 	if not get_purchase:
-		return bale_registration_list
+		return None
 
 	bale_purchase_details = frappe.get_all(
 			"Bale Purchase Detail",
