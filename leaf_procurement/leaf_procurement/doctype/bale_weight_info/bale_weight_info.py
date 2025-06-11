@@ -14,6 +14,7 @@ class BaleWeightInfo(Document):
 		self.reclassification_grade = ""
 		self.price = 0
 		self.bale_weight = 0
+		
 
 	def autoname(self):
 		today = datetime.strptime(self.date, "%Y-%m-%d")

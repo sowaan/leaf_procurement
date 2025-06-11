@@ -33,6 +33,7 @@
   "section_break_zoru",
   "scan_barcode",
   "reclassification_grade",
+  "message_label",
   "add_weight_information",
   "column_break_bunv",
   "item_grade",
@@ -295,12 +296,17 @@
   {
    "fieldname": "column_break_jjvd",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "message_label",
+   "fieldtype": "HTML",
+   "options": "<div style=\"font-size: 1.0rem; font-weight: 500; color:rgb(240, 132, 8); margin-bottom: 8px;"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-10 13:09:22.863238",
+ "modified": "2025-06-10 21:07:04.705282",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
