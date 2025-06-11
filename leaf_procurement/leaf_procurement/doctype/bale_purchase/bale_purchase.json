@@ -20,7 +20,17 @@
   "total_bales",
   "remaining_bales",
   "section_break_qlxn",
+  "bale_barcode",
+  "price",
   "add_grades",
+  "column_break_zetb",
+  "item_grade",
+  "item_sub_grade",
+  "save_weight",
+  "column_break_vcdo",
+  "pending_bales",
+  "column_break_gpmk",
+  "grade_list",
   "section_break_risd",
   "detail_table",
   "amended_from"
@@ -140,12 +150,62 @@
    "fieldtype": "Read Only",
    "hidden": 1,
    "label": "Barcode Length"
+  },
+  {
+   "fieldname": "bale_barcode",
+   "fieldtype": "Data",
+   "label": "Bale Barcode"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price"
+  },
+  {
+   "fieldname": "column_break_zetb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_grade",
+   "fieldtype": "Link",
+   "label": "Item Grade",
+   "options": "Item Grade"
+  },
+  {
+   "fieldname": "item_sub_grade",
+   "fieldtype": "Link",
+   "label": "Item Sub Grade",
+   "options": "Item Sub Grade"
+  },
+  {
+   "fieldname": "column_break_vcdo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pending_bales",
+   "fieldtype": "HTML",
+   "label": "Pending Bales",
+   "options": "<div id=\"pending-bales-container\" style=\"max-height: 350px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; font-family: monospace; border-radius: 10px;\"></div>"
+  },
+  {
+   "fieldname": "save_weight",
+   "fieldtype": "Button",
+   "label": "Save Weight"
+  },
+  {
+   "fieldname": "column_break_gpmk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grade_list",
+   "fieldtype": "HTML",
+   "label": "Grade List"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-05 16:42:01.928756",
+ "modified": "2025-06-10 17:24:44.453187",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

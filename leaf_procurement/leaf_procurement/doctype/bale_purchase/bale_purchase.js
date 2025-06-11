@@ -113,8 +113,82 @@ function open_grade_selector_popup(callback) {
 }
 
 
+async function validate_bale_data(frm) {
+    const values = frm.doc;
+    const weight = values.bale_weight;
+
+    if (!values.bale_barcode) {
+        frappe.show_alert({ message: __("Please scan a barcode before saving detail."), indicator: "orange" });
+        return { valid: false };
+    }
+
+    const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
+    if (existing) {
+        frappe.show_alert({
+            message: `Bale with barcode ${values.bale_barcode} already exists in the table.`,
+            indicator: 'red'
+        });
+        return { valid: false };
+    }
+
+    if (!values.item_grade || !values.item_sub_grade) {
+        frappe.show_alert({
+            message: `Please select Grade and Sub-Grade to save weight information.`,
+            indicator: 'red'
+        });
+        return { valid: false };
+    }
+    return { valid: true };
+}
+
 
 frappe.ui.form.on("Bale Purchase", {
+    save_weight: async function (frm) {
+        const result = await validate_bale_data(frm);
+        if (!result.valid) {
+            frappe.validated = false;
+            return;
+        }
+        await frm.events.update_bale_weight_details(frm, true);
+    },
+
+    after_save: function (frm) {
+        render_main_pending_bales_list(frm);
+    },
+
+    update_bale_weight_details: async function (frm, reload = true) {
+        try {
+            const values = frm.doc;
+
+            const insert_response = await frappe.call({
+                method: "frappe.client.insert",
+                args: {
+                    doc: {
+                        doctype: "Bale Purchase Detail",
+                        parent: frm.doc.name,
+                        parenttype: "Bale Purchase",
+                        parentfield: "detail_table",
+                        bale_barcode: values.bale_barcode,
+                        item_grade: values.item_grade,
+                        item_sub_grade: values.item_sub_grade,
+                        rate: values.price,
+                    }
+                }
+            });
+
+
+            if (insert_response && !insert_response.exc && reload) {
+                await frm.reload_doc();  // Refresh to show updated child table
+            }
+
+
+
+        } catch (error) {
+            console.error("Error updating bale details:", error);
+            frappe.msgprint(__('An error occurred while saving Bale Weight Detail.'));
+        }
+    },
+
     add_grades: function (frm) {
 
         const total = cint(frm.doc.total_bales || 0);
@@ -242,7 +316,7 @@ frappe.ui.form.on("Bale Purchase", {
 
 
         async function render_pending_bales_list() {
-            const container = d.fields_dict.pending_bales_html.$wrapper.find('#pending-bales-container');
+            const container = d.fields_dict.pending_bales.$wrapper.find('#pending-bales-container');
             container.empty();
 
             if (!frm.bale_registration_barcodes || frm.bale_registration_barcodes.length === 0) {
@@ -260,14 +334,10 @@ frappe.ui.form.on("Bale Purchase", {
                 </div>
             `);
             container.append($header);
-            let already_processed = [];
-
-            already_processed = await already_processed_bale(frm);
-            const detail_barcodes = (frm.doc.detail_table || [])
+            const processed_barcodes = (frm.doc.detail_table || [])
                 .map(row => row.bale_barcode)
                 .filter(barcode => !!barcode);
 
-            const processed_barcodes = Array.from(new Set([...detail_barcodes, ...already_processed]));
             const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
             const message_label = d.fields_dict.p_message_label.$wrapper.find('#message-label');
@@ -379,8 +449,19 @@ frappe.ui.form.on("Bale Purchase", {
     bale_registration_code(frm) {
         validate_day_status(frm);  // Optional validation if needed
         load_bale_barcodes(frm);
-    }
-    ,
+    },
+
+    bale_barcode: async function (frm) {
+        if (suppress_focus) return;  // Prevent focus if suppress is active
+        const barcode = frm.doc.bale_barcode;
+        if (barcode && barcode.length == frm.doc.barcode_length) {
+            if (frm.doc.bale_registration_code) {
+                if (!is_grade_popup_open) await proceedWithBarcodeValidationAndGrade(frm, barcode);
+            }
+        }
+
+    },
+
     refresh: function (frm) {
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['detail_table'].grid.update_docfield_property(
@@ -440,35 +521,35 @@ frappe.ui.form.on("Bale Purchase", {
     }
 });
 
-async function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
-    const validBarcodes = Array.from(new Set(frm.bale_registration_barcodes || [])); // Ensure uniqueness
+async function proceedWithBarcodeValidationAndGrade(frm, barcode) {
+    const validBarcodes = frm.bale_registration_barcodes || []; // Ensure uniqueness
+    const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
 
     if (!validBarcodes.includes(barcode)) {
         frappe.show_alert({ message: __('This Bale Barcode is not part of this lot.'), indicator: 'orange' });
-        d.set_value('p_bale_registration_code', '');
+        frm.set_value('bale_barcode', '');
+        $barcode_input.focus();
         return;
     }
 
-    const already_processed = await already_processed_bale(frm); // Assume this returns a clean array
-    const detail_barcodes = (frm.doc.detail_table || [])
-        .map(row => row.bale_barcode)
-        .filter(b => !!b);
+    const already_scanned = (frm.doc.detail_table || []).some(row => row.bale_barcode === barcode);
 
-    const all_scanned = new Set([...already_processed, ...detail_barcodes]);
 
-    if (all_scanned.has(barcode)) {
-        frappe.show_alert({ message: __('This Bale Barcode is already scanned'), indicator: 'orange' });
-        d.set_value('p_bale_registration_code', '');
+    if (already_scanned) {
+        frappe.show_alert({
+            message: __('⚠️ This Bale Barcode is already scanned: {0}', [barcode]),
+            indicator: 'red'
+        });
+        frm.set_value('bale_barcode', '');
+        $barcode_input.focus();
         return;
     }
-
-    if (is_grade_popup_open) return;
 
     is_grade_popup_open = true;
-
+    frm.set_value('bale_barcode', barcode);
     open_grade_selector_popup(async function (grade, sub_grade) {
-        d.set_value('p_item_grade', grade);
-        d.set_value('p_item_sub_grade', sub_grade);
+        frm.set_value('item_grade', grade);
+        frm.set_value('item_sub_grade', sub_grade);
 
         const r = await frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
@@ -482,28 +563,50 @@ async function proceedWithBarcodeValidationAndGrade(frm, barcode, d) {
         });
 
         if (r.message !== undefined) {
-            d.set_value("p_price", r.message);
-            setTimeout(() => {
-                update_price_grade_labels(d, grade, sub_grade, r.message);
-            }, 100);
+            frm.set_value("price", r.message);
+            // setTimeout(() => {
+            //     update_price_grade_labels(frm, grade, sub_grade, r.message);
+            // }, 100);
         }
-
         is_grade_popup_open = false;
+
     });
 }
 
 
 frappe.ui.form.on("Bale Purchase Detail", {
     delete_row(frm, cdt, cdn) {
-        frappe.model.clear_doc(cdt, cdn);  // delete the row
-        frm.refresh_field('detail_table');
+        const row = locals[cdt][cdn];
 
-        if (cur_dialog) {
-            cur_dialog.hide();
-        }
+        // Ask for confirmation before deleting
+        frappe.confirm(
+            `Are you sure you want to delete this row: ${row.bale_barcode}?`,
+            function () {
+                // Call server method to delete the child record
+                frappe.call({
+                    method: "frappe.client.delete",
+                    args: {
+                        doctype: row.doctype,
+                        name: row.name
+                    },
+                    callback: function (response) {
+                        if (!response.exc) {
+                            frappe.msgprint(__("Row deleted successfully"));
 
-        // Remove any lingering modal backdrop
-        $('.modal-backdrop').remove();
+                            // Remove from form UI
+                            frappe.model.clear_doc(cdt, cdn);
+                            frm.refresh_field('detail_table');
+
+                            if (cur_dialog) {
+                                cur_dialog.hide();
+                            }
+                            $('.modal-backdrop').remove();
+                            frm.reload_doc();
+                        }
+                    }
+                });
+            }
+        );
     },
     refresh: function (frm) {
         hide_grid_controls(frm);
@@ -639,55 +742,119 @@ function primary_action_function(frm, d, values) {
 
     }, 300);
 }
-function load_bale_barcodes(frm) {
+async function load_bale_barcodes(frm) {
     if (!frm.doc.bale_registration_code) {
         frm.bale_registration_barcodes = [];  // Clear any old data
         return;
     }
-
-    // frappe.call({
-    //     method: "leaf_procurement.leaf_procurement.doctype.bale_purchase.bale_purchase.get_unpurchase_bales",
-    //     args: {
-    //         name: frm.doc.bale_registration_code
-    //     },
-    //     callback: function (r) {
-    //         if (r.message) {
-    //             const details = r.message || [];
-
-    //             // Extract bale barcodes and store them in a custom property on the form
-    //             frm.bale_registration_barcodes = details
-    //                 .map(row => row.bale_barcode)
-    //                 .filter(barcode => !!barcode);  // Filter out any empty/null values
-
-    //             //console.log("✅ Loaded Barcodes:", frm.bale_registration_barcodes);
-    //         } else {
-    //             frm.bale_registration_barcodes = [];
-    //             frappe.msgprint(__('⚠️ No details found for this Bale Registration.'));
-    //         }
-    //     }
-    // });
-
-    frappe.call({
+    const r = await frappe.call({
         method: 'frappe.client.get',
         args: {
             doctype: 'Bale Registration',
             name: frm.doc.bale_registration_code
         },
-        callback: function (r) {
-            if (r.message) {
-                const details = r.message.bale_registration_detail || [];
+    });
 
-                // Extract bale barcodes and store them in a custom property on the form
-                frm.bale_registration_barcodes = details
-                    .map(row => row.bale_barcode)
-                    .filter(barcode => !!barcode);  // Filter out any empty/null values
+    if (r.message) {
+        const details = r.message.bale_registration_detail || [];
+        // Extract bale barcodes and store them in a custom property on the form
+        frm.bale_registration_barcodes = details
+            .map(row => row.bale_barcode)
+            .filter(barcode => !!barcode);  // Filter out any empty/null values
 
-                //console.log("✅ Loaded Barcodes:", frm.bale_registration_barcodes);
-            } else {
-                frm.bale_registration_barcodes = [];
-                frappe.msgprint(__('⚠️ No details found for this Bale Registration.'));
-            }
+        setTimeout(() => {
+            render_main_pending_bales_list(frm);
+        }, 300);
+    } else {
+        frm.bale_registration_barcodes = [];
+        frappe.msgprint(__('⚠️ No details found for this Bale Registration.'));
+    }
+
+}
+
+async function render_main_pending_bales_list(frm) {
+    const container = frm.fields_dict.pending_bales.$wrapper.find('#pending-bales-container');
+    container.empty();
+
+    if (!frm.bale_registration_barcodes || frm.bale_registration_barcodes.length === 0) {
+        container.html('<div>No bales available for this lot.</div>');
+        return;
+    }
+
+    if (frm.bale_registration_barcodes.length === frm.doc.total_bales) return;
+
+    // Header row with two columns: Barcode and Status
+    const $header = $(`
+                <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
+                    <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
+                    <div style="flex: 0 0 8ch; text-align: center;">Status</div>
+                </div>
+            `);
+    container.append($header);
+    let already_processed = [];
+    already_processed = await already_processed_bale(frm);
+    const detail_barcodes = (frm.doc.detail_table || [])
+        .map(row => row.bale_barcode)
+        .filter(barcode => !!barcode);
+
+    const processed_barcodes = Array.from(new Set([...detail_barcodes, ...already_processed]));
+
+    const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
+
+    const message_label = frm.fields_dict.pending_bales.$wrapper.find('#message-label');
+
+    if (pending_barcodes.length === 2) {
+        message_label.text('⚠️ The next bale is the last one for this lot!');
+    } else {
+        message_label.text('');
+    }
+
+    Array.from(new Set(frm.bale_registration_barcodes)).forEach(barcode => {
+        const is_processed = processed_barcodes.includes(barcode);
+        const statusText = is_processed ? '✅' : '';
+        const statusBgColor = is_processed ? '#d4edda' : '#fff3cd';
+        const statusTextColor = is_processed ? '#155724' : '#856404';
+
+        // Barcode cell
+        const $barcodeCell = $(`<div style="
+                                        flex: 1 1 13ch;
+                                        min-width: 13ch;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        font-family: monospace;
+                                        padding: 4px 6px;
+                                    ">${barcode}</div>`);
+
+        // Status cell
+        const $statusCell = $(`<div style="
+                            flex: 0 0 8ch;
+                            text-align: center;
+                            font-weight: 700;
+                            color: ${statusTextColor};
+                            border-radius: 3px;
+                            padding: 2px 4px;
+                            user-select: none;
+                            margin-left: 6px;
+                        ">${statusText}</div>`);
+
+        // Row container
+        const $row = $('<div style="display: flex; align-items: center; margin: 2px 0;"></div>');
+        $row.append($barcodeCell, $statusCell);
+
+        if (!is_processed) {
+            $row.css('cursor', 'pointer');
+
+            $row.on('click', () => {
+                frm.set_value('bale_barcode', barcode);
+                proceedWithBarcodeValidationAndGrade(frm, barcode);
+
+            });
+        } else {
+            $row.css('cursor', 'default');
         }
+
+        container.append($row);
     });
 }
 

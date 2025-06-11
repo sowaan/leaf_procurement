@@ -18,6 +18,12 @@ class BalePurchase(Document):
 		prefix = f"{self.location_short_code}-{fy_start_year_short}-{fy_end_year_short}-BP-"
 		self.name = make_autoname(prefix + ".######")
 
+	def before_save(self):
+		self.bale_barcode = ""
+		self.item_grade = ""
+		self.item_sub_grade = ""
+		self.price = 0
+
 	def on_submit(self):
 		if not self.bale_registration_code:
 			return
