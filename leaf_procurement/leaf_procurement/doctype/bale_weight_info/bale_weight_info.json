@@ -153,10 +153,11 @@
    "label": "Bale Registration Date"
   },
   {
-   "default": "now",
+   "fetch_from": "bale_registration_code.date",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Weighment Date"
+   "label": "Weighment Date",
+   "read_only": 1
   },
   {
    "fieldname": "purchase_invoice",
@@ -306,7 +307,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-10 21:07:04.705282",
+ "modified": "2025-06-11 15:34:19.477304",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

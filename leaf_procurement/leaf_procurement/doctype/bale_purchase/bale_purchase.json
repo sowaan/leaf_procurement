@@ -114,10 +114,11 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "now",
+   "fetch_from": "bale_registration_code.date",
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Purchase Date",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -206,7 +207,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-11 14:54:08.794486",
+ "modified": "2025-06-11 15:35:28.712967",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",
