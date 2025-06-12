@@ -7,6 +7,7 @@ let stopReading = false;
 let suppress_focus = false;
 let active_weight_dialog = null; // global reference
 let scaleConnected = 'Disconnected';
+let updateWeightOnForm = true;
 
 async function proceedWithBarcodeValidationAndGradeMainPage(frm, barcode) {
     const validBarcodes = frm.bale_registration_barcodes || [];
@@ -94,6 +95,10 @@ async function render_main_pending_bales_list(frm) {
                 message_label.text('');
             }
 
+            if(pending_barcodes.length == 0)
+                updateWeightOnForm=false;
+            else
+                updateWeightOnForm=true;
             //message_label.html$('<div><h2>'+ message_label +'</h2></div>');
             frm.bale_registration_barcodes.forEach(barcode => {
                 const is_processed = processed_barcodes.includes(barcode);
@@ -143,9 +148,13 @@ async function render_main_pending_bales_list(frm) {
 
 
 function updateMainWeightDisplay(frm, weight) {
-    // $weightDisplay.text(weight + " kg");
-    frm.set_value('bale_weight', weight);
+    // $weightDisplay.text(weight + " kg");update
 
+    
+    if(updateWeightOnForm)
+    {
+        frm.set_value('bale_weight', weight);
+    }
     let color = scaleConnected === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
     frm.fields_dict.scale_status.$wrapper.html(html);
@@ -387,6 +396,7 @@ frappe.ui.form.on("Bale Weight Info", {
     },
     validate: async function (frm) {
 
+        if(!frm.doc.scan_barcode) return;
         const result = await validate_bale_data(frm);
         if (!result.valid) {
             frappe.validated = false;

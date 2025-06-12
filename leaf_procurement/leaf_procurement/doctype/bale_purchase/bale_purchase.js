@@ -170,6 +170,7 @@ frappe.ui.form.on("Bale Purchase", {
         //render_main_pending_bales_list(frm);
     },
     validate: async function (frm) {
+        if(!frm.doc.bale_barcode) return;
 
         const result = await validate_bale_data(frm);
         if (!result.valid) {
