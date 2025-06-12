@@ -52,16 +52,14 @@
    "in_list_view": 1,
    "label": "Weight",
    "precision": "2",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "reclassification_grade",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "ReClassification Grade",
-   "options": "Reclassification Grade",
-   "reqd": 1
+   "options": "Reclassification Grade"
   },
   {
    "fieldname": "delete_row",
@@ -73,7 +71,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-08 15:35:36.541141",
+ "modified": "2025-06-13 00:01:48.371092",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Detail",

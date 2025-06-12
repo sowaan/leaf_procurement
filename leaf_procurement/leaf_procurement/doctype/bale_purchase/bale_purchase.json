@@ -6,31 +6,32 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "location_warehouse",
   "company",
   "bale_registration_code",
-  "date",
-  "column_break_jzzd",
-  "location_warehouse",
   "supplier_grower",
-  "item",
-  "barcode_length",
-  "column_break_xwsz",
+  "column_break_jzzd",
   "location_short_code",
   "registration_date",
+  "barcode_length",
   "total_bales",
+  "column_break_xwsz",
+  "item",
+  "date",
   "remaining_bales",
+  "column_break_sotj",
+  "grade_list",
   "section_break_qlxn",
   "bale_barcode",
   "price",
-  "message_label",
+  "save_weight",
   "add_grades",
   "column_break_zetb",
   "item_grade",
   "item_sub_grade",
-  "save_weight",
+  "message_label",
   "column_break_vcdo",
   "pending_bales",
-  "grade_list",
   "section_break_risd",
   "detail_table",
   "amended_from"
@@ -67,11 +68,11 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Company",
    "options": "Company",
-   "read_only": 1,
-   "reqd": 1
+   "read_only": 1
   },
   {
    "fieldname": "location_warehouse",
@@ -161,7 +162,8 @@
   {
    "fieldname": "price",
    "fieldtype": "Currency",
-   "label": "Price"
+   "label": "Price",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_zetb",
@@ -171,13 +173,15 @@
    "fieldname": "item_grade",
    "fieldtype": "Link",
    "label": "Item Grade",
-   "options": "Item Grade"
+   "options": "Item Grade",
+   "read_only": 1
   },
   {
    "fieldname": "item_sub_grade",
    "fieldtype": "Link",
    "label": "Item Sub Grade",
-   "options": "Item Sub Grade"
+   "options": "Item Sub Grade",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_vcdo",
@@ -196,18 +200,21 @@
   },
   {
    "fieldname": "grade_list",
-   "fieldtype": "HTML",
-   "label": "Grade List"
+   "fieldtype": "HTML"
   },
   {
    "fieldname": "message_label",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "column_break_sotj",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-11 15:35:28.712967",
+ "modified": "2025-06-12 21:14:47.569665",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

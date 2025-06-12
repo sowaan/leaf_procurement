@@ -19,7 +19,7 @@ class BaleWeightInfo(Document):
 	def autoname(self):
 		date_str = str(self.date)  # or date_obj.strftime("%Y-%m-%d")
 		today = datetime.strptime(date_str, "%Y-%m-%d")        
-		date_part = today.strftime("%d%m%Y")
+		#date_part = today.strftime("%d%m%Y")
 		fy = get_fiscal_year(today)
 		fy_start_year_short = fy[1].strftime("%y")
 		fy_end_year_short = fy[2].strftime("%y")

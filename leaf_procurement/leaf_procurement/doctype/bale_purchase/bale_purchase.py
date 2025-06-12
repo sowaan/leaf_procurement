@@ -26,7 +26,7 @@ class BalePurchase(Document):
 		self.bale_barcode = ""
 		self.item_grade = ""
 		self.item_sub_grade = ""
-		self.price = 0
+		self.price = ""
 
 	def on_submit(self):
 		if not self.bale_registration_code:
