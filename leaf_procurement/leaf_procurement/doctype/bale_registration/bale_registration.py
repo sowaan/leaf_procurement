@@ -70,3 +70,5 @@ class BaleRegistration(Document):
                 indicator='orange'
             )
             raise ValidationError
+        
+        

@@ -2,6 +2,21 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Bale Registration", {
+    on_submit: function(frm) {
+        frappe.msgprint({
+            title: __('Success'),
+            message: __('Record submitted successfully.'),
+            indicator: 'green'
+        });
+
+        // Use frappe.new_doc in a safe callback
+        setTimeout(() => {
+            if (frm && frm.doc && frm.doc.doctype === 'Bale Registration') {
+                frappe.new_doc('Bale Registration');
+            }
+        }, 1000); // Wait 1 second
+            
+    },    
     refresh(frm) {
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
@@ -15,6 +30,7 @@ frappe.ui.form.on("Bale Registration", {
 
         // Ensure barcode is present
         if (!barcode) return;
+
 
 
         // Check length
@@ -51,8 +67,10 @@ frappe.ui.form.on("Bale Registration", {
 
         // Clear the input field
         frm.set_value('scan_barcode', '');
+
     },
     onload: function (frm) {
+        frm.page.sidebar.toggle(false);
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1

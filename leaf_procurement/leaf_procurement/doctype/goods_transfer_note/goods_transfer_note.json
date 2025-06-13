@@ -50,7 +50,8 @@
    "fieldname": "receiving_location",
    "fieldtype": "Link",
    "label": "Receiving Location",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "reqd": 1
   },
   {
    "fetch_from": "driver.full_name",
@@ -190,7 +191,8 @@
    "fieldname": "transit_location",
    "fieldtype": "Link",
    "label": "Transit Location",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "reqd": 1
   },
   {
    "fieldname": "remarks",
@@ -201,7 +203,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-03 16:51:16.368074",
+ "modified": "2025-06-12 12:54:12.409350",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -221,6 +223,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

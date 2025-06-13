@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Day Setup", {
-    set_due_date_min: function(frm) {
+    set_due_date_min: function (frm) {
         if (frm.doc.date) {
             // Convert frappe date string (YYYY-MM-DD) to JavaScript Date object
             let parts = frm.doc.date.split('-'); // [YYYY, MM, DD]
@@ -13,12 +13,12 @@ frappe.ui.form.on("Day Setup", {
             frm.set_df_property('due_date', 'min_date', null);
         }
     },
-	refresh(frm) {
+    refresh(frm) {
         frm.clear_custom_buttons();
 
         if (!frm.doc.day_open_time) {
             // Show Day Open button only if day_open_time is not set
-            frm.add_custom_button(__('Day Open'), function() {
+            frm.add_custom_button(__('Day Open'), function () {
                 const now = frappe.datetime.now_datetime();
                 frm.set_value('day_open_time', now);
                 //frm.set_value('status', "Opened");
@@ -31,18 +31,18 @@ frappe.ui.form.on("Day Setup", {
         }
 
         if (frm.doc.day_open_time && !frm.doc.day_close_time) {
-frm.add_custom_button(__('Day Close'), async function () {
-    try {
-        const result = await frappe.call({
-            method: "leaf_procurement.leaf_procurement.api.day_close_utils.check_gtn_and_grade_difference",
-            args: {
-                date: frm.doc.date  // filter by selected date
-            }
-        });
+            frm.add_custom_button(__('Day Close'), async function () {
+                try {
+                    const result = await frappe.call({
+                        method: "leaf_procurement.leaf_procurement.api.day_close_utils.check_gtn_and_grade_difference",
+                        args: {
+                            date: frm.doc.date  // filter by selected date
+                        }
+                    });
 
-        if (result.message && result.message.length > 0) {
-            const tableRows = result.message.map(d => {
-                return `
+                    if (result.message && result.message.length > 0) {
+                        const tableRows = result.message.map(d => {
+                            return `
                     <tr>
                         <td>${d.bale_id || ""}</td>
                         <td>${d.item_grade || ""}</td>
@@ -50,9 +50,9 @@ frm.add_custom_button(__('Day Close'), async function () {
                         <td>${d.weight || ""}</td>
                     </tr>
                 `;
-            }).join("");
+                        }).join("");
 
-            const tableHtml = `
+                        const tableHtml = `
                 <table class="table table-bordered" style="width:100%">
                     <thead style="color: rgb(255, 255, 255); background-color:rgb(33, 82, 206); font-weight: bold;">
                         <tr>
@@ -68,33 +68,33 @@ frm.add_custom_button(__('Day Close'), async function () {
                 </table>
             `;
 
-            frappe.msgprint({
-                title: __("Bales Not Dispatched Yet!"),
-                indicator: "orange",
-                message: tableHtml
-            });
+                        frappe.msgprint({
+                            title: __("Bales Not Dispatched Yet!"),
+                            indicator: "orange",
+                            message: tableHtml
+                        });
 
-            return; // stop execution if mismatches found
+                        return; // stop execution if mismatches found
+                    }
+
+                    // No mismatches, proceed with day close
+                    const now = frappe.datetime.now_datetime();
+                    frm.set_value('day_close_time', now);
+                    // frm.set_value('status', "Closed"); // Uncomment if needed
+
+                    await frm.save();
+                    frappe.msgprint(__('Day closed at: ') + now);
+                    frm.reload_doc();
+
+                } catch (err) {
+                    frappe.msgprint(__('Error checking GTN and grade differences.'));
+                    console.error(err);
+                }
+            }, __('Actions'));
+
         }
 
-        // No mismatches, proceed with day close
-        const now = frappe.datetime.now_datetime();
-        frm.set_value('day_close_time', now);
-        // frm.set_value('status', "Closed"); // Uncomment if needed
-
-        await frm.save();
-        frappe.msgprint(__('Day closed at: ') + now);
-        frm.reload_doc();
-
-    } catch (err) {
-        frappe.msgprint(__('Error checking GTN and grade differences.'));
-        console.error(err);
-    }
-}, __('Actions'));
-
-        }
-
-	},
+    },
     date: function (frm) {
         frm.events.set_due_date_min(frm);
 
@@ -106,10 +106,10 @@ frm.add_custom_button(__('Day Close'), async function () {
                 message: __('Selected date ({0}) is not today ({1}).', [frm.doc.date, today]),
                 indicator: 'orange'
             });
-        }        
-    },    
-    onload: function(frm) {
-        if(frm.is_new()) {
+        }
+    },
+    onload: function (frm) {
+        if (frm.is_new()) {
             frm.events.set_due_date_min(frm);
             frappe.call({
                 method: 'frappe.client.get',
@@ -117,7 +117,7 @@ frm.add_custom_button(__('Day Close'), async function () {
                     doctype: 'Leaf Procurement Settings',
                     name: 'Leaf Procurement Settings'
                 },
-                callback: function(r) {
+                callback: function (r) {
                     if (r.message) {
                         frm.set_value('company', r.message.company_name);
                         frm.set_value('location_warehouse', r.message.location_warehouse);
@@ -126,5 +126,5 @@ frm.add_custom_button(__('Day Close'), async function () {
                 }
             });
         }
-    }    
+    }
 });

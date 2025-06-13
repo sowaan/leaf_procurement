@@ -3,6 +3,7 @@
 let suppress_focus = false;
 let is_grade_popup_open = false;
 let is_rendering_main_pending_bales = false;
+
 function open_grade_selector_popup(callback) {
     let selected_grade = null;
     let selected_sub_grade = null;
@@ -113,7 +114,33 @@ function open_grade_selector_popup(callback) {
     render_grade_buttons();
 }
 
-
+function update_grade_box(frm)
+{
+        //if (frm.doc.supplier_grower && frm.doc.item_grade && frm.doc.item_sub_grade) {
+            let html = `
+                <div style="
+                    background-color: #f0f8ff;
+                    padding: 20px;
+                    border-radius: 10px;
+                    text-align: center;
+                    font-family: sans-serif;
+                ">
+                    <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">
+                        ${frm.doc.supplier_grower}
+                    </div>
+                    <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
+                        Grade: ${frm.doc.item_grade}
+                    </div>
+                    <div style="font-size: 18px; margin-top: 5px; color: #8e44ad;">
+                        Sub-grade: ${frm.doc.item_sub_grade}
+                    </div>
+                    <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
+                        Price: ${frm.doc.price}
+                    </div>          
+                    </div>
+            `;
+            frm.fields_dict.grade_list.$wrapper.html(html);    
+}
 async function validate_bale_data(frm) {
     const values = frm.doc;
     const weight = values.bale_weight;
@@ -157,6 +184,23 @@ async function validate_bale_data(frm) {
 
 
 frappe.ui.form.on("Bale Purchase", {
+    on_submit: function(frm) {
+        frappe.msgprint({
+            title: __('Success'),
+            message: __('Record submitted successfully.'),
+            indicator: 'green'
+        });
+
+        // Use frappe.new_doc in a safe callback
+        setTimeout(() => {
+            if (frm && frm.doc && frm.doc.doctype === 'Bale Purchase') {
+                frappe.new_doc('Bale Purchase');
+            }
+        }, 1000); // Wait 1 second
+            
+    },    
+    
+
     save_weight: async function (frm) {
         // const result = await validate_bale_data(frm);
         // if (!result.valid) {
@@ -170,6 +214,7 @@ frappe.ui.form.on("Bale Purchase", {
         //render_main_pending_bales_list(frm);
     },
     validate: async function (frm) {
+        if(!frm.doc.bale_barcode) return;
 
         const result = await validate_bale_data(frm);
         if (!result.valid) {
@@ -346,8 +391,8 @@ frappe.ui.form.on("Bale Purchase", {
 
             //const message_label = d.fields_dict.p_message_label.$wrapper.find('#message-label');
 const message_label = frm.fields_dict.message_label.$wrapper;
-console.log('here...');
-console.log('check', pending_barcodes.length);
+// console.log('here...');
+// console.log('check', pending_barcodes.length);
             if (pending_barcodes.length == 2) {
                 message_label.text('⚠️ The next bale is the last one for this lot!');
             } else {
@@ -464,6 +509,28 @@ console.log('check', pending_barcodes.length);
             if (frm.doc.bale_registration_code) {
                 if (!is_grade_popup_open) await proceedWithBarcodeValidationAndGrade(frm, barcode);
             }
+            else{
+               const barcode = frm.doc.bale_barcode;
+
+    
+            frappe.call({
+                method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_bale_registration_code_by_barcode',
+                args: { barcode: barcode },
+                callback: async function (r) {
+                    if (r.message) {
+                        const registration_code = r.message;
+
+                        frm.set_value('bale_registration_code', registration_code);
+
+                        setTimeout(() => {
+                            proceedWithBarcodeValidationAndGrade(frm, barcode);
+                        }, 300)
+                    }
+                }
+            });
+            
+                            
+            }
         }
 
     },
@@ -477,12 +544,18 @@ console.log('check', pending_barcodes.length);
         hide_grid_controls(frm);
     
         load_bale_barcodes(frm);
+
+        //update_grade_box(frm);
+        // } else {
+        //     frm.fields_dict.grade_list.$wrapper.html(`<p style="color:gray;">Grade details not available</p>`);
+        // }
                 //load_bale_barcodes(frm);
     },
     date: function (frm) {
         validate_day_status(frm);
     },
     onload: function (frm) {
+        frm.page.sidebar.toggle(false);
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['detail_table'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
@@ -571,9 +644,9 @@ async function proceedWithBarcodeValidationAndGrade(frm, barcode) {
 
         if (r.message !== undefined) {
             frm.set_value("price", r.message);
-            // setTimeout(() => {
-            //     update_price_grade_labels(frm, grade, sub_grade, r.message);
-            // }, 100);
+            setTimeout(() => {
+                update_grade_box(frm);
+            }, 100);
         }
         is_grade_popup_open = false;
 
@@ -643,13 +716,17 @@ frappe.ui.form.on("Bale Purchase Detail", {
         }
     },
     bale_barcode: function (frm, cdt, cdn) {
+        console.log('hhhhh....');
         const row = locals[cdt][cdn];
         const valid_barcodes = frm.bale_registration_barcodes || [];
 
+ 
         if (!valid_barcodes.includes(row.bale_barcode)) {
             frappe.msgprint(__('Invalid Bale Barcode: {0}', [row.bale_barcode]));
             frappe.model.set_value(cdt, cdn, 'bale_barcode', '');
         }
+
+
     },
     // bale_barcode(frm, cdt, cdn) {
     //     update_bale_counter(frm);

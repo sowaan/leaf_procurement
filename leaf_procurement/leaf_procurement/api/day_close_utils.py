@@ -12,6 +12,9 @@ def check_gtn_and_grade_difference(date):
         pluck="bale_barcode"
     )
 
+    if not bale_ids_registered:
+        return  mismatches# or return None / {} / [] depending on your function
+    
     # Step 2: Get bale IDs from submitted GTNs
     bale_ids_with_gtn = frappe.db.sql("""
         SELECT gd.bale_barcode

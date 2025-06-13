@@ -170,7 +170,7 @@ def get_processed_bale_barcodes(parent_name):
     return frappe.db.get_all(
         "Bale Weight Detail",  # child table name
         filters={"parent": parent_name},
-        fields=["bale_barcode"]
+        fields=["bale_barcode", "weight"]
     )
 
 
