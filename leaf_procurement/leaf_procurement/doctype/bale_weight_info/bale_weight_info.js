@@ -469,6 +469,7 @@ frappe.ui.form.on("Bale Weight Info", {
     },
     validate: async function (frm) {
 
+
         if (!frm.doc.scan_barcode) return;
         const result = await validate_bale_data(frm);
         if (!result.valid) {
@@ -608,9 +609,74 @@ frappe.ui.form.on("Bale Weight Info", {
     },
     refresh: function (frm) {
         if (frm.doc.docstatus === 1) {
+            $('[data-original-title="Print"]').hide();
             frm.fields_dict['detail_table'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
             );
+            if (!frm.doc.stationery) {
+                frm.add_custom_button(__('Purchase Print'), async () => {
+                    const { value } = await frappe.prompt([
+                        {
+                            fieldname: 'stationery',
+                            label: 'Stationery',
+                            fieldtype: 'Data',
+                            reqd: 1
+                        }
+                    ],
+                        (values) => {
+                            // Save stationery to the current doc or linked doc
+                            frappe.call({
+                                method: 'frappe.client.set_value',
+                                args: {
+                                    doctype: frm.doc.doctype,
+                                    name: frm.doc.name,
+                                    fieldname: {
+                                        'stationery': values.stationery
+                                    }
+                                },
+                                callback: function (response) {
+                                    // After saving, open print view
+                                    const docname = frm.doc.purchase_invoice; // or hardcode if needed
+                                    const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
+                                    window.open(route, '_blank');
+                                }
+                            });
+                        },
+                        __('Enter Stationery'), __('Save'));
+                });
+            }
+            if (frm.doc.stationery && !frm.doc.re_print) {
+                frm.add_custom_button(__('Re-Print'), async () => {
+                    const { value } = await frappe.prompt([
+                        {
+                            fieldname: 'stationery',
+                            label: 'Stationery',
+                            fieldtype: 'Data',
+                            reqd: 1
+                        }
+                    ],
+                        (values) => {
+                            frappe.call({
+                                method: 'frappe.client.set_value',
+                                args: {
+                                    doctype: frm.doc.doctype,
+                                    name: frm.doc.name,
+                                    fieldname: {
+                                        'stationery': values.stationery,
+                                        're_print': 1
+                                    }
+                                },
+                                callback: function (response) {
+                                    // After saving, open print view
+                                    const docname = frm.doc.purchase_invoice; // or hardcode if needed
+                                    const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
+                                    window.open(route, '_blank');
+                                }
+                            });
+                        },
+                        __('Enter Stationery'), __('Save'));
+                });
+            }
         }
         load_bale_barcodes(frm);
         // frm.set_value('scan_barcode', '');

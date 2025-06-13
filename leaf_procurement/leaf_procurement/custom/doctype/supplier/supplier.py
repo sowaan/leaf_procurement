@@ -11,6 +11,18 @@ def normalize_nic(nic):
 
 def validate_unique_nic(doc, method):
     normalized_nic = normalize_nic(doc.custom_nic_number)
+
+    # Auto-format if it's 13 digits
+    cnic = None
+    if len(normalized_nic) == 13:
+        cnic = f"{normalized_nic[:5]}-{normalized_nic[5:12]}-{normalized_nic[12]}"
+        doc.custom_nic_number = cnic
+
+    # Validate formatted CNIC
+    cnic_regex = r'^\d{5}-\d{7}-\d{1}$'
+    if cnic and not re.match(cnic_regex, cnic):
+        frappe.throw(_("CNIC must be in the format xxxxx-xxxxxxx-x"))
+
     if len(normalized_nic) != 13:
         frappe.throw(
             _("NIC must be 13 digits. Current value: {0}").format(doc.custom_nic_number),

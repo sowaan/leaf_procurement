@@ -22,6 +22,9 @@ class CustomSupplier(Supplier):
         self.name = make_autoname(prefix + ".######")
                   
     def create_primary_contact(self):
+        if self.custom_quota_allowed is None or self.custom_quota_allowed <= 0:
+            frappe.throw(_("Quota allowed must be greater than 0."), title=_("Invalid Quota Allowed"))
+
         if not self.mobile_no:
             frappe.throw(_("Mobile number is required."), title=_("Missing Mobile Number"))
         from erpnext.selling.doctype.customer.customer import make_contact # type: ignore
