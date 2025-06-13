@@ -92,12 +92,13 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "Draft\nOpened\nClosed",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-13 10:36:36.602086",
+ "modified": "2025-06-13 12:27:25.921890",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",
