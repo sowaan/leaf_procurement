@@ -15,7 +15,8 @@
   "location_warehouse",
   "due_date",
   "bank",
-  "day_close_time"
+  "day_close_time",
+  "status"
  ],
  "fields": [
   {
@@ -83,12 +84,20 @@
    "hidden": 1,
    "label": "Allow Day Open On Sunday",
    "read_only": 1
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nOpen\nClosed",
+   "read_only": 1
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-02 22:51:23.172668",
+ "modified": "2025-06-13 10:33:09.431257",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",
@@ -108,7 +117,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

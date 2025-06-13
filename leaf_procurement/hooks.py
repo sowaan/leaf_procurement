@@ -39,7 +39,15 @@ fixtures = [
                     "Purchase Invoice-naming_series-options",
                     "Supplier-main-quick_entry",
                     "Supplier-mobile_no-reqd",
-                    "Supplier-main-search_fields"
+                    "Supplier-main-search_fields",
+                    "Supplier-main-field_order",
+					"Supplier-main-fields",
+                    "Supplier-naming_series-hidden",
+                    "Supplier-supplier_group-hidden",
+                    "Supplier-supplier_type-hidden",
+                    "Supplier-is_transporter-hidden",
+                    "Supplier-default_currency-hidden",
+                    "Supplier-default_currency-default"
                     )
 			]
 		]
