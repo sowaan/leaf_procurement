@@ -21,7 +21,7 @@ frappe.ui.form.on("Day Setup", {
             frm.add_custom_button(__('Day Open'), function () {
                 const now = frappe.datetime.now_datetime();
                 frm.set_value('day_open_time', now);
-                //frm.set_value('status', "Opened");
+                frm.set_value('status', "Opened");
 
                 frm.save().then(() => {
                     frappe.msgprint(__('Day opened at: ') + now);
@@ -80,7 +80,7 @@ frappe.ui.form.on("Day Setup", {
                     // No mismatches, proceed with day close
                     const now = frappe.datetime.now_datetime();
                     frm.set_value('day_close_time', now);
-                    // frm.set_value('status', "Closed"); // Uncomment if needed
+                    frm.set_value('status', "Closed"); // Uncomment if needed
 
                     await frm.save();
                     frappe.msgprint(__('Day closed at: ') + now);
