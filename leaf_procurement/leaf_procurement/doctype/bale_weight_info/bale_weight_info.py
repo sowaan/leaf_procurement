@@ -84,6 +84,7 @@ class BaleWeightInfo(Document):
 
 		self.make_purchase_invoice()
 
+
 	
 	def make_purchase_invoice(self):
 		from leaf_procurement.leaf_procurement.api.bale_weight_utils import create_purchase_invoice
@@ -118,6 +119,7 @@ def match_grade_with_bale_purchase(barcode):
 	bale_purchase_detail = frappe.db.get_value('Bale Purchase Detail', {'bale_barcode': barcode}, ['bale_barcode', 'item_grade', 'item_sub_grade'], as_dict=1)
 
 	return bale_purchase_detail
+
 
 @frappe.whitelist()
 def quota_weight(location):

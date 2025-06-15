@@ -10,21 +10,23 @@
   "custom_is_sync",
   "column_break_gtqf",
   "location_short_code",
-  "date",
+  "grower_name",
   "company",
   "check_validations",
   "column_break_mesd",
   "item",
-  "lot_size",
+  "date",
   "column_break_jyzh",
-  "remaining_bales",
+  "lot_size",
   "bales_in_lot",
+  "remaining_bales",
   "remaining_weight",
   "section_break_riwp",
   "scan_barcode",
   "column_break_boca",
   "barcode_length",
   "column_break_ipfc",
+  "lot_counter",
   "column_break_qrme",
   "section_for_detail",
   "bale_registration_detail",
@@ -76,6 +78,7 @@
   {
    "fieldname": "remaining_bales",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Remaining Bales"
   },
   {
@@ -179,12 +182,23 @@
   {
    "fieldname": "column_break_qrme",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "supplier_grower.supplier_name",
+   "fieldname": "grower_name",
+   "fieldtype": "Read Only",
+   "label": "Grower Name"
+  },
+  {
+   "fieldname": "lot_counter",
+   "fieldtype": "HTML",
+   "label": "Lot Counter"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-12 19:32:54.597819",
+ "modified": "2025-06-15 11:53:53.979186",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

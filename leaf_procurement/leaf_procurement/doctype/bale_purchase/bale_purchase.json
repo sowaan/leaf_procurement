@@ -50,7 +50,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "bale_registration_code.supplier_grower",
+   "fetch_from": "bale_registration_code.grower_name",
    "fieldname": "supplier_grower",
    "fieldtype": "Read Only",
    "label": "Supplier (Grower)"
@@ -214,7 +214,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-12 21:14:47.569665",
+ "modified": "2025-06-15 12:25:21.355637",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Purchase",

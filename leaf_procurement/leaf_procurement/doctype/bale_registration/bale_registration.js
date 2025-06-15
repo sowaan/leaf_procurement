@@ -78,7 +78,9 @@ frappe.ui.form.on("Bale Registration", {
         }
         
         if (!frm.is_new()) return;
-
+        if (frm.doc.date) {
+            update_lot_counter(frm);
+        }
         //validate_day_status(frm);        
         frappe.call({
             method: 'frappe.client.get',
@@ -104,6 +106,9 @@ frappe.ui.form.on("Bale Registration", {
     },
     date: function (frm) {
         validate_day_status(frm);
+        if (frm.doc.date) {
+            update_lot_counter(frm);
+        }
     },
     supplier_grower: function (frm) {
         if (frm.doc.supplier_grower) {
@@ -134,7 +139,38 @@ frappe.ui.form.on("Bale Registration", {
 
 });
 
-
+function update_lot_counter(frm) {
+    frappe.call({
+        method: "frappe.client.get_count",
+        args: {
+            doctype: "Bale Registration",
+            filters: {
+                date: frm.doc.date
+            }
+        },
+        callback: function(r) {
+            if (r.message !== undefined) {
+                const count = r.message+1;
+                const html = `
+                    <div style="
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: #1F7C83;
+                        background-color: #E6F9FB;
+                        padding: 20px;
+                        text-align: center;
+                        border-radius: 10px;
+                        box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+                    ">
+                        Lot No: ${count}
+                    </div>
+                `;
+                frm.set_df_property('lot_counter', 'options', html);
+                frm.refresh_field('lot_counter');
+            }
+        }
+    });
+}
 frappe.ui.form.on('Bale Registration Detail', {
     delete_row(frm, cdt, cdn) {
         frappe.model.clear_doc(cdt, cdn);  // delete the row

@@ -12,6 +12,7 @@
   "rejected_item_sub_grade",
   "stationery",
   "re_print",
+  "grower_name",
   "column_break_zlih",
   "location_short_code",
   "registration_date",
@@ -41,6 +42,7 @@
   "column_break_bunv",
   "item_grade",
   "bale_weight",
+  "is_bale_rejected",
   "column_break_uzxd",
   "item_sub_grade",
   "price",
@@ -324,12 +326,26 @@
    "hidden": 1,
    "label": "Re Print",
    "read_only": 1
+  },
+  {
+   "fetch_from": "supplier_grower.supplier_name",
+   "fieldname": "grower_name",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Grower Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_bale_rejected",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Bale Rejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-13 18:49:59.615787",
+ "modified": "2025-06-15 15:42:52.178294",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

@@ -220,7 +220,37 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
         "page_len": int(page_len)
     })
 
+@frappe.whitelist()
+def get_purchase_detail(barcode):
+    purchase_detail = frappe.get_all(
+        'Bale Purchase Detail',
+        filters={ 'bale_barcode': barcode },
+        fields=['item_grade', 'item_sub_grade'],
+        limit=1
+    )
 
+    if not purchase_detail:
+        return { "found": False }
+
+    item_grade = purchase_detail[0].get('item_grade')
+    item_sub_grade = purchase_detail[0].get('item_sub_grade')
+
+    is_rejected = False
+
+    if item_grade:
+        grade_doc = frappe.get_value(
+            'Item Grade',
+            item_grade,
+            'rejected_grade'
+        )
+        is_rejected = bool(grade_doc)
+
+    return {
+        "found": True,
+        "item_grade": item_grade,
+        "item_sub_grade": item_sub_grade,
+        "is_rejected": is_rejected
+    }
 
 @frappe.whitelist()
 def get_registered_bale_count(bale_registration_code):

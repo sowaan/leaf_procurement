@@ -41,6 +41,12 @@ async function proceedWithBarcodeValidationAndGradeMainPage(frm, barcode) {
         frm.set_value('item_grade', grade);
         frm.set_value('item_sub_grade', sub_grade);
         frm.set_value('reclassification_grade', reclassification_grade);
+    frappe.db.get_value('Item Grade', grade, 'rejected_grade')
+        .then(r => {
+            const is_rejected = r.message && r.message.rejected_grade;
+            frm.set_value('is_bale_rejected', is_rejected ? 1 : 0);
+        });
+
         frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
             args: {
@@ -68,6 +74,7 @@ async function proceedWithBarcodeValidationAndGradeMainPage(frm, barcode) {
 async function render_main_pending_bales_list(frm) {
 
     if (is_rendering_main_pending_bales) return;
+
     is_rendering_main_pending_bales = true;
     const container = frm.fields_dict.bale_list.$wrapper;
     container.empty();
@@ -96,7 +103,7 @@ async function render_main_pending_bales_list(frm) {
             const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcode_values.includes(b));
             const message_label = frm.fields_dict.message_label.$wrapper;
             message_label.text('');
-            if (pending_barcodes.length === 2) {
+            if (pending_barcodes.length == 1) {
                 message_label.text('⚠️ The next bale is the last one for this lot!');
             }
 
@@ -347,7 +354,7 @@ function update_grade_box(frm) {
                     font-family: sans-serif;
                 ">
                     <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">
-                        ${frm.doc.supplier_grower}
+                        ${frm.doc.grower_name}
                     </div>
                     <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
                         Grade: ${frm.doc.item_grade} / ${frm.doc.item_sub_grade}
@@ -477,11 +484,17 @@ frappe.ui.form.on("Bale Weight Info", {
             return;
         }
         const values = frm.doc;
+        let temp_weight = 0;
+
+        if(!values.is_bale_rejected)
+            temp_weight = values.bale_weight;
+
+       // console.log('is rejected:', is_rejected_grade);
         frm.doc.detail_table.push({
             bale_barcode: values.scan_barcode,
             item_grade: values.item_grade,
             item_sub_grade: values.item_sub_grade,
-            weight: values.bale_weight,
+            weight: temp_weight,
             rate: values.price,
             reclassification_grade: values.reclassification_grade
         });
@@ -603,9 +616,10 @@ frappe.ui.form.on("Bale Weight Info", {
     }
     ,
 
-    bale_registration_code: function (frm) {
+    bale_registration_code: async function (frm) {
         validate_day_status(frm);
         load_bale_barcodes(frm);
+        await check_rejected_purchases(frm);
     },
     refresh: function (frm) {
         if (frm.doc.docstatus === 1) {
@@ -1145,7 +1159,10 @@ function open_grade_selector_popup(barcode, callback) {
                         `);
                         $btn.on('click', function () {
                             if (grade.rejected_grade)
+                               { 
                                 is_rejected_grade = true;
+                                selected_reclassification_grade='';
+                               }
                             else
                                 is_rejected_grade = false;
 
@@ -1251,7 +1268,9 @@ function open_grade_selector_popup(barcode, callback) {
                         ">${grade.name}</button>
                     `);
                         $btn.on('click', function () {
-                            selected_reclassification_grade = grade.name;
+                            if(!is_rejected_grade) 
+                                selected_reclassification_grade = grade.name;
+
                             $('.reclassification-grade-btn').removeClass('btn-success').addClass('btn-primary');
                             $(this).removeClass('btn-primary').addClass('btn-success');
                             update_selected_summary();
@@ -1334,7 +1353,49 @@ function check_day_open_status(frm) {
     });
 }
 
+async function check_rejected_purchases(frm) {
+    console.log('here i am now...');
+    if (!frm.doc.bale_registration_code) return;
+    const registration_code = frm.doc.bale_registration_code;
+    try {
+        const reg_doc = await frappe.db.get_doc('Bale Registration', registration_code);
+
+        const registered_barcodes = (reg_doc.bale_registration_detail || []).map(d => d.bale_barcode);
+        //console.log("Registered Barcodes:", registered_barcodes);
+
+        for (const barcode of registered_barcodes) {
+
+            const res = await frappe.call({
+                method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_purchase_detail',
+                args: { barcode }
+            });
+
+            if (!res.message || !res.message.is_rejected) continue;
+
+            const exists = frm.doc.detail_table.some(row => row.bale_barcode === barcode);
+            if (exists) continue;
+
+const child = frm.add_child('detail_table', {
+    bale_barcode: barcode,
+    item_grade: res.message.item_grade,
+    item_sub_grade: res.message.item_sub_grade,
+    weight: 0,
+    rate: 0,
+    reclassification_grade: ''
+});
+frm.refresh_field('detail_table');
+           // frm.save();
+
+        }
+
+    } catch (e) {
+        console.error("Failed to load Bale Registration document:", e);
+        frappe.msgprint("Error fetching Bale Registration document.");
+    }
+}
+
 function load_bale_barcodes(frm) {
+
     is_rendering_main_pending_bales = false;
     setTimeout(() => {
         render_main_pending_bales_list(frm);

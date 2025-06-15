@@ -4,9 +4,9 @@
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
 from frappe import _, ValidationError 	#type: ignore
-from frappe.model.naming import make_autoname
-from frappe.utils import flt, nowdate
-from erpnext.accounts.utils import get_fiscal_year
+from frappe.model.naming import make_autoname # type: ignore
+from frappe.utils import flt, nowdate # type: ignore
+from erpnext.accounts.utils import get_fiscal_year # type: ignore
 from datetime import datetime
 
 
