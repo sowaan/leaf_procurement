@@ -75,21 +75,25 @@ import frappe  # type: ignore
 def get_invoice_item_by_barcode(itemcode, barcode):
     # Fetch the first Purchase Invoice Item with matching item and batch
     invoice_item = frappe.db.sql("""
-        SELECT
-            pii.name,
-            pii.qty,
-            pii.rate,
-            pii.amount,
-            pii.batch_no,
-            pii.parent AS invoice_no,
-            pi.supplier,
-            pi.posting_date,
-            pii.lot_number,
-            pii.grade,
-            pii.sub_grade
-        FROM `tabPurchase Invoice Item` pii
-        INNER JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent
+SELECT
+    pii.name,
+    pii.qty,
+    pii.rate,
+    pii.amount,
+    pii.batch_no,
+    pii.parent AS invoice_no,
+    pi.supplier,
+    pi.posting_date,
+    pii.lot_number,
+    pii.grade,
+    pii.sub_grade,
+    bwi.name AS bale_weight_info_name,
+    bwi.stationery
+FROM `tabPurchase Invoice Item` pii
+INNER JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent
+LEFT JOIN `tabBale Weight Info` bwi ON bwi.purchase_invoice = pi.name
         WHERE pii.item_code = %s and qty>0 AND pii.batch_no = %s AND pi.docstatus = 1
+            AND bwi.stationery is not null
         ORDER BY pii.creation ASC
         LIMIT 1
     """, (itemcode, barcode), as_dict=True)

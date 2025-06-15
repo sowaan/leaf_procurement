@@ -83,6 +83,7 @@ class BaleWeightInfo(Document):
 			raise ValidationError
 
 		self.make_purchase_invoice()
+		self.reload()
 
 
 	

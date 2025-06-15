@@ -1,7 +1,79 @@
 // Copyright (c) 2025, Sowaan and contributors
 // For license information, please see license.txt
+function update_gtn_counter(frm) {
+    frappe.call({
+        method: "frappe.client.get_count",
+        args: {
+            doctype: "Goods Transfer Note",
+            filters: {
+                date: frm.doc.date
+            }
+        },
+        callback: function(r) {
+            if (r.message !== undefined) {
+                const count = r.message+1;
+                const html = `
+                    <div style="
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: #1F7C83;
+                        background-color: #E6F9FB;
+                        padding: 20px;
+                        text-align: center;
+                        border-radius: 10px;
+                        box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+                    ">
+                        GTN No: ${count}
+                    </div>
+                `;
+                frm.set_df_property('gtn_counter', 'options', html);
+                frm.refresh_field('gtn_counter');
+            }
+        }
+    });
+}
+
+async function get_latest_open_day() {
+    return new Promise((resolve, reject) => {
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Day Setup",
+                filters: {
+                    day_open_time: ["is", "set"],
+                    day_close_time: ["is", "not set"]
+                },
+                fields: ["name", "date"],
+                order_by: "date desc",
+                limit_page_length: 1
+            },
+            callback: function (r) {
+                if (r.message && r.message.length > 0) {
+                    resolve(r.message[0].date);
+                } else {
+                    resolve(null);  // No open day
+                }
+            },
+            error: function (err) {
+                reject(err);
+            }
+        });
+    });
+}
 
 frappe.ui.form.on("Goods Transfer Note", {
+    validate: async function (frm)
+    {
+        const open_day_date = await get_latest_open_day();
+        if (!open_day_date) {
+            frappe.throw(__("⚠️ You cannot save because the day is not opened."));
+        }
+    
+        
+    },
+    date:function (frm){
+        update_gtn_counter(frm);
+    },
     refresh(frm) {
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
@@ -64,13 +136,25 @@ frappe.ui.form.on("Goods Transfer Note", {
             }
         });
     },
-    onload: function (frm) {
+    onload: async function (frm) {
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
             );
         }
         if (!frm.is_new()) return;
+
+        const open_day_date = await get_latest_open_day();
+        if (open_day_date) {
+            frm.set_value('date', open_day_date);
+        } else {
+            frappe.show_alert({
+                message: __("⚠️ No open day found."),
+                indicator: 'red'
+            });
+        }
+
+        update_gtn_counter(frm);
 
         frappe.call({
             method: 'frappe.client.get',
@@ -87,6 +171,8 @@ frappe.ui.form.on("Goods Transfer Note", {
                 }
             }
         });
+
+
 
     },
     company(frm) {

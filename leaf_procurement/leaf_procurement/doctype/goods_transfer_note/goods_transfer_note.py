@@ -3,15 +3,39 @@
 
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
-
+from frappe import _ # type: ignore
 
 
 class GoodsTransferNote(Document):
-	def on_submit(self):
-		create_stock_entry_from_gtn(self)
+    def on_submit(self):
+        create_stock_entry_from_gtn(self)
     # def on_update(self):
     #     create_stock_entry_from_gtn(self)
-        
+
+    def validate(self):
+        ensure_unique_tsa_per_warehouse(self)
+
+def ensure_unique_tsa_per_warehouse(self):
+    if not self.tsa_number or not self.location_warehouse:
+        return
+
+    duplicate = frappe.db.exists(
+        "Goods Transfer Note",
+        {
+            "tsa_number": self.tsa_number,
+            "location_warehouse": self.location_warehouse,
+            "name": ["!=", self.name]
+        }
+    )
+
+    if duplicate:
+        frappe.throw(
+            _("TSA Number <b>{0}</b> is already used in warehouse <b>{1}</b>. TSA Number must be unique per warehouse.").format(
+                self.tsa_number, self.location_warehouse
+            ),
+            title=_("Duplicate TSA Number")
+        )
+
 def create_stock_entry_from_gtn(gtn_doc):
     if not gtn_doc.location_warehouse or not gtn_doc.receiving_location:
         frappe.throw("Dispatch and Receiving Warehouse must be set.")

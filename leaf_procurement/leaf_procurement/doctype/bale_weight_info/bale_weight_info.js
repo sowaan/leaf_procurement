@@ -41,11 +41,11 @@ async function proceedWithBarcodeValidationAndGradeMainPage(frm, barcode) {
         frm.set_value('item_grade', grade);
         frm.set_value('item_sub_grade', sub_grade);
         frm.set_value('reclassification_grade', reclassification_grade);
-    frappe.db.get_value('Item Grade', grade, 'rejected_grade')
-        .then(r => {
-            const is_rejected = r.message && r.message.rejected_grade;
-            frm.set_value('is_bale_rejected', is_rejected ? 1 : 0);
-        });
+        frappe.db.get_value('Item Grade', grade, 'rejected_grade')
+            .then(r => {
+                const is_rejected = r.message && r.message.rejected_grade;
+                frm.set_value('is_bale_rejected', is_rejected ? 1 : 0);
+            });
 
         frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.item_grade_price.item_grade_price.get_item_grade_price",
@@ -486,10 +486,10 @@ frappe.ui.form.on("Bale Weight Info", {
         const values = frm.doc;
         let temp_weight = 0;
 
-        if(!values.is_bale_rejected)
+        if (!values.is_bale_rejected)
             temp_weight = values.bale_weight;
 
-       // console.log('is rejected:', is_rejected_grade);
+        // console.log('is rejected:', is_rejected_grade);
         frm.doc.detail_table.push({
             bale_barcode: values.scan_barcode,
             item_grade: values.item_grade,
@@ -622,13 +622,15 @@ frappe.ui.form.on("Bale Weight Info", {
         await check_rejected_purchases(frm);
     },
     refresh: function (frm) {
+
         if (frm.doc.docstatus === 1) {
             $('[data-original-title="Print"]').hide();
             frm.fields_dict['detail_table'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
             );
+          
             if (!frm.doc.stationery) {
-                frm.add_custom_button(__('Purchase Print'), async () => {
+                frm.add_custom_button(__('Generate Voucher'), async () => {
                     const { value } = await frappe.prompt([
                         {
                             fieldname: 'stationery',
@@ -638,6 +640,7 @@ frappe.ui.form.on("Bale Weight Info", {
                         }
                     ],
                         (values) => {
+                            console.log('values:  ',values);
                             // Save stationery to the current doc or linked doc
                             frappe.call({
                                 method: 'frappe.client.set_value',
@@ -658,8 +661,15 @@ frappe.ui.form.on("Bale Weight Info", {
                         },
                         __('Enter Stationery'), __('Save'));
                 });
+                frm.set_df_property('re_print', 'hidden', 1); 
             }
-            if (frm.doc.stationery && !frm.doc.re_print) {
+            else if (!frm.doc.reprint_reason)
+            {
+                frm.set_df_property('re_print', 'hidden', 0); 
+            }
+            
+            if(frm.doc.stationery && frm.doc.re_print) {
+
                 frm.add_custom_button(__('Re-Print'), async () => {
                     const { value } = await frappe.prompt([
                         {
@@ -667,6 +677,12 @@ frappe.ui.form.on("Bale Weight Info", {
                             label: 'Stationery',
                             fieldtype: 'Data',
                             reqd: 1
+                        },
+                        {
+                             fieldname: 'reason',
+                            label: 'Reason',
+                            fieldtype: 'Small Text',
+                            reqd: 1                           
                         }
                     ],
                         (values) => {
@@ -677,7 +693,8 @@ frappe.ui.form.on("Bale Weight Info", {
                                     name: frm.doc.name,
                                     fieldname: {
                                         'stationery': values.stationery,
-                                        're_print': 1
+                                        're_print': 0,
+                                        'reprint_reason': values.reason
                                     }
                                 },
                                 callback: function (response) {
@@ -1158,11 +1175,10 @@ function open_grade_selector_popup(barcode, callback) {
                             ">${grade.name}</button>
                         `);
                         $btn.on('click', function () {
-                            if (grade.rejected_grade)
-                               { 
+                            if (grade.rejected_grade) {
                                 is_rejected_grade = true;
-                                selected_reclassification_grade='';
-                               }
+                                selected_reclassification_grade = '';
+                            }
                             else
                                 is_rejected_grade = false;
 
@@ -1268,7 +1284,7 @@ function open_grade_selector_popup(barcode, callback) {
                         ">${grade.name}</button>
                     `);
                         $btn.on('click', function () {
-                            if(!is_rejected_grade) 
+                            if (!is_rejected_grade)
                                 selected_reclassification_grade = grade.name;
 
                             $('.reclassification-grade-btn').removeClass('btn-success').addClass('btn-primary');
@@ -1375,16 +1391,16 @@ async function check_rejected_purchases(frm) {
             const exists = frm.doc.detail_table.some(row => row.bale_barcode === barcode);
             if (exists) continue;
 
-const child = frm.add_child('detail_table', {
-    bale_barcode: barcode,
-    item_grade: res.message.item_grade,
-    item_sub_grade: res.message.item_sub_grade,
-    weight: 0,
-    rate: 0,
-    reclassification_grade: ''
-});
-frm.refresh_field('detail_table');
-           // frm.save();
+            const child = frm.add_child('detail_table', {
+                bale_barcode: barcode,
+                item_grade: res.message.item_grade,
+                item_sub_grade: res.message.item_sub_grade,
+                weight: 0,
+                rate: 0,
+                reclassification_grade: ''
+            });
+            frm.refresh_field('detail_table');
+            // frm.save();
 
         }
 
