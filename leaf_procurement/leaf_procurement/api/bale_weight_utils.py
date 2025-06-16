@@ -59,8 +59,8 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     transport_charges_rate = warehouse_info.custom_transport_charges
     transport_charges_item = doc.transport_charges_item
 
-    rejected_grade = doc.rejected_item_grade
-    rejected_sub_grade = doc.rejected_item_sub_grade
+    # rejected_grade = doc.rejected_item_grade
+    # rejected_sub_grade = doc.rejected_item_sub_grade
 
     if not transport_charges_item:
         frappe.throw(f"Transport Charges Item Code in not defined at Settings Screen")
@@ -78,8 +78,8 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     invoice.due_date = day_setup.due_date
 
     item_weight = 0
-    item_grade = rejected_grade
-    item_sub_grade = rejected_sub_grade
+    # item_grade = rejected_grade
+    # item_sub_grade = rejected_sub_grade
     item_rate = 0
 
     for detail in doc.detail_table:
@@ -99,8 +99,16 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
                 _("No matching purchase detail found in Bale Purchase for item {0} and batch {1}")
                 .format(doc.item, detail.bale_barcode)
             )
-            
-        if detail.item_grade == rejected_grade or  detail.item_grade != purchase_detail.item_grade or detail.item_sub_grade != purchase_detail.item_sub_grade:
+        
+        grade_doc = frappe.get_value(
+            'Item Grade',
+            detail.item_grade,
+            'rejected_grade'
+        )
+
+        is_rejected = bool(grade_doc) 
+
+        if is_rejected:
             ensure_batch_exists(detail.bale_barcode, doc.item, 0)
             invoice.append("custom_rejected_items", {
                 "item_code": doc.item,
