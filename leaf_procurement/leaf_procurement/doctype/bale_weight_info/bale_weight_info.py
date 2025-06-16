@@ -92,7 +92,7 @@ class BaleWeightInfo(Document):
 	def update_status(self):
 		if self.docstatus == 2:
 			self.status = "Cancelled"
-		elif self.re_print == 1:
+		elif self.reprint_reason:
 			self.status = "Re-Printed"
 		elif self.stationery:
 			self.status = "Printed"

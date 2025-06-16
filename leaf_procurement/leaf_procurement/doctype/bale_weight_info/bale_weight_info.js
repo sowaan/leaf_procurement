@@ -648,7 +648,8 @@ frappe.ui.form.on("Bale Weight Info", {
                                     doctype: frm.doc.doctype,
                                     name: frm.doc.name,
                                     fieldname: {
-                                        'stationery': values.stationery
+                                        'stationery': values.stationery,
+                                        'status': 'Printed'
                                     }
                                 },
                                 callback: function (response) {
@@ -694,7 +695,8 @@ frappe.ui.form.on("Bale Weight Info", {
                                     fieldname: {
                                         'stationery': values.stationery,
                                         're_print': 0,
-                                        'reprint_reason': values.reason
+                                        'reprint_reason': values.reason,
+                                        'status': 'Re-Printed'
                                     }
                                 },
                                 callback: function (response) {
