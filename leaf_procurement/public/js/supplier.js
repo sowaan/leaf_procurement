@@ -19,7 +19,7 @@ frappe.ui.form.on('Supplier', {
         }
     },
     validate: function (frm) {
-        const cnic = frm.doc.custom_nic_number;
+        let cnic = frm.doc.custom_nic_number;
         const cnic_regex = /^\d{5}-\d{7}-\d{1}$/;
         if (cnic) {
             cnic = cnic.replace(/\D/g, '');
