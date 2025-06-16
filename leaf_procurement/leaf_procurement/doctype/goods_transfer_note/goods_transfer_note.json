@@ -16,8 +16,9 @@
   "location_warehouse",
   "transit_location",
   "driver_name",
-  "vehicle_number",
+  "driver_vehicle_number",
   "tsa_number",
+  "vehicle_number",
   "column_break_qkth",
   "default_item",
   "receiving_location",
@@ -31,6 +32,7 @@
   "column_break_qsdm",
   "barcode_length",
   "column_break_vomc",
+  "gtn_counter",
   "section_break_sgpc",
   "bale_registration_detail",
   "amended_from"
@@ -80,9 +82,8 @@
    "label": "Driver CNIC"
   },
   {
-   "fetch_from": "driver.custom_vehicle_plate_number",
    "fieldname": "vehicle_number",
-   "fieldtype": "Read Only",
+   "fieldtype": "Data",
    "label": "Vehicle Number"
   },
   {
@@ -111,7 +112,8 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Date",
+   "read_only": 1
   },
   {
    "fieldname": "transport_type",
@@ -130,8 +132,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "TSA Number",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "reverse_confirmation_mobile",
@@ -198,12 +199,22 @@
    "fieldname": "remarks",
    "fieldtype": "Data",
    "label": "Remarks"
+  },
+  {
+   "fetch_from": "driver.custom_vehicle_plate_number",
+   "fieldname": "driver_vehicle_number",
+   "fieldtype": "Read Only",
+   "label": "Driver Vehicle"
+  },
+  {
+   "fieldname": "gtn_counter",
+   "fieldtype": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-12 12:54:12.409350",
+ "modified": "2025-06-15 21:48:09.199290",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",

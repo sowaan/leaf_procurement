@@ -212,6 +212,12 @@ frappe.ui.form.on("Bale Purchase", {
 
     after_save: function (frm) {
         //render_main_pending_bales_list(frm);
+                setTimeout(() => {
+            const $input = frm.fields_dict.bale_barcode.$wrapper.find('input');
+            if ($input.length) {
+                $input.focus();
+            }
+        }, 100);
     },
     validate: async function (frm) {
         if(!frm.doc.bale_barcode) return;
@@ -574,6 +580,12 @@ const message_label = frm.fields_dict.message_label.$wrapper;
             };
         };
 
+        setTimeout(() => {
+            const $input = frm.fields_dict.bale_barcode.$wrapper.find('input');
+            if ($input.length) {
+                $input.focus();
+            }
+        }, 100);
         if (!frm.is_new) return;
         frm.set_query('bale_registration_code', function () {
             return {
@@ -894,7 +906,7 @@ async function render_main_pending_bales_list(frm) {
     const pending_barcodes = frm.bale_registration_barcodes.filter(b => !processed_barcodes.includes(b));
 
 const message_label = frm.fields_dict.message_label.$wrapper;
-    if (pending_barcodes.length === 2) {
+    if (pending_barcodes.length === 1) {
         message_label.text('⚠️ The next bale is the last one for this lot!');
     } else {
         message_label.text('');

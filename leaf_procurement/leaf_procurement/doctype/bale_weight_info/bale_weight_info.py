@@ -85,6 +85,8 @@ class BaleWeightInfo(Document):
 			raise ValidationError
 
 		self.make_purchase_invoice()
+		self.reload()
+
 
 	
 	def update_status(self):
@@ -131,6 +133,7 @@ def match_grade_with_bale_purchase(barcode):
 	bale_purchase_detail = frappe.db.get_value('Bale Purchase Detail', {'bale_barcode': barcode}, ['bale_barcode', 'item_grade', 'item_sub_grade'], as_dict=1)
 
 	return bale_purchase_detail
+
 
 @frappe.whitelist()
 def quota_weight(location):

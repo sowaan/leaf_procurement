@@ -78,13 +78,27 @@ frappe.ui.form.on("Day Setup", {
                     }
 
                     // No mismatches, proceed with day close
-                    const now = frappe.datetime.now_datetime();
-                    frm.set_value('day_close_time', now);
-                    frm.set_value('status', "Closed"); // Uncomment if needed
+                    frappe.confirm(
+                        __("Are you sure you want to close the day?"),
+                        async function () {
+                            const now = frappe.datetime.now_datetime();
+                            frm.set_value('day_close_time', now);
+                            frm.set_value('status', "Closed");
 
-                    await frm.save();
-                    frappe.msgprint(__('Day closed at: ') + now);
-                    frm.reload_doc();
+                            await frm.save();
+                            frappe.show_alert({
+                                message: __('Day has been closed.', now),
+                                indicator: 'green'
+                            });
+                            frm.reload_doc();
+                        },
+                        function () {
+                            frappe.show_alert({
+                                message: __('Day close cancelled.'),
+                                indicator: 'orange'
+                            });
+                        }
+                    );
 
                 } catch (err) {
                     frappe.msgprint(__('Error checking GTN and grade differences.'));

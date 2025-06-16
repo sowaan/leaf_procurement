@@ -4,6 +4,5 @@
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 
-
 class GoodsReceivingNote(Document):
 	pass
