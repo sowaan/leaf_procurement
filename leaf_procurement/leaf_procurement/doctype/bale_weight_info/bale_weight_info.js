@@ -671,7 +671,7 @@ frappe.ui.form.on("Bale Weight Info", {
             
             if(frm.doc.stationery && frm.doc.re_print) {
 
-                frm.add_custom_button(__('Re-Print'), async () => {
+                frm.add_custom_button(__('Reprint Voucher'), async () => {
                     const { value } = await frappe.prompt([
                         {
                             fieldname: 'stationery',
