@@ -1,109 +1,138 @@
 {
- "actions": [],
- "allow_rename": 1,
- "creation": "2025-05-09 13:10:36.367148",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "company_name",
-  "default_item",
-  "rejected_item_sub_grade",
-  "lot_size",
-  "allow_sunday_open",
-  "column_break_omrn",
-  "location_warehouse",
-  "rejected_item_grade",
-  "rejected_location_warehouse",
-  "transport_charges_item",
-  "barcode_length"
- ],
- "fields": [
-  {
-   "fieldname": "lot_size",
-   "fieldtype": "Int",
-   "label": "Lot Size"
-  },
-  {
-   "fieldname": "column_break_omrn",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "barcode_length",
-   "fieldtype": "Int",
-   "label": "Barcode Length"
-  },
-  {
-   "fieldname": "company_name",
-   "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company"
-  },
-  {
-   "fieldname": "location_warehouse",
-   "fieldtype": "Link",
-   "label": "Location (Warehouse)",
-   "options": "Warehouse"
-  },
-  {
-   "fieldname": "default_item",
-   "fieldtype": "Link",
-   "label": "Default Item",
-   "options": "Item"
-  },
-  {
-   "fieldname": "rejected_location_warehouse",
-   "fieldtype": "Link",
-   "label": "Rejected Location (Warehouse)",
-   "options": "Warehouse"
-  },
-  {
-   "fieldname": "rejected_item_grade",
-   "fieldtype": "Link",
-   "label": "Rejected Item Grade",
-   "options": "Item Grade"
-  },
-  {
-   "fieldname": "transport_charges_item",
-   "fieldtype": "Link",
-   "label": "Transport Charges Item",
-   "options": "Item"
-  },
-  {
-   "fieldname": "rejected_item_sub_grade",
-   "fieldtype": "Link",
-   "label": "Rejected Item Sub Grade",
-   "options": "Item Sub Grade"
-  },
-  {
-   "default": "0",
-   "fieldname": "allow_sunday_open",
-   "fieldtype": "Check",
-   "label": "Allow Day Open On Sunday"
-  }
- ],
- "grid_page_length": 50,
- "index_web_pages_for_search": 1,
- "issingle": 1,
- "links": [],
- "modified": "2025-06-02 22:06:40.093794",
- "modified_by": "Administrator",
- "module": "Leaf Procurement",
- "name": "Leaf Procurement Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "row_format": "Dynamic",
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2025-05-09 13:10:36.367148",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "company_name",
+    "default_item",
+    "rejected_item_sub_grade",
+    "lot_size",
+    "allow_sunday_open",
+    "column_break_omrn",
+    "location_warehouse",
+    "rejected_item_grade",
+    "rejected_location_warehouse",
+    "transport_charges_item",
+    "barcode_length",
+    "sync_settings_tab",
+    "instance_url",
+    "column_break_yfay",
+    "api_key",
+    "api_secret"
+  ],
+  "fields": [
+    {
+      "default": "0",
+      "fieldname": "allow_sunday_open",
+      "fieldtype": "Check",
+      "label": "Allow Day Open On Sunday"
+    },
+    {
+      "fieldname": "lot_size",
+      "fieldtype": "Int",
+      "label": "Lot Size"
+    },
+    {
+      "fieldname": "column_break_omrn",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "barcode_length",
+      "fieldtype": "Int",
+      "label": "Barcode Length"
+    },
+    {
+      "fieldname": "company_name",
+      "fieldtype": "Link",
+      "label": "Company",
+      "options": "Company"
+    },
+    {
+      "fieldname": "location_warehouse",
+      "fieldtype": "Link",
+      "label": "Location (Warehouse)",
+      "options": "Warehouse"
+    },
+    {
+      "fieldname": "default_item",
+      "fieldtype": "Link",
+      "label": "Default Item",
+      "options": "Item"
+    },
+    {
+      "fieldname": "rejected_location_warehouse",
+      "fieldtype": "Link",
+      "label": "Rejected Location (Warehouse)",
+      "options": "Warehouse"
+    },
+    {
+      "fieldname": "rejected_item_grade",
+      "fieldtype": "Link",
+      "label": "Rejected Item Grade",
+      "options": "Item Grade"
+    },
+    {
+      "fieldname": "transport_charges_item",
+      "fieldtype": "Link",
+      "label": "Transport Charges Item",
+      "options": "Item"
+    },
+    {
+      "fieldname": "rejected_item_sub_grade",
+      "fieldtype": "Link",
+      "label": "Rejected Item Sub Grade",
+      "options": "Item Sub Grade"
+    },
+    {
+      "fieldname": "sync_settings_tab",
+      "fieldtype": "Tab Break",
+      "label": "Sync Settings"
+    },
+    {
+      "fieldname": "column_break_yfay",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "api_key",
+      "fieldtype": "Data",
+      "label": "API Key"
+    },
+    {
+      "fieldname": "api_secret",
+      "fieldtype": "Data",
+      "label": "API Secret"
+    },
+    {
+      "fieldname": "instance_url",
+      "fieldtype": "Data",
+      "label": "Instance URL"
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "issingle": 1,
+  "links": [],
+  "modified": "2025-06-02 22:06:40.093794",
+  "modified_by": "Administrator",
+  "module": "Leaf Procurement",
+  "name": "Leaf Procurement Settings",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": []
 }
