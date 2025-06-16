@@ -18,7 +18,8 @@ class DaySetup(Document):
                 frappe.throw(_("Due Date ({}) must be after Date ({}).").format(self.due_date, self.date))
 
         # Check if date is Sunday
-        if date_obj and date_obj.weekday() == 6 and not self.allow_sunday_open:  # Sunday = 6
+        settings = frappe.get_doc("Leaf Procurement Settings", "Leaf Procurement Settings")
+        if date_obj and date_obj.weekday() == 6 and not settings.allow_sunday_open:  # Sunday = 6
             frappe.throw(_("You cannot open day on Sunday as entry is not permitted on Sunday."))
 
 
@@ -31,23 +32,24 @@ class DaySetup(Document):
                 frappe.throw(_("A record already exists for the date {}. Only one record per day is allowed.").format(self.date))
         # Find all open days (with open time but no close time), excluding current date
         
-        open_days = frappe.db.get_all(
-            "Day Setup",
-            filters={
-                "day_open_time": ["is", "set"],
-                "day_close_time": ["is", "not set"],
-                "date": ["!=", self.date]
-            },
-            fields=["date"]
-        )
-
-        if open_days:
-            # Format open dates with line breaks
-            open_dates = '<br>'.join(f"- {day.date}" for day in open_days)
-            frappe.throw(
-                _("There are already open day(s):<br>{0}").format(open_dates),
-                title=_("Open Days Found")
+        if not self.day_open_time: #only check if day in not open yet
+            open_days = frappe.db.get_all(
+                "Day Setup",
+                filters={
+                    "day_open_time": ["is", "set"],
+                    "day_close_time": ["is", "not set"],
+                    "date": ["!=", self.date]
+                },
+                fields=["date"]
             )
+
+            if open_days:
+                # Format open dates with line breaks
+                open_dates = '<br>'.join(f"- {day.date}" for day in open_days)
+                frappe.throw(
+                    _("There are already open day(s):<br>{0}").format(open_dates),
+                    title=_("Open Days Found")
+                )
 
           		
     def _parse_date(self, value):
