@@ -7,6 +7,9 @@ from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 
 class BaleWeightInfo(Document):
+	def validate(self):
+		self.update_status()
+
 	def before_save(self):
 		self.scan_barcode = ""
 		self.item_grade = ""
@@ -14,7 +17,6 @@ class BaleWeightInfo(Document):
 		self.reclassification_grade = ""
 		self.price = 0
 		self.bale_weight = 0
-		
 
 	def autoname(self):
 		date_str = str(self.date)  # or date_obj.strftime("%Y-%m-%d")
@@ -85,6 +87,17 @@ class BaleWeightInfo(Document):
 		self.make_purchase_invoice()
 
 	
+	def update_status(self):
+		if self.docstatus == 2:
+			self.status = "Cancelled"
+		elif self.re_print == 1:
+			self.status = "Re-Printed"
+		elif self.stationery:
+			self.status = "Printed"
+		else:
+			self.status = "No Printed"
+
+
 	def make_purchase_invoice(self):
 		from leaf_procurement.leaf_procurement.api.bale_weight_utils import create_purchase_invoice
 

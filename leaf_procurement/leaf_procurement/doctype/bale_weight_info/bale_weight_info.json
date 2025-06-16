@@ -33,6 +33,7 @@
   "payment_mode",
   "purchase_receipt_created",
   "transport_charges_item",
+  "status",
   "section_break_zoru",
   "scan_barcode",
   "reclassification_grade",
@@ -324,12 +325,21 @@
    "hidden": 1,
    "label": "Re Print",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "No Printed\nPrinted\nRe-Printed\nCancelled",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-13 18:49:59.615787",
+ "modified": "2025-06-16 10:24:15.304632",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
