@@ -124,8 +124,8 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
                 "batch_no": detail.bale_barcode,
                 "description": f"Bale Barcode: {detail.bale_barcode}",
                 "lot_number": registration_code,
-                "grade": rejected_grade,
-                "sub_grade": rejected_sub_grade,
+                "grade": detail.item_grade,
+                "sub_grade": detail.item_sub_grade,
             })  
         else:
             ensure_batch_exists(detail.bale_barcode, doc.item, detail.weight)
