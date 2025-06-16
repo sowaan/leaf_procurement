@@ -648,7 +648,8 @@ frappe.ui.form.on("Bale Weight Info", {
                                     doctype: frm.doc.doctype,
                                     name: frm.doc.name,
                                     fieldname: {
-                                        'stationery': values.stationery
+                                        'stationery': values.stationery,
+                                        'status': 'Printed'
                                     }
                                 },
                                 callback: function (response) {
@@ -670,7 +671,7 @@ frappe.ui.form.on("Bale Weight Info", {
             
             if(frm.doc.stationery && frm.doc.re_print) {
 
-                frm.add_custom_button(__('Re-Print'), async () => {
+                frm.add_custom_button(__('Reprint Voucher'), async () => {
                     const { value } = await frappe.prompt([
                         {
                             fieldname: 'stationery',
@@ -694,7 +695,8 @@ frappe.ui.form.on("Bale Weight Info", {
                                     fieldname: {
                                         'stationery': values.stationery,
                                         're_print': 0,
-                                        'reprint_reason': values.reason
+                                        'reprint_reason': values.reason,
+                                        'status': 'No Printed'
                                     }
                                 },
                                 callback: function (response) {
