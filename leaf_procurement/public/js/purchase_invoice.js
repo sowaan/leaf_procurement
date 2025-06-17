@@ -7,7 +7,7 @@ frappe.ui.form.on('Purchase Invoice', {
         $('[data-original-title="Print"]').hide();
         if (frm.doc.docstatus === 1) {
             if (!frm.doc.custom_stationary) {
-                frm.add_custom_button(__('Generate Voucher'), async () => {
+                frm.add_custom_button(__('Print Voucher'), async () => {
                     const { value } = await frappe.prompt([
                         {
                             fieldname: 'stationery',
@@ -29,7 +29,7 @@ frappe.ui.form.on('Purchase Invoice', {
                                     }
                                 },
                                 freeze: true,
-                                freeze_message: __('Generating Voucher...'),
+                                freeze_message: __('Print Voucher...'),
                                 callback: function (response) {
                                     // After saving, open print view
                                     const docname = frm.doc.name; // or hardcode if needed

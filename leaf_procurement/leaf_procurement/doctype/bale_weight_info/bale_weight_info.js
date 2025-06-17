@@ -399,7 +399,7 @@ async function validate_bale_data(frm) {
     let rejected_grade = false;
     try {
         const grade_doc = await frappe.db.get_doc('Item Grade', values.item_grade);
-        rejected_grade = grade_doc.rejected_grade === 1; // true if checkbox is checked
+        rejected_grade = grade_doc.rejected_grade == 1; // true if checkbox is checked
     } catch (err) {
         frappe.show_alert({
             message: `Error fetching Item Grade info: ${err.message}`,
@@ -409,6 +409,7 @@ async function validate_bale_data(frm) {
     }
 
     // If it's not a rejected grade, apply min/max weight validation
+    
     if (!rejected_grade) {
 
         if (!values.reclassification_grade) {
@@ -433,6 +434,13 @@ async function validate_bale_data(frm) {
                 });
                 return { valid: false };
             }
+        }
+        else{
+                frappe.show_alert({
+                    message: `Quota Setup is not defined please define a Quota for this location.`,
+                    indicator: 'red'
+                });
+                return { valid: false };            
         }
     }
 
@@ -629,87 +637,87 @@ frappe.ui.form.on("Bale Weight Info", {
                 'delete_row', 'hidden', 1
             );
           
-            if (!frm.doc.stationery) {
-                frm.add_custom_button(__('Generate Voucher'), async () => {
-                    const { value } = await frappe.prompt([
-                        {
-                            fieldname: 'stationery',
-                            label: 'Stationery',
-                            fieldtype: 'Data',
-                            reqd: 1
-                        }
-                    ],
-                        (values) => {
-                            console.log('values:  ',values);
-                            // Save stationery to the current doc or linked doc
-                            frappe.call({
-                                method: 'frappe.client.set_value',
-                                args: {
-                                    doctype: frm.doc.doctype,
-                                    name: frm.doc.name,
-                                    fieldname: {
-                                        'stationery': values.stationery,
-                                        'status': 'Printed'
-                                    }
-                                },
-                                callback: function (response) {
-                                    // After saving, open print view
-                                    const docname = frm.doc.purchase_invoice; // or hardcode if needed
-                                    const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
-                                    window.open(route, '_blank');
-                                }
-                            });
-                        },
-                        __('Enter Stationery'), __('Save'));
-                });
-                frm.set_df_property('re_print', 'hidden', 1); 
-            }
-            else if (!frm.doc.reprint_reason)
-            {
-                frm.set_df_property('re_print', 'hidden', 0); 
-            }
+            // if (!frm.doc.stationery) {
+            //     frm.add_custom_button(__('Generate Voucher'), async () => {
+            //         const { value } = await frappe.prompt([
+            //             {
+            //                 fieldname: 'stationery',
+            //                 label: 'Stationery',
+            //                 fieldtype: 'Data',
+            //                 reqd: 1
+            //             }
+            //         ],
+            //             (values) => {
+            //                 console.log('values:  ',values);
+            //                 // Save stationery to the current doc or linked doc
+            //                 frappe.call({
+            //                     method: 'frappe.client.set_value',
+            //                     args: {
+            //                         doctype: frm.doc.doctype,
+            //                         name: frm.doc.name,
+            //                         fieldname: {
+            //                             'stationery': values.stationery,
+            //                             'status': 'Printed'
+            //                         }
+            //                     },
+            //                     callback: function (response) {
+            //                         // After saving, open print view
+            //                         const docname = frm.doc.purchase_invoice; // or hardcode if needed
+            //                         const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
+            //                         window.open(route, '_blank');
+            //                     }
+            //                 });
+            //             },
+            //             __('Enter Stationery'), __('Save'));
+            //     });
+            //     frm.set_df_property('re_print', 'hidden', 1); 
+            // }
+            // else if (!frm.doc.reprint_reason)
+            // {
+            //     frm.set_df_property('re_print', 'hidden', 0); 
+            // }
             
-            if(frm.doc.stationery && frm.doc.re_print) {
+            // if(frm.doc.stationery && frm.doc.re_print) {
 
-                frm.add_custom_button(__('Reprint Voucher'), async () => {
-                    const { value } = await frappe.prompt([
-                        {
-                            fieldname: 'stationery',
-                            label: 'Stationery',
-                            fieldtype: 'Data',
-                            reqd: 1
-                        },
-                        {
-                             fieldname: 'reason',
-                            label: 'Reason',
-                            fieldtype: 'Small Text',
-                            reqd: 1                           
-                        }
-                    ],
-                        (values) => {
-                            frappe.call({
-                                method: 'frappe.client.set_value',
-                                args: {
-                                    doctype: frm.doc.doctype,
-                                    name: frm.doc.name,
-                                    fieldname: {
-                                        'stationery': values.stationery,
-                                        're_print': 0,
-                                        'reprint_reason': values.reason,
-                                        'status': 'Re-Printed'
-                                    }
-                                },
-                                callback: function (response) {
-                                    // After saving, open print view
-                                    const docname = frm.doc.purchase_invoice; // or hardcode if needed
-                                    const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
-                                    window.open(route, '_blank');
-                                }
-                            });
-                        },
-                        __('Enter Stationery'), __('Save'));
-                });
-            }
+            //     frm.add_custom_button(__('Reprint Voucher'), async () => {
+            //         const { value } = await frappe.prompt([
+            //             {
+            //                 fieldname: 'stationery',
+            //                 label: 'Stationery',
+            //                 fieldtype: 'Data',
+            //                 reqd: 1
+            //             },
+            //             {
+            //                  fieldname: 'reason',
+            //                 label: 'Reason',
+            //                 fieldtype: 'Small Text',
+            //                 reqd: 1                           
+            //             }
+            //         ],
+            //             (values) => {
+            //                 frappe.call({
+            //                     method: 'frappe.client.set_value',
+            //                     args: {
+            //                         doctype: frm.doc.doctype,
+            //                         name: frm.doc.name,
+            //                         fieldname: {
+            //                             'stationery': values.stationery,
+            //                             're_print': 0,
+            //                             'reprint_reason': values.reason,
+            //                             'status': 'Re-Printed'
+            //                         }
+            //                     },
+            //                     callback: function (response) {
+            //                         // After saving, open print view
+            //                         const docname = frm.doc.purchase_invoice; // or hardcode if needed
+            //                         const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
+            //                         window.open(route, '_blank');
+            //                     }
+            //                 });
+            //             },
+            //             __('Enter Stationery'), __('Save'));
+            //     });
+            // }
         }
         load_bale_barcodes(frm);
         // frm.set_value('scan_barcode', '');
