@@ -10,6 +10,12 @@ def execute(filters=None):
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
 	grade_type = ""
+	supplier_filter = ""
+	
+	if filters.get("supplier"):
+		supplier_list = ", ".join([f"'{s}'" for s in filters.get("supplier")])
+		supplier_filter = f"AND p.supplier_grower IN ({supplier_list})"
+
 
 	if filters.get("grade_type") == "Reclassification Grade":
 		grade_type = "reclassification_grade"
@@ -51,6 +57,7 @@ def execute(filters=None):
 		FROM `tabBale Weight Info` p
 		JOIN `tabBale Weight Detail` c ON p.name = c.parent
 		WHERE p.docstatus = 1
+		{supplier_filter}
 		GROUP BY c.{grade_type}
 	""", {
 		"from_date": from_date,
