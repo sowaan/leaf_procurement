@@ -109,6 +109,7 @@ def sync_up():
 		doctypes = [
 			("supplier", "Supplier"),
 			("driver", "Driver"),
+			("bale_audit", "Bale Audit"),
 			("bale_registration", "Bale Registration"),
 			("purchase_invoice", "Purchase Invoice"),
 			("goods_receiving_note", "Goods Receiving Note"),
