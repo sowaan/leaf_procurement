@@ -14,6 +14,7 @@ def create_company(settings, headers, data):
 		if not frappe.db.exists("Company", item['name']):
 			try:
 				doc = frappe.new_doc("Company")
+				doc.name = item.get('name', item['name'])
 				doc.company_name = item['name']
 				doc.abbr = item.get('abbr', item['name'])
 				doc.default_currency = item.get('default_currency', 'USD')
@@ -92,10 +93,12 @@ def create_warehouse(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Warehouse")
+						doc.name = item.get('name', item['name'])
 						doc.warehouse_name = item.get('warehouse_name', item['name'])
 						doc.custom_short_code = item.get('custom_short_code', '')
 						doc.company = item.get('company', 'Default Company')
-						doc.insert(ignore_permissions=True)
+						doc.set("__islocal", False)
+						doc.db_insert()
 						created.append(doc.name)
 				else:
 					frappe.throw(_("Failed to fetch data for Warehouse: {0}").format(response.text))
@@ -191,6 +194,7 @@ def create_item_grade(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Item Grade")
+						doc.name = item.get('name', item['name'])
 						doc.item_grade_name = item.get('item_grade_name', item['name'])
 						doc.rejected_grade = item.get('rejected_grade', False)
 						doc.insert(ignore_permissions=True)
@@ -216,6 +220,7 @@ def create_item_sub_grade(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Item Sub Grade")
+						doc.name = item.get('name', item['name'])
 						doc.item_grade = item.get('item_grade', item['name'])
 						doc.item_sub_grade = item.get('item_sub_grade', item['name'])
 						doc.insert(ignore_permissions=True)
@@ -241,6 +246,7 @@ def create_item_grade_price(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Item Grade Price")
+						doc.name = item.get('name', item['name'])
 						doc.company = item.get('company', item['name'])
 						doc.location_warehouse = item.get('location_warehouse', 'Default Warehouse')
 						doc.item = item.get('item', item['name'])
@@ -272,6 +278,7 @@ def create_bale_status(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Bale Status")
+						doc.name = item.get('name', item['name'])
 						doc.bale_status_name = item.get('bale_status_name', item['name'])
 						doc.default_status = item.get('default_status', False)
 						doc.insert(ignore_permissions=True)
@@ -297,6 +304,7 @@ def create_reclassification_grade(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Reclassification Grade")
+						doc.name = item.get('name', item['name'])
 						doc.reclassification_grade_name = item.get('reclassification_grade_name', item['name'])
 						doc.insert(ignore_permissions=True)
 				else:
@@ -320,6 +328,7 @@ def create_transport_type(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Transport Type")
+						doc.name = item.get('name', item['name'])
 						doc.transport_type = item.get('transport_type', item['name'])
 						doc.insert(ignore_permissions=True)
 				else:

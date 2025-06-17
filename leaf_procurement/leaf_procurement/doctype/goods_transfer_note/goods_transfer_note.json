@@ -12,6 +12,7 @@
   "driver_mobile",
   "transport_type",
   "remarks",
+  "custom_is_sync",
   "column_break_vvyy",
   "location_warehouse",
   "transit_location",
@@ -209,12 +210,22 @@
   {
    "fieldname": "gtn_counter",
    "fieldtype": "HTML"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "custom_is_sync",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Sync",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-15 21:48:09.199290",
+ "modified": "2025-06-17 11:19:25.387174",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -234,7 +245,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

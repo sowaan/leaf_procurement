@@ -27,6 +27,7 @@
   "column_break_sjov",
   "supplier",
   "driver",
+  "bale_audit",
   "bale_registration",
   "purchase_invoice",
   "goods_receiving_note",
@@ -188,12 +189,18 @@
    "fieldname": "quota_setup",
    "fieldtype": "Check",
    "label": "Quota Setup"
+  },
+  {
+   "default": "0",
+   "fieldname": "bale_audit",
+   "fieldtype": "Check",
+   "label": "Bale Audit"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-03 08:43:37.084453",
+ "modified": "2025-06-17 12:31:50.300009",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Sync Tool",
