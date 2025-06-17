@@ -82,6 +82,9 @@ class BaleWeightInfo(Document):
 			raise ValidationError
 
 		self.make_purchase_invoice()
+		if self.bale_registration_code:
+			frappe.db.set_value("Bale Registration", self.bale_registration_code, "bale_status", "In Print Voucher") 
+
 		self.reload()
 
 

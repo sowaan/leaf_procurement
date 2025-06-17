@@ -22,6 +22,14 @@ frappe.ui.form.on("Bale Registration", {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
             );
+        } else {
+            if (!frm.doc.bale_status)
+                frm.set_value('bale_status', 'In Registration');
+        }
+    },
+    after_save(frm) {
+        if (frm.doc.docstatus === 1) {
+            frm.reload_doc();
         }
     },
     scan_barcode: function (frm) {
@@ -101,7 +109,8 @@ frappe.ui.form.on("Bale Registration", {
                 }
             }
         });
-
+        frm.set_value('bale_status', 'In Registration');
+        
 
     },
     date: function (frm) {

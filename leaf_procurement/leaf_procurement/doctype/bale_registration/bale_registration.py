@@ -22,13 +22,13 @@ class BaleRegistration(Document):
         prefix = f"{self.location_short_code}-{date_part}-{fy_start_year_short}-{fy_end_year_short}-"
         self.name = make_autoname(prefix + ".######")
           
+    
     def on_submit(self):
         # if check validations is false, no need to check validations
         # as this is a sync operation
         if not self.check_validations:
             return
-	
-        
+
         day_open = frappe.get_all("Day Setup",
             filters={
                 "date": self.date,
@@ -70,5 +70,5 @@ class BaleRegistration(Document):
                 indicator='orange'
             )
             raise ValidationError
-        
-        
+        self.bale_status = "In Buying"
+        frappe.db.set_value(self.doctype, self.name, "bale_status", "In Buying")

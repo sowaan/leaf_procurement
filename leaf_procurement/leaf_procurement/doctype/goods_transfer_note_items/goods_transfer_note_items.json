@@ -37,11 +37,13 @@
   {
    "fieldname": "item_grade",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Item Grade"
   },
   {
    "fieldname": "item_sub_grade",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Item Sub Grade"
   },
   {
@@ -62,12 +64,13 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-03 16:52:31.076903",
+ "modified": "2025-06-17 06:20:45.450779",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

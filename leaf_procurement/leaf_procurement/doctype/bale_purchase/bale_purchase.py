@@ -84,7 +84,8 @@ class BalePurchase(Document):
 				title=_("Mismatch in Bale Count")
 			)
 
-	
+		if self.bale_registration_code:
+			frappe.db.set_value("Bale Registration", self.bale_registration_code, "bale_status", "In Weighment") 
 
 	# def autoname(self):
 	# 	cached_prefix = get_cached_prefix()

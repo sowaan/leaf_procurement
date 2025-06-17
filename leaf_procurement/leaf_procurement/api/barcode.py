@@ -91,7 +91,7 @@ SELECT
 FROM `tabPurchase Invoice Item` pii
 INNER JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent
         WHERE pii.item_code = %s and qty>0 AND pii.batch_no = %s AND pi.docstatus = 1
-            AND pi.custom_stationary is not null
+            
         ORDER BY pii.creation ASC
         LIMIT 1
     """, (itemcode, barcode), as_dict=True)

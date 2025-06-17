@@ -33,6 +33,28 @@ function update_gtn_counter(frm) {
     });
 }
 
+function update_bale_counter(frm) {
+    const count = frm.doc.bale_registration_detail?.length || 0;
+
+    const html = `
+        <div style="
+            font-size: 16px;
+            font-weight: bold;
+            color: #1F7C83;
+            background-color: #E6F9FB;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        ">
+            Total Bales: ${count}
+        </div>
+    `;
+
+    frm.set_df_property('bale_counter', 'options', html);
+    frm.refresh_field('bale_counter');
+}
+
 async function get_latest_open_day() {
     return new Promise((resolve, reject) => {
         frappe.call({
@@ -118,6 +140,10 @@ frappe.ui.form.on("Goods Transfer Note", {
             callback: function (r) {
 
                 if (r.message && r.message.exists) {
+                    if(r.message.qty <=0){
+                        frappe.show_alert({ message: __('The bale has been rejected during purchase / weight.'), indicator: 'orange' });
+                        return;
+                    }
                     let row = frm.add_child('bale_registration_detail', {
                         bale_barcode: barcode,
                         weight: r.message.qty,
@@ -127,8 +153,9 @@ frappe.ui.form.on("Goods Transfer Note", {
                         item_sub_grade: r.message.sub_grade
                     });
                     frm.refresh_field('bale_registration_detail');
+                    update_bale_counter(frm);
                 } else {
-                    frappe.show_alert({ message: __('This barcode has not been invoiced or has been rejected during invoice generation.'), indicator: 'orange' });
+                    frappe.show_alert({ message: __('Invalid barcode, voucher has not been generated for this bale or the bale has been rejected.'), indicator: 'orange' });
                     //frappe.msgprint(__('This barcode has not been invoiced or has been rejected during invoice generation.'));
                 }
 
@@ -137,6 +164,8 @@ frappe.ui.form.on("Goods Transfer Note", {
         });
     },
     onload: async function (frm) {
+
+  
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
@@ -144,6 +173,14 @@ frappe.ui.form.on("Goods Transfer Note", {
         }
         if (!frm.is_new()) return;
 
+        if (!frm.doc.transport_type) {
+            frappe.db.get_value('Transport Type', {}, 'name').then(r => {
+                if (r.message && r.message.name) {
+                    frm.set_value('transport_type', r.message.name);
+                    frm.refresh_field('transport_type');
+                }
+            });
+        }
         const open_day_date = await get_latest_open_day();
         if (open_day_date) {
             frm.set_value('date', open_day_date);
@@ -155,7 +192,7 @@ frappe.ui.form.on("Goods Transfer Note", {
         }
 
         update_gtn_counter(frm);
-
+ update_bale_counter(frm);
         frappe.call({
             method: 'frappe.client.get',
             args: {

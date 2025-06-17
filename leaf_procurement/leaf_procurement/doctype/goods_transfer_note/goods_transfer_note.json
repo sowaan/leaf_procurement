@@ -11,15 +11,14 @@
   "driver",
   "driver_mobile",
   "transport_type",
-  "remarks",
-  "custom_is_sync",
+  "tsa_number",
   "column_break_vvyy",
   "location_warehouse",
   "transit_location",
   "driver_name",
   "driver_vehicle_number",
-  "tsa_number",
   "vehicle_number",
+  "remarks",
   "column_break_qkth",
   "default_item",
   "receiving_location",
@@ -32,11 +31,14 @@
   "scan_barcode",
   "column_break_qsdm",
   "barcode_length",
+  "bale_counter",
   "column_break_vomc",
   "gtn_counter",
   "section_break_sgpc",
   "bale_registration_detail",
-  "amended_from"
+  "amended_from",
+  "section_break_dytr",
+  "gtn_barcode"
  ],
  "fields": [
   {
@@ -67,7 +69,9 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company",
-   "read_only": 1
+   "print_hide": 1,
+   "read_only": 1,
+   "report_hide": 1
   },
   {
    "fieldname": "location_warehouse",
@@ -85,7 +89,8 @@
   {
    "fieldname": "vehicle_number",
    "fieldtype": "Data",
-   "label": "Vehicle Number"
+   "label": "Vehicle Number",
+   "reqd": 1
   },
   {
    "fetch_from": "driver.cell_number",
@@ -97,7 +102,9 @@
    "fetch_from": "driver.custom_freight_to_be_paid",
    "fieldname": "freight",
    "fieldtype": "Read Only",
-   "label": "Freight"
+   "label": "Freight",
+   "print_hide": 1,
+   "report_hide": 1
   },
   {
    "fieldname": "column_break_qkth",
@@ -108,7 +115,9 @@
    "fieldname": "location_short_code",
    "fieldtype": "Read Only",
    "hidden": 1,
-   "label": "Location Short Code"
+   "label": "Location Short Code",
+   "print_hide": 1,
+   "report_hide": 1
   },
   {
    "fieldname": "date",
@@ -119,8 +128,10 @@
   {
    "fieldname": "transport_type",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Transport Type",
-   "options": "Transport Type"
+   "options": "Transport Type",
+   "read_only": 1
   },
   {
    "fetch_from": "receiving_location.mobile_no",
@@ -151,7 +162,10 @@
   {
    "fieldname": "barcode_length",
    "fieldtype": "Read Only",
-   "label": "Barcode Length"
+   "hidden": 1,
+   "label": "Barcode Length",
+   "print_hide": 1,
+   "report_hide": 1
   },
   {
    "fieldname": "column_break_vomc",
@@ -213,19 +227,23 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "0",
-   "fieldname": "custom_is_sync",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Is Sync",
-   "no_copy": 1,
-   "read_only": 1
+   "fieldname": "gtn_barcode",
+   "fieldtype": "Barcode",
+   "hidden": 1
+  },
+  {
+   "fieldname": "section_break_dytr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bale_counter",
+   "fieldtype": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-17 11:19:25.387174",
+ "modified": "2025-06-17 05:15:38.748144",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -245,6 +263,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
