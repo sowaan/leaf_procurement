@@ -9,10 +9,12 @@ def execute(filters=None):
 
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
-	grade_filter = ""
+	grade_type = ""
 
-	if filters.get("grade"):
-		grade_filter = "AND c.reclassification_grade = %(grade)s"
+	if filters.get("grade_type") == "Reclassification Grade":
+		grade_type = "reclassification_grade"
+	elif filters.get("grade_type") == "Buying Grade":
+		grade_type = "item_grade"
 
 	data = frappe.db.sql(f"""
 		WITH totals AS (
@@ -22,10 +24,9 @@ def execute(filters=None):
 			FROM `tabBale Weight Info` p
 			JOIN `tabBale Weight Detail` c ON p.name = c.parent
 			WHERE p.docstatus = 1
-			{grade_filter}
 		)
 		SELECT
-			c.reclassification_grade AS grade,
+			c.{grade_type} AS grade,
 
 			-- Today
 			COUNT(CASE WHEN DATE(p.date) = %(to_date)s THEN c.name ELSE NULL END) AS bales_today,
@@ -50,16 +51,15 @@ def execute(filters=None):
 		FROM `tabBale Weight Info` p
 		JOIN `tabBale Weight Detail` c ON p.name = c.parent
 		WHERE p.docstatus = 1
-		{grade_filter}
-		GROUP BY c.reclassification_grade
+		GROUP BY c.{grade_type}
 	""", {
 		"from_date": from_date,
 		"to_date": to_date,
-		"grade": filters.get("grade")
+		"grade_type": grade_type
 	}, as_dict=True)
 
 	columns = [
-		{"label": "Grade", "fieldname": "grade", "fieldtype": "Data", "width": 100},
+		{"label": filters.get("grade_type"), "fieldname": "grade", "fieldtype": "Data", "width": 200, "align": "left"},
 		{"label": "Bales Today", "fieldname": "bales_today", "fieldtype": "Int", "width": 120},
 		{"label": "Kgs Today", "fieldname": "kgs_today", "fieldtype": "Float", "width": 120},
 		{"label": "Amount Today", "fieldname": "amount_today", "fieldtype": "Currency", "width": 120},
