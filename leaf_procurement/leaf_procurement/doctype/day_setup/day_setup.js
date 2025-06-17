@@ -108,6 +108,12 @@ frappe.ui.form.on("Day Setup", {
 
         }
 
+                if (!frm.is_new()) {
+            frm.fields.forEach(function(field) {
+                frm.set_df_property(field.df.fieldname, 'read_only', 1);
+            });
+            frm.refresh_fields();
+        }
     },
     date: function (frm) {
         frm.events.set_due_date_min(frm);

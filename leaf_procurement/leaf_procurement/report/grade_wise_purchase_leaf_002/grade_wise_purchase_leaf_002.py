@@ -36,19 +36,45 @@ def execute(filters=None):
 
 			-- Today
 			COUNT(CASE WHEN DATE(p.date) = %(to_date)s THEN c.name ELSE NULL END) AS bales_today,
-			SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) AS kgs_today,
-			SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END) AS amount_today,
-			AVG(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE NULL END) AS avg_today,
-			(
+SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) AS kgs_today,
+SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END) AS amount_today,
+CASE
+    WHEN SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) = 0 THEN 0
+    ELSE
+        SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END)
+        /
+        SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END)
+END AS avg_today,			(
 				SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END)
 				/ NULLIF((SELECT total_today FROM totals), 0)
 			) * 100 AS percentage_today,
 
 			-- ToDate
 			COUNT(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN c.name ELSE NULL END) AS bales_todate,
-			SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) AS kgs_todate,
-			SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END) AS amount_todate,
-			AVG(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE NULL END) AS avg_todate,
+SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
+         THEN IFNULL(c.weight, 0) 
+         ELSE 0 
+    END) AS kgs_todate,
+
+SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
+         THEN IFNULL(c.weight, 0) * IFNULL(c.rate, 0) 
+         ELSE 0 
+    END) AS amount_todate,
+
+CASE 
+    WHEN SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) = 0
+    THEN 0
+    ELSE
+        SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
+                 THEN IFNULL(c.weight, 0) * IFNULL(c.rate, 0) 
+                 ELSE 0 
+            END) 
+        / 
+        SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
+                 THEN IFNULL(c.weight, 0) 
+                 ELSE 0 
+            END)
+END AS avg_todate,	
 			(
 				SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END)
 				/ NULLIF((SELECT total_todate FROM totals), 0)

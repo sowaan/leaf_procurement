@@ -87,13 +87,11 @@ SELECT
     pii.lot_number,
     pii.grade,
     pii.sub_grade,
-    bwi.name AS bale_weight_info_name,
-    bwi.stationery
+    pi.custom_stationary
 FROM `tabPurchase Invoice Item` pii
 INNER JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent
-LEFT JOIN `tabBale Weight Info` bwi ON bwi.purchase_invoice = pi.name
         WHERE pii.item_code = %s and qty>0 AND pii.batch_no = %s AND pi.docstatus = 1
-            AND bwi.stationery is not null
+            AND pi.custom_stationary is not null
         ORDER BY pii.creation ASC
         LIMIT 1
     """, (itemcode, barcode), as_dict=True)
