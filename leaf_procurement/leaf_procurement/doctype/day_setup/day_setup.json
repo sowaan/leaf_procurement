@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:LP-DS-{######}",
+ "autoname": "format:LP-DS-{#####}",
  "creation": "2025-05-10 15:47:22.473500",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -98,7 +98,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-13 12:27:25.921890",
+ "modified": "2025-06-16 18:51:37.608311",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",

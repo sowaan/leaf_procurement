@@ -43,11 +43,14 @@ fixtures = [
                     "Supplier-main-field_order",
 					"Supplier-main-fields",
                     "Supplier-naming_series-hidden",
+					"Supplier-naming_series-reqd",
                     "Supplier-supplier_group-hidden",
                     "Supplier-supplier_type-hidden",
                     "Supplier-is_transporter-hidden",
                     "Supplier-default_currency-hidden",
                     "Supplier-default_currency-default",
+                    "Purchase Invoice-status-allow_on_submit",
+                    "Purchase Invoice-status-options"
                     )
 			]
 		]
@@ -100,7 +103,7 @@ doctype_js = {
     "Supplier" : "public/js/supplier.js",
     "Purchase Invoice" : "public/js/purchase_invoice.js",
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Purchase Invoice" : "public/js/purchase_invoice_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
