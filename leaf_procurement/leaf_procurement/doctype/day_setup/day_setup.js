@@ -27,7 +27,7 @@ frappe.ui.form.on("Day Setup", {
                     frappe.msgprint(__('Day opened at: ') + now);
                     frm.reload_doc();  // ensure buttons refresh
                 });
-            }, __('Actions'));
+            });
         }
 
         if (frm.doc.day_open_time && !frm.doc.day_close_time) {
@@ -104,7 +104,7 @@ frappe.ui.form.on("Day Setup", {
                     frappe.msgprint(__('Error checking GTN and grade differences.'));
                     console.error(err);
                 }
-            }, __('Actions'));
+            });
 
         }
 
