@@ -207,7 +207,12 @@ after_migrate = [
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
+    "cron":{
+        "*/15 * * * *":[
+            "leaf_procurement.tasks.sync.hybrid_sync"
+        ]
+    }
 # 	"all": [
 # 		"leaf_procurement.tasks.all"
 # 	],
@@ -223,7 +228,7 @@ after_migrate = [
 # 	"monthly": [
 # 		"leaf_procurement.tasks.monthly"
 # 	],
-# }
+}
 
 # Testing
 # -------
