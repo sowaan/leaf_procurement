@@ -1,5 +1,6 @@
 import frappe
 import socket
+from leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool import sync_up
 
 @frappe.whitelist()
 def hybrid_sync():
@@ -8,8 +9,9 @@ def hybrid_sync():
         return
     
     if is_internet_available():
-        print("✅ Internet is available.")
+        # print("✅ Internet is available.")
         # proceed with API call or online task
+        sync_up()
     else:
         print("❌ No internet connection")
         # handle offline logic
