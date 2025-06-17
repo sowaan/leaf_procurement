@@ -37,7 +37,6 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "hidden": 1,
-   "in_list_view": 1,
    "label": "Company",
    "options": "Company",
    "read_only": 1
@@ -63,7 +62,6 @@
   {
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Location (Warehouse)",
    "options": "Warehouse",
    "read_only": 1,
@@ -187,6 +185,7 @@
    "fetch_from": "supplier_grower.supplier_name",
    "fieldname": "grower_name",
    "fieldtype": "Read Only",
+   "in_list_view": 1,
    "label": "Grower Name"
   },
   {
@@ -198,7 +197,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-15 11:53:53.979186",
+ "modified": "2025-06-16 05:20:01.642730",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
