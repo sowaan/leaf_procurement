@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Bale Registration", {
-    on_submit: function(frm) {
+    on_submit: function (frm) {
         frappe.msgprint({
             title: __('Success'),
             message: __('Record submitted successfully.'),
@@ -15,8 +15,8 @@ frappe.ui.form.on("Bale Registration", {
                 frappe.new_doc('Bale Registration');
             }
         }, 1000); // Wait 1 second
-            
-    },    
+
+    },
     refresh(frm) {
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
@@ -76,7 +76,7 @@ frappe.ui.form.on("Bale Registration", {
                 'delete_row', 'hidden', 1
             );
         }
-        
+
         if (!frm.is_new()) return;
         if (frm.doc.date) {
             update_lot_counter(frm);
@@ -148,9 +148,9 @@ function update_lot_counter(frm) {
                 date: frm.doc.date
             }
         },
-        callback: function(r) {
+        callback: function (r) {
             if (r.message !== undefined) {
-                const count = r.message+1;
+                const count = r.message + 1;
                 const html = `
                     <div style="
                         font-size: 16px;
@@ -202,6 +202,7 @@ function validate_day_status(frm) {
         },
         callback: function (r) {
             const is_day_open = r.message && r.message.length > 0;
+            frm.set_value('day_setup', is_day_open ? r.message[0].name : null);
 
             // Enable or disable fields based on day status
             //toggle_fields(frm, is_day_open);

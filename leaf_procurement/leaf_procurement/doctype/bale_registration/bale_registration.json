@@ -16,6 +16,7 @@
   "column_break_mesd",
   "item",
   "date",
+  "day_setup",
   "column_break_jyzh",
   "lot_size",
   "bales_in_lot",
@@ -192,12 +193,20 @@
    "fieldname": "lot_counter",
    "fieldtype": "HTML",
    "label": "Lot Counter"
+  },
+  {
+   "fieldname": "day_setup",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Day Setup",
+   "options": "Day Setup",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-16 05:20:01.642730",
+ "modified": "2025-06-17 16:12:40.414194",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
@@ -216,7 +225,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

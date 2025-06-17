@@ -9,35 +9,29 @@
   "section_break_l9ab",
   "company",
   "date",
-  "amended_from",
+  "location_shortcode",
+  "custom_is_sync",
   "column_break_rnfv",
   "location_warehouse",
   "barcode_length",
-  "custom_is_sync",
-  "column_break_irkq",
-  "location_shortcode",
   "item",
+  "connect_scale",
+  "disconnect_scale",
+  "column_break_irkq",
+  "scale_status",
   "section_break_xyxs",
-  "add_audit_weight",
+  "bale_barcode",
   "column_break_arkr",
-  "column_break_foqf",
+  "captured_weight",
+  "add_audit_weight",
   "section_break_ynis",
-  "detail_table"
+  "detail_table",
+  "amended_from"
  ],
  "fields": [
   {
    "fieldname": "section_break_l9ab",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Bale Audit",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   },
   {
    "fieldname": "company",
@@ -98,10 +92,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_foqf",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "detail_table",
    "fieldtype": "Table",
    "options": "Bale Audit Detail",
@@ -121,12 +111,47 @@
    "label": "Is Sync",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "scale_status",
+   "fieldtype": "HTML",
+   "label": "Scale Status"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bale Audit",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "connect_scale",
+   "fieldtype": "Button",
+   "label": "Connect Scale"
+  },
+  {
+   "fieldname": "bale_barcode",
+   "fieldtype": "Data",
+   "label": "Bale BarCode"
+  },
+  {
+   "fieldname": "captured_weight",
+   "fieldtype": "Float",
+   "label": "Captured Weight"
+  },
+  {
+   "fieldname": "disconnect_scale",
+   "fieldtype": "Button",
+   "label": "Disconnect Scale"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-17 12:30:58.965652",
+ "modified": "2025-06-17 15:58:22.557081",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",

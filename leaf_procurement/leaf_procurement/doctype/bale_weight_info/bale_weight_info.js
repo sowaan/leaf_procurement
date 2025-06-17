@@ -269,7 +269,7 @@ async function readScaleContinuously(frm) {
                 const weight = parseFloat(value.trim());
                 if (!isNaN(weight)) {
                     window._scaleConnection.lastWeight = weight.toFixed(2);
-                    updateMainWeightDisplayWeightDisplay(frm, window._scaleConnection.lastWeight);
+                    updateMainWeightDisplay(frm, window._scaleConnection.lastWeight);
                 }
             }
         } catch (e) {
