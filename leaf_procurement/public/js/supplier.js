@@ -1,7 +1,7 @@
 frappe.ui.form.on('Supplier', {
     //custom supplier client script
     onload: function (frm) {
-        $('div[data-fieldname="naming_series"]').hide();
+        frm.set_df_property('naming_series', 'hidden', 1);
         if (!frm.doc.custom_nic_number || !frm.doc.custom_location_warehouse) {
             frappe.call({
                 method: 'frappe.client.get',
@@ -17,6 +17,9 @@ frappe.ui.form.on('Supplier', {
                 }
             });
         }
+    },
+    refresh: function (frm) {
+        frm.set_df_property('naming_series', 'hidden', 1);
     },
     validate: function (frm) {
         let cnic = frm.doc.custom_nic_number;
