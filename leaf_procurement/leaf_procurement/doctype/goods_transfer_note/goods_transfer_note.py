@@ -7,7 +7,9 @@ from frappe import _ # type: ignore
 
 
 class GoodsTransferNote(Document):
+
     def on_submit(self):
+        self.gtn_barcode = self.transit_short_code + "/-/" + self.name
         create_stock_entry_from_gtn(self)
     # def on_update(self):
     #     create_stock_entry_from_gtn(self)

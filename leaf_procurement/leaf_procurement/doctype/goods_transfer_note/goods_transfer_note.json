@@ -14,6 +14,7 @@
   "tsa_number",
   "column_break_vvyy",
   "location_warehouse",
+  "location_short_code",
   "transit_location",
   "driver_name",
   "driver_vehicle_number",
@@ -22,11 +23,11 @@
   "column_break_qkth",
   "default_item",
   "receiving_location",
+  "transit_short_code",
   "receiving_warehouse_mobile",
   "driver_cnic",
   "freight",
   "reverse_confirmation_mobile",
-  "location_short_code",
   "section_break_nppb",
   "scan_barcode",
   "column_break_qsdm",
@@ -238,12 +239,20 @@
   {
    "fieldname": "bale_counter",
    "fieldtype": "HTML"
+  },
+  {
+   "fetch_from": "transit_location.custom_short_code",
+   "fieldname": "transit_short_code",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Transit Short Code",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-17 05:15:38.748144",
+ "modified": "2025-06-18 12:41:26.247174",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -263,7 +272,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
