@@ -57,37 +57,53 @@ def sync_down():
 
 		for field, doctype in doctypes:
 			if doc.get(field):
-				print(f"Syncing from {doc.get(field)} to {doctype}...")
 				url = f'{settings.instance_url}/api/resource/{doctype}?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
-					if doctype == "Company":
-						create_company(settings, headers, data)
-					if doctype == "Warehouse":
-						create_warehouse(settings, headers, data)
-					if doctype == "Quota Setup":
-						create_quota_setup(settings, headers, data)
-					if doctype == "Item":
-						create_item(settings, headers, data)
-					if doctype == "Item Grade":
-						create_item_grade(settings, headers, data)
-					if doctype == "Item Sub Grade":
-						create_item_sub_grade(settings, headers, data)
-					if doctype == "Item Grade Price":
-						create_item_grade_price(settings, headers, data)
-					if doctype == "Bale Status":
-						create_bale_status(settings, headers, data)
-					if doctype == "Reclassification Grade":
-						create_reclassification_grade(settings, headers, data)
-					if doctype == "Transport Type":
-						create_transport_type(settings, headers, data)
+					if len(data) > 10:
+						frappe.enqueue(
+							"leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.process_sync",
+							queue='default',
+							doctype=doctype,
+							data=data
+						)
+						frappe.msgprint(_(f"Sync for {doctype} is queued in the background."))
+					else:
+						process_sync(doctype, data)
 
-					frappe.msgprint(_(f"Synced {len(data)} records for {doctype}."))
+						frappe.msgprint(_(f"Synced {len(data)} records for {doctype}."))
 				else:
 					frappe.throw(_("Failed to sync {0}: {1}").format(doctype, response.text))
 	except Exception as e:
 		frappe.log_error(str(e), "Sync Down Error")
+
+def process_sync(doctype, data):
+	settings = frappe.get_doc("Leaf Procurement Settings")
+	headers = {
+		"Authorization": f"token {settings.get('api_key')}:{settings.get('api_secret')}",
+		"Content-Type": "application/json"
+	}
+	if doctype == "Company":
+		create_company(settings, headers, data)
+	if doctype == "Warehouse":
+		create_warehouse(settings, headers, data)
+	if doctype == "Quota Setup":
+		create_quota_setup(settings, headers, data)
+	if doctype == "Item":
+		create_item(settings, headers, data)
+	if doctype == "Item Grade":
+		create_item_grade(settings, headers, data)
+	if doctype == "Item Sub Grade":
+		create_item_sub_grade(settings, headers, data)
+	if doctype == "Item Grade Price":
+		create_item_grade_price(settings, headers, data)
+	if doctype == "Bale Status":
+		create_bale_status(settings, headers, data)
+	if doctype == "Reclassification Grade":
+		create_reclassification_grade(settings, headers, data)
+	if doctype == "Transport Type":
+		create_transport_type(settings, headers, data)
 
 
 @frappe.whitelist()
@@ -127,7 +143,7 @@ def sync_up():
 				for name in data:
 					doc_data = frappe.get_doc(doctype, name)
 					if doctype == "Bale Registration":
-						doc_data.check_validations == 0
+						doc_data.check_validations = 0
 					doc_data = json.loads(doc_data.as_json())
 					print(f"Syncing {doctype} record: {doc_data}")
 					response = requests.post(url, headers=headers, json=doc_data)
@@ -136,6 +152,6 @@ def sync_up():
 						frappe.db.set_value(doctype, name, 'custom_is_sync', 1)
 						frappe.msgprint(_(f"Synced record {doc_data['name']} for {doctype}."))
 					else:
-						frappe.throw(_("Failed to sync {0} {1}: {2}").format(doctype, doc_data['name'], response.text))
+						frappe.log_error(response.text, f"Failed to sync {doctype} {doc_data['name']}")
 	except Exception as e:
 		frappe.log_error(str(e), "Sync Up Error")

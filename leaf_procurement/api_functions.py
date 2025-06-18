@@ -42,7 +42,7 @@ def create_company_accounts(settings, headers, company_name):
 	"""Create company accounts for the given company name."""
 	if not frappe.db.exists("Account", {"company": company_name}):
 		try:
-			url = f'{settings.instance_url}/api/resource/Account?fields=["*"]&filters=[["Account","company", "=", "{company_name}"]]'
+			url = f'{settings.get("instance_url")}/api/resource/Account?fields=["*"]&filters=[["Account","company", "=", "{company_name}"]]'
 			print(f"Fetching accounts for company: {url}")
 			response = requests.get(url, headers=headers)
 			if response.status_code == 200:
@@ -62,7 +62,7 @@ def create_letterHead(settings, headers, name):
 	"""Create a Letter Head with the given name."""
 	if not frappe.db.exists("Letter Head", name):
 		try:
-			url = f'{settings.instance_url}/api/resource/Letter Head?fields=["*"]&filters=[["name", "=", "{name}"]]'
+			url = f'{settings.get("instance_url")}/api/resource/Letter Head?fields=["*"]&filters=[["name", "=", "{name}"]]'
 			response = requests.get(url, headers=headers)
 			if response.status_code == 200:
 				data = response.json().get("data", [])
@@ -86,7 +86,7 @@ def create_warehouse(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Warehouse", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Warehouse?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Warehouse?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				print(f"Response status code: {response}")
 				if response.status_code == 200:
@@ -124,7 +124,7 @@ def create_quota_setup(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Quota Setup", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Quota Setup?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Quota Setup?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
@@ -156,7 +156,7 @@ def create_item(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Item", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Item?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Item?fields=["*"]'
 				print(f"Fetching accounts for company: {url}")
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
@@ -187,7 +187,7 @@ def create_item_grade(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Item Grade", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Item Grade?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Item Grade?fields=["*"]'
 				print(f"Fetching accounts for company: {url}")
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
@@ -214,7 +214,7 @@ def create_item_sub_grade(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Item Sub Grade", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Item Sub Grade?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Item Sub Grade?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
@@ -240,7 +240,7 @@ def create_item_grade_price(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Item Grade Price", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Item Grade Price?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Item Grade Price?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
@@ -272,7 +272,7 @@ def create_bale_status(settings, headers, data):
 	for item in data:	
 		if not frappe.db.exists("Bale Status", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Bale Status?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Bale Status?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
@@ -322,7 +322,7 @@ def create_transport_type(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Transport Type", item['name']):
 			try:
-				url = f'{settings.instance_url}/api/resource/Transport Type?fields=["*"]'
+				url = f'{settings.get("instance_url")}/api/resource/Transport Type?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
