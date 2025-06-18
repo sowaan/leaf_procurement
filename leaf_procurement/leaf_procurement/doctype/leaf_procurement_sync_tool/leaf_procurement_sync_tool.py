@@ -137,19 +137,21 @@ def sync_up():
 
 		for field, doctype in doctypes:
 			if doc.get(field):
-				print(f"Syncing from {doctype} to server...")
+				# print(f"Syncing from {doctype} to server...")
 				url = f'{settings.instance_url}/api/resource/{doctype}'
 				data = frappe.get_all(doctype, filters={"custom_is_sync": 0}, pluck='name')
 				for name in data:
 					doc_data = frappe.get_doc(doctype, name)
 					if doctype == "Bale Registration":
 						doc_data.check_validations = 0
+						doc_data.day_setup = ""
+
 					doc_data = json.loads(doc_data.as_json())
 					doc_data["skip_autoname"] = True
-					print(f"Syncing {doctype} record: {doc_data}")
+					# print(f"Syncing {doctype} record: {doc_data}")
 					response = requests.post(url, headers=headers, json=doc_data)
 					if response.status_code == 200 or response.status_code == 201:
-						print(doctype, name, 'custom_is_sync', "Want to check save record values")
+						# print(doctype, name, 'custom_is_sync', "Want to check save record values")
 						frappe.db.set_value(doctype, name, 'custom_is_sync', 1)
 						frappe.msgprint(_(f"Synced record {doc_data['name']} for {doctype}."))
 					else:
