@@ -140,4 +140,17 @@ frappe.ui.form.on('Purchase Invoice', {
             }
         }
     }
+    ,
+    before_cancel: function(frm) {
+        frappe.call({
+            method: 'your_app.api.check_bale_dependencies',
+            args: { purchase_invoice: frm.doc.name },
+            callback: function(r) {
+                if (r.message && r.message.length) {
+                    frappe.msgprint('Cannot cancel: Bales are already transferred.');
+                    throw 'Cancel aborted';
+                }
+            }
+        });
+    }    
 });
