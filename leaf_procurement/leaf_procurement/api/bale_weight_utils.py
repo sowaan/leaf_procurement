@@ -5,12 +5,22 @@ from frappe.utils import nowdate 	#type: ignore
 @frappe.whitelist()
 def get_bale_registration_code_by_barcode(barcode):
     # Step 1: Get parent Bale Registration Code
-    result = frappe.db.get_value('Bale Registration Detail', {'bale_barcode': barcode}, 'parent', as_dict=True)
+    result = frappe.db.get_value('Bale Registration Detail', {'bale_barcode': barcode}, 'parent')
     if not result:
         return None
 
-    bale_registration_code = result.parent
+    bale_registration_code = result
 
+    # Step 2: Check if already exists in Bale Purchase with submitted status
+    existing_bale_purchase = frappe.db.get_value(
+        'Bale Purchase',
+        {'bale_registration_code': bale_registration_code, 'docstatus': 1},
+        'name'
+    )
+    
+    if not existing_bale_purchase:
+        return None  # Already used in a submitted Bale Purchase
+    
     # Step 2: Check if already exists in Bale Purchase
     exists_in_purchase = frappe.db.exists('Bale Weight Info', {'bale_registration_code': bale_registration_code})
     if exists_in_purchase:

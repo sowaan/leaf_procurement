@@ -126,16 +126,16 @@ function update_grade_box(frm)
                     font-family: sans-serif;
                 ">
                     <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">
-                        ${frm.doc.supplier_grower}
+                        ${frm.doc.supplier_grower || ''}
                     </div>
                     <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
-                        Grade: ${frm.doc.item_grade}
+                        Grade: ${frm.doc.item_grade || ''}
                     </div>
                     <div style="font-size: 18px; margin-top: 5px; color: #8e44ad;">
-                        Sub-grade: ${frm.doc.item_sub_grade}
+                        Sub-grade: ${frm.doc.item_sub_grade || ''}
                     </div>
                     <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
-                        Price: ${frm.doc.price}
+                        Price: ${frm.doc.price || ''}
                     </div>          
                     </div>
             `;
@@ -586,6 +586,10 @@ const message_label = frm.fields_dict.message_label.$wrapper;
                 $input.focus();
             }
         }, 100);
+
+                  
+                update_grade_box(frm);
+      
         if (!frm.is_new) return;
         frm.set_query('bale_registration_code', function () {
             return {
@@ -887,12 +891,13 @@ async function render_main_pending_bales_list(frm) {
 
 
     // Header row with two columns: Barcode and Status
-    const $header = $(`
-                <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
-                    <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
-                    <div style="flex: 0 0 8ch; text-align: center;">Status</div>
-                </div>
-            `);
+const $header = $(`
+    <div style="display: flex; font-weight: bold; padding-bottom: 6px; border-bottom: 1px solid #ccc;">
+        <div style="flex: 1 1 13ch; min-width: 13ch; font-family: monospace;">Bale Barcode</div>
+        <div style="flex: 1 1 10ch; text-align: center;">Grade</div>
+        <div style="flex: 0 0 8ch; text-align: center;">Status</div>
+    </div>
+`);
     container.append($header);
     let already_processed = [];
     already_processed = await already_processed_bale(frm);
@@ -912,54 +917,42 @@ const message_label = frm.fields_dict.message_label.$wrapper;
         message_label.text('');
     }
 
+const barcodeToGrade = {};
+(frm.doc.detail_table || []).forEach(row => {
+    if (row.bale_barcode) {
+        barcodeToGrade[row.bale_barcode] = row.item_grade || "";
+    }
+});
 
-    Array.from(new Set(frm.bale_registration_barcodes)).forEach(barcode => {
-        const is_processed = processed_barcodes.includes(barcode);
-        const statusText = is_processed ? '✅' : '';
-        const statusBgColor = is_processed ? '#d4edda' : '#fff3cd';
-        const statusTextColor = is_processed ? '#155724' : '#856404';
+for (const barcode of Array.from(new Set(frm.bale_registration_barcodes))) {
+    const is_processed = processed_barcodes.includes(barcode);
+    const statusText = is_processed ? '✅' : '';
+    const statusTextColor = is_processed ? '#155724' : '#856404';
 
-        // Barcode cell
-        const $barcodeCell = $(`<div style="
-                                        flex: 1 1 13ch;
-                                        min-width: 13ch;
-                                        white-space: nowrap;
-                                        overflow: hidden;
-                                        text-overflow: ellipsis;
-                                        font-family: monospace;
-                                        padding: 4px 6px;
-                                    ">${barcode}</div>`);
+    const grade = barcodeToGrade[barcode] || "-";
 
-        // Status cell
-        const $statusCell = $(`<div style="
-                            flex: 0 0 8ch;
-                            text-align: center;
-                            font-weight: 700;
-                            color: ${statusTextColor};
-                            border-radius: 3px;
-                            padding: 2px 4px;
-                            user-select: none;
-                            margin-left: 6px;
-                        ">${statusText}</div>`);
+    const $barcodeCell = $(`<div style="flex: 1 1 13ch; min-width: 13ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: monospace; padding: 4px 6px;">${barcode}</div>`);
 
-        // Row container
-        const $row = $('<div style="display: flex; align-items: center; margin: 2px 0;"></div>');
-        $row.append($barcodeCell, $statusCell);
+    const $gradeCell = $(`<div style="flex: 1 1 10ch; text-align: center; font-family: monospace; padding: 4px 6px;">${grade}</div>`);
 
-        if (!is_processed) {
-            $row.css('cursor', 'pointer');
+    const $statusCell = $(`<div style="flex: 0 0 8ch; text-align: center; font-weight: 700; color: ${statusTextColor}; border-radius: 3px; padding: 2px 4px; user-select: none; margin-left: 6px;">${statusText}</div>`);
 
-            $row.on('click', () => {
-                frm.set_value('bale_barcode', barcode);
-                proceedWithBarcodeValidationAndGrade(frm, barcode);
+    const $row = $('<div style="display: flex; align-items: center; margin: 2px 0;"></div>');
+    $row.append($barcodeCell, $gradeCell, $statusCell);
 
-            });
-        } else {
-            $row.css('cursor', 'default');
-        }
+    if (!is_processed) {
+        $row.css('cursor', 'pointer');
+        $row.on('click', () => {
+            frm.set_value('bale_barcode', barcode);
+            proceedWithBarcodeValidationAndGrade(frm, barcode);
+        });
+    } else {
+        $row.css('cursor', 'default');
+    }
 
-        container.append($row);
-    });
+    container.append($row);
+}
+
 }
 
 function hide_grid_controls(frm) {

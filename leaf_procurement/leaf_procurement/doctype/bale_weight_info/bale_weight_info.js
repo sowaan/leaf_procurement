@@ -354,16 +354,16 @@ function update_grade_box(frm) {
                     font-family: sans-serif;
                 ">
                     <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">
-                        ${frm.doc.grower_name}
+                        ${frm.doc.grower_name || ''}
                     </div>
                     <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
-                        Grade: ${frm.doc.item_grade} / ${frm.doc.item_sub_grade}
+                        Grade: ${frm.doc.item_grade || ''} / ${frm.doc.item_sub_grade || ''}
                     </div>
                     <div style="font-size: 18px; margin-top: 5px; color: #8e44ad;">
-                        Weight: ${frm.doc.bale_weight}
+                        Weight: ${frm.doc.bale_weight || ''}
                     </div>
                     <div style="font-size: 20px; margin-top: 10px; color: #16a085;">
-                        Price: ${frm.doc.price}
+                        Price: ${frm.doc.price || ''}
                     </div>          
                     </div>
             `;
@@ -463,6 +463,25 @@ async function validate_bale_data(frm) {
 }
 
 frappe.ui.form.on("Bale Weight Info", {
+    on_submit: function(frm) {
+        frappe.msgprint({
+            title: __('Success'),
+            message: __('Record submitted successfully.'),
+            indicator: 'green'
+        });
+
+        // Use frappe.new_doc in a safe callback
+        setTimeout(() => {
+            if (frm && frm.doc && frm.doc.doctype === 'Bale Weight Info') {
+                frappe.new_doc('Bale Weight Info');
+
+            }
+        }, 1000); // Wait 1 second
+
+             setTimeout(() => {
+                update_grade_box(frm);
+ },100);
+    },        
     save_weight: async function (frm) {
         const result = await validate_bale_data(frm);
         if (!result.valid) {
@@ -481,6 +500,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 $input.focus();
             }
         }, 100);
+
     },
     validate: async function (frm) {
 
@@ -565,6 +585,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_bale_registration_code_by_barcode',
                     args: { barcode: barcode },
                     callback: function (r) {
+                        console.log(r.message);
                         if (r.message) {
                             const registration_code = r.message;
 
@@ -597,7 +618,7 @@ frappe.ui.form.on("Bale Weight Info", {
                             });
                         } else {
                             frappe.show_alert({
-                                message: '⚠️ Bale Registration not found for scanned barcode.',
+                                message: '⚠️ No Valid Bale Registration not found for scanned barcode.',
                                 indicator: 'red'
                             });
                             frm.set_value('bale_registration_code', '');
@@ -637,94 +658,9 @@ frappe.ui.form.on("Bale Weight Info", {
                 'delete_row', 'hidden', 1
             );
           
-            // if (!frm.doc.stationery) {
-            //     frm.add_custom_button(__('Generate Voucher'), async () => {
-            //         const { value } = await frappe.prompt([
-            //             {
-            //                 fieldname: 'stationery',
-            //                 label: 'Stationery',
-            //                 fieldtype: 'Data',
-            //                 reqd: 1
-            //             }
-            //         ],
-            //             (values) => {
-            //                 console.log('values:  ',values);
-            //                 // Save stationery to the current doc or linked doc
-            //                 frappe.call({
-            //                     method: 'frappe.client.set_value',
-            //                     args: {
-            //                         doctype: frm.doc.doctype,
-            //                         name: frm.doc.name,
-            //                         fieldname: {
-            //                             'stationery': values.stationery,
-            //                             'status': 'Printed'
-            //                         }
-            //                     },
-            //                     callback: function (response) {
-            //                         // After saving, open print view
-            //                         const docname = frm.doc.purchase_invoice; // or hardcode if needed
-            //                         const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
-            //                         window.open(route, '_blank');
-            //                     }
-            //                 });
-            //             },
-            //             __('Enter Stationery'), __('Save'));
-            //     });
-            //     frm.set_df_property('re_print', 'hidden', 1); 
-            // }
-            // else if (!frm.doc.reprint_reason)
-            // {
-            //     frm.set_df_property('re_print', 'hidden', 0); 
-            // }
-            
-            // if(frm.doc.stationery && frm.doc.re_print) {
-
-            //     frm.add_custom_button(__('Reprint Voucher'), async () => {
-            //         const { value } = await frappe.prompt([
-            //             {
-            //                 fieldname: 'stationery',
-            //                 label: 'Stationery',
-            //                 fieldtype: 'Data',
-            //                 reqd: 1
-            //             },
-            //             {
-            //                  fieldname: 'reason',
-            //                 label: 'Reason',
-            //                 fieldtype: 'Small Text',
-            //                 reqd: 1                           
-            //             }
-            //         ],
-            //             (values) => {
-            //                 frappe.call({
-            //                     method: 'frappe.client.set_value',
-            //                     args: {
-            //                         doctype: frm.doc.doctype,
-            //                         name: frm.doc.name,
-            //                         fieldname: {
-            //                             'stationery': values.stationery,
-            //                             're_print': 0,
-            //                             'reprint_reason': values.reason,
-            //                             'status': 'Re-Printed'
-            //                         }
-            //                     },
-            //                     callback: function (response) {
-            //                         // After saving, open print view
-            //                         const docname = frm.doc.purchase_invoice; // or hardcode if needed
-            //                         const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
-            //                         window.open(route, '_blank');
-            //                     }
-            //                 });
-            //             },
-            //             __('Enter Stationery'), __('Save'));
-            //     });
-            // }
         }
         load_bale_barcodes(frm);
-        // frm.set_value('scan_barcode', '');
-        // frm.set_value('item_grade', '');
-        // frm.set_value('item_sub_grade', '');
-        // frm.set_value('reclassification_grade', '');
-        // frm.set_value('price', '');        
+      
 
     },
     date: function (frm) {
@@ -773,7 +709,9 @@ frappe.ui.form.on("Bale Weight Info", {
             );
         }
 
-
+         setTimeout(() => {
+                update_grade_box(frm);
+ },100);
         //console.log('before: ',frm);
         setTimeout(() => {
             const $input = frm.fields_dict.scan_barcode.$wrapper.find('input');
@@ -781,6 +719,7 @@ frappe.ui.form.on("Bale Weight Info", {
                 $input.focus();
             }
         }, 100);
+
 
         if (!frm.is_new()) return;
 

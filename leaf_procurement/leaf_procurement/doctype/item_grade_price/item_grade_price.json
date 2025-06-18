@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:{abbr}-{short_code}-{item_sub_grade}-{###}",
  "creation": "2025-05-09 11:57:11.493822",
@@ -101,7 +102,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-20 11:21:37.223352",
+ "modified": "2025-06-18 01:11:02.786860",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Item Grade Price",
