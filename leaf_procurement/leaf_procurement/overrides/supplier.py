@@ -19,7 +19,7 @@ class CustomSupplier(Supplier):
         )
 
         prefix = f"{self.custom_location_short_code}-{year}-SUP-"
-        self.name = make_autoname(prefix + ".######")
+        self.name = make_autoname(prefix + ".#####")
                   
     def create_primary_contact(self):
         if self.custom_quota_allowed is None or self.custom_quota_allowed <= 0:
