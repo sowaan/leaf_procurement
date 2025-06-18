@@ -338,3 +338,24 @@ def create_transport_type(settings, headers, data):
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Transport Type Sync Errors")
+
+
+@frappe.whitelist()
+def update_bale_status(purchase_invoice):
+    # Step 1: Fetch Bale Weight Info
+    result = frappe.get_all(
+        'Bale Weight Info',
+        filters={'purchase_invoice': purchase_invoice},
+        fields=['name', 'bale_registration_code'],
+        limit_page_length=1
+    )
+
+    if result:
+        bale_registration_code = result[0].get('bale_registration_code')
+
+        # Step 2: Update Bale Registration status
+        if bale_registration_code:
+            frappe.db.set_value('Bale Registration', bale_registration_code, 'bale_status', 'Completed')
+            return {'status': 'success', 'updated': bale_registration_code}
+
+    return {'status': 'no_bale_found'}

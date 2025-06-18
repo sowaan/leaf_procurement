@@ -28,7 +28,7 @@ def validate_unique_nic(doc, method):
             _("NIC must be 13 digits. Current value: {0}").format(doc.custom_nic_number),
             title="Invalid NIC Number"
         )
-    settings = frappe.get_doc("Leaf Procurement Settings", ["custom_company","custom_location_warehouse"])
+    settings = frappe.get_doc("Leaf Procurement Settings")
     
     if not doc.custom_location_warehouse:
         doc.custom_location_warehouse = settings.get("location_warehouse") if settings else None

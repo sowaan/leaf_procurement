@@ -55,11 +55,7 @@ fixtures = [
 		]
 	}      
 ]
-doc_events = {
-    "Supplier": {
-        "validate": "leaf_procurement.leaf_procurement.custom.doctype.supplier.supplier.validate_unique_nic"
-    }
-}
+
 # Apps
 # ------------------
 
@@ -196,6 +192,9 @@ after_migrate = [
 # Hook on document methods and events
 
 doc_events = {
+    "Supplier": {
+        "validate": "leaf_procurement.leaf_procurement.custom.doctype.supplier.supplier.validate_unique_nic"
+    },
     "Purchase Invoice": {
         "on_cancel": "leaf_procurement.public.python.purchase_invoice_hooks.on_cancel_purchase_invoice",
         "before_cancel": "leaf_procurement.public.python.purchase_invoice_hooks.before_cancel_purchase_invoice"
