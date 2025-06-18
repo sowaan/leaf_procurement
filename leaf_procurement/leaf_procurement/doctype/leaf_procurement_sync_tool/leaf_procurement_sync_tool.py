@@ -57,11 +57,11 @@ def sync_down():
 
 		for field, doctype in doctypes:
 			if doc.get(field):
-				url = f'{settings.instance_url}/api/resource/{doctype}?fields=["*"]'
+				url = f'{settings.instance_url}/api/resource/{doctype}?fields=["*"]&limit_page_length=1000000'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
-					if len(data) > 10:
+					if len(data) > 20:
 						frappe.enqueue(
 							"leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.process_sync",
 							queue='default',
