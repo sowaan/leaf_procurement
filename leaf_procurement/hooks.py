@@ -197,7 +197,8 @@ after_migrate = [
 
 doc_events = {
     "Purchase Invoice": {
-        "validate": "leaf_procurement.public.python.purchase_invoice_hooks.on_cancel_purchase_invoice"
+        "on_cancel": "leaf_procurement.public.python.purchase_invoice_hooks.on_cancel_purchase_invoice",
+        "before_cancel": "leaf_procurement.public.python.purchase_invoice_hooks.before_cancel_purchase_invoice"
     }
 }
 

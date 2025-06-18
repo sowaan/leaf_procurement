@@ -28,11 +28,13 @@ def check_gtn_and_grade_difference(date):
     bales_missing_gtn = set(bale_ids_registered) - bale_ids_with_gtn
 
     for bale_id in bales_missing_gtn:
-        result = frappe.db.get_value(
-            "Bale Weight Detail",
-            {"bale_barcode": bale_id},
-            ["item_grade", "rate", "weight"]
-        )
+        result = frappe.db.sql("""
+            SELECT d.item_grade, d.rate, d.weight
+            FROM `tabBale Weight Detail` d
+            JOIN `tabBale Weight Info` p ON d.parent = p.name
+            WHERE d.bale_barcode = %s AND p.docstatus = 1
+            LIMIT 1
+        """, (bale_id,), as_dict=True)
 
         if not result:
             continue
