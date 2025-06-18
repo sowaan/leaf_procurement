@@ -9,6 +9,7 @@ import json
 from leaf_procurement.api_functions import (
 	create_company,
 	create_warehouse,
+	create_quota_setup,
 	create_item,
 	create_item_grade,
 	create_item_sub_grade,
@@ -65,6 +66,8 @@ def sync_down():
 						create_company(settings, headers, data)
 					if doctype == "Warehouse":
 						create_warehouse(settings, headers, data)
+					if doctype == "Quota Setup":
+						create_quota_setup(settings, headers, data)
 					if doctype == "Item":
 						create_item(settings, headers, data)
 					if doctype == "Item Grade":
