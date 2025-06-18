@@ -82,10 +82,15 @@ frappe.ui.form.on('Purchase Invoice', {
                                 callback: function (response) {
 
                                     update_registration_status(frm);
+                                    frappe.set_route(
+                                        "print",
+                                        "Purchase Invoice",
+                                        frm.doc.name
+                                    );
                                     // After saving, open print view
-                                    const docname = frm.doc.name; // or hardcode if needed
-                                    const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
-                                    window.open(route, '_blank');
+                                    // const docname = frm.doc.name; // or hardcode if needed
+                                    // const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
+                                    // window.open(route, '_blank');
                                 }
                             });
                         },
@@ -128,10 +133,15 @@ frappe.ui.form.on('Purchase Invoice', {
                                 },
                                 callback: function (response) {
                                     // After saving, open print view
-                                    frm.set_df_property('custom_re_print', 'hidden', 1);
-                                    const docname = frm.doc.name; // or hardcode if needed
-                                    const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
-                                    window.open(route, '_blank');
+                                   // frm.set_df_property('custom_re_print', 'hidden', 1);
+                                    // const docname = frm.doc.name; // or hardcode if needed
+                                    // const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
+                                    // window.open(route, '_blank');
+                                    frappe.set_route(
+                                        "print",
+                                        "Purchase Invoice",
+                                        frm.doc.name
+                                    );
                                 }
                             });
                         },
