@@ -5,7 +5,6 @@ def after_install():
     This function is called when the app is installed.
     It creates necessary translations for the app.
     """
-    setup_buying_settings()
     create_translations()
     frappe.db.commit()  # Ensure changes are committed to the database
     frappe.msgprint("Leaf Procurement app installed successfully with translations.")
@@ -31,8 +30,3 @@ def create_translations():
                 "translated_text": t["translated_text"]
             })
             doc.insert(ignore_permissions=True)
-
-def setup_buying_settings():
-    settings = frappe.get_single("Buying Settings")
-    settings.supp_master_name = "Naming Series"
-    settings.save()
