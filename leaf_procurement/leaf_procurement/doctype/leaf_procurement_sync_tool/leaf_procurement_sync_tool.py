@@ -145,6 +145,7 @@ def sync_up():
 					if doctype == "Bale Registration":
 						doc_data.check_validations = 0
 					doc_data = json.loads(doc_data.as_json())
+					doc_data["skip_autoname"] = True
 					print(f"Syncing {doctype} record: {doc_data}")
 					response = requests.post(url, headers=headers, json=doc_data)
 					if response.status_code == 200 or response.status_code == 201:

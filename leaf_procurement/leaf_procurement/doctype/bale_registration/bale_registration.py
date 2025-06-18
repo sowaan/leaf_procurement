@@ -13,6 +13,8 @@ from datetime import datetime
 
 class BaleRegistration(Document):
     def autoname(self):
+        if getattr(self, "skip_autoname", False):
+            return
         today = datetime.strptime(self.date, "%Y-%m-%d")
         date_part = today.strftime("%d%m%Y")
         current_year_short = today.strftime("%y")

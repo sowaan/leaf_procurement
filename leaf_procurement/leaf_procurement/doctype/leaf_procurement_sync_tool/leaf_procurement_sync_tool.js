@@ -21,8 +21,10 @@ const sync_up_checkboxes = [
     "bale_registration",
     "purchase_invoice",
     "goods_receiving_note",
-    "goods_transfer_note",
+    "goods_transfer_note"
 ];
+
+let is_bulk_update = false;
 
 frappe.ui.form.on("Leaf Procurement Sync Tool", {
     refresh(frm) {
@@ -75,24 +77,30 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
     sync_down_select_all(frm) {
         const is_checked = frm.doc.sync_down_select_all;
         frm.fields_dict.sync_down_select_all.df.label = is_checked ? 'Unselect All' : 'Select All';
+        is_bulk_update = true;
         sync_down_checkboxes.forEach(field => {
             frm.set_value(field, is_checked);
         });
+        is_bulk_update = false;
     },
 
     sync_up_select_all(frm) {
         const is_checked = frm.doc.sync_up_select_all;
         frm.fields_dict.sync_up_select_all.df.label = is_checked ? 'Unselect All' : 'Select All';
+        is_bulk_update = true;
         sync_up_checkboxes.forEach(field => {
             frm.set_value(field, is_checked);
         });
+        is_bulk_update = false;
     },
 
-    // Add triggers for individual checkboxes
+    // Individual sync_down checkbox handlers
     ...Object.fromEntries(
         sync_down_checkboxes.map(field => [
             field,
             function (frm) {
+                if (is_bulk_update) return;
+
                 if (!frm.doc[field]) {
                     frm.set_value('sync_down_select_all', 0);
                     frm.fields_dict.sync_down_select_all.df.label = 'Select All';
@@ -104,10 +112,13 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
         ])
     ),
 
+    // Individual sync_up checkbox handlers
     ...Object.fromEntries(
         sync_up_checkboxes.map(field => [
             field,
             function (frm) {
+                if (is_bulk_update) return;
+
                 if (!frm.doc[field]) {
                     frm.set_value('sync_up_select_all', 0);
                     frm.fields_dict.sync_up_select_all.df.label = 'Select All';
