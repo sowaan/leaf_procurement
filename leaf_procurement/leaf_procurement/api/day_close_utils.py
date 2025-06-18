@@ -36,11 +36,13 @@ def check_gtn_and_grade_difference(date):
             LIMIT 1
         """, (bale_id,), as_dict=True)
 
-        if not result:
+        if result:
+            item_grade = result[0]["item_grade"]
+            rate = result[0]["rate"]
+            weight = result[0]["weight"]
+        else:
             continue
-
-        item_grade, rate, weight = result       
-            
+        
         # Get rejection status from Item Grade
         is_rejected = frappe.db.get_value("Item Grade", {"item_grade_name": item_grade}, "rejected_grade")
 

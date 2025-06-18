@@ -12,7 +12,8 @@
   "column_break_vuup",
   "lot_number",
   "item_grade",
-  "item_sub_grade"
+  "item_sub_grade",
+  "reclassification_grade"
  ],
  "fields": [
   {
@@ -32,7 +33,9 @@
   {
    "fieldname": "lot_number",
    "fieldtype": "Read Only",
-   "label": "Lot Number"
+   "label": "Lot Number",
+   "print_hide": 1,
+   "report_hide": 1
   },
   {
    "fieldname": "item_grade",
@@ -43,8 +46,10 @@
   {
    "fieldname": "item_sub_grade",
    "fieldtype": "Read Only",
-   "in_list_view": 1,
-   "label": "Item Sub Grade"
+   "hidden": 1,
+   "label": "Item Sub Grade",
+   "print_hide": 1,
+   "report_hide": 1
   },
   {
    "fieldname": "rate",
@@ -59,12 +64,19 @@
   {
    "fieldname": "column_break_vuup",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reclassification_grade",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reclassification Grade",
+   "options": "Reclassification Grade"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-17 06:20:45.450779",
+ "modified": "2025-06-18 09:11:05.922410",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",

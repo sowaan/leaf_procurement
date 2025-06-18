@@ -7,9 +7,14 @@ from frappe import _ # type: ignore
 
 
 class GoodsTransferNote(Document):
+    def before_save(self):
+        if not self.transit_short_code:
+            frappe.throw("Transit Short Code is missing. Please ensure it is set before submission.")
+        
+        self.gtn_barcode = f"{self.transit_short_code}|{self.name}"       
 
     def on_submit(self):
-        self.gtn_barcode = self.transit_short_code + "/-/" + self.name
+
         create_stock_entry_from_gtn(self)
     # def on_update(self):
     #     create_stock_entry_from_gtn(self)

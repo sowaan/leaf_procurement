@@ -140,6 +140,7 @@ frappe.ui.form.on("Goods Transfer Note", {
             callback: function (r) {
 
                 if (r.message && r.message.exists) {
+                    console.log(r.message);
                     if(r.message.qty <=0){
                         frappe.show_alert({ message: __('The bale has been rejected during purchase / weight.'), indicator: 'orange' });
                         return;
@@ -150,7 +151,8 @@ frappe.ui.form.on("Goods Transfer Note", {
                         rate: r.message.rate,
                         lot_number: r.message.lot_number,
                         item_grade: r.message.grade,
-                        item_sub_grade: r.message.sub_grade
+                        item_sub_grade: r.message.sub_grade, 
+                        reclassification_grade: r.message.reclassification_grade
                     });
                     frm.refresh_field('bale_registration_detail');
                     update_bale_counter(frm);
@@ -192,7 +194,7 @@ frappe.ui.form.on("Goods Transfer Note", {
         }
 
         update_gtn_counter(frm);
- update_bale_counter(frm);
+        update_bale_counter(frm);
         frappe.call({
             method: 'frappe.client.get',
             args: {
@@ -230,4 +232,41 @@ frappe.ui.form.on("Goods Transfer Note", {
             };
         });
     }
+});
+
+
+frappe.ui.form.on("Goods Transfer Note Items", {
+    delete_row(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+
+        // Ask for confirmation before deleting
+        frappe.confirm(
+            `Are you sure you want to delete this row: ${row.bale_barcode}?`,
+            function () {
+                // Call server method to delete the child record
+                frappe.call({
+                    method: "frappe.client.delete",
+                    args: {
+                        doctype: row.doctype,
+                        name: row.name
+                    },
+                    callback: function (response) {
+                        if (!response.exc) {
+                            frappe.msgprint(__("Row deleted successfully"));
+
+                            // Remove from form UI
+                            frappe.model.clear_doc(cdt, cdn);
+                            frm.refresh_field('bale_registration_detail');
+
+                            if (cur_dialog) {
+                                cur_dialog.hide();
+                            }
+                            $('.modal-backdrop').remove();
+                            frm.reload_doc();
+                        }
+                    }
+                });
+            }
+        );
+    },
 });

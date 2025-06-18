@@ -87,9 +87,11 @@ SELECT
     pii.lot_number,
     pii.grade,
     pii.sub_grade,
+    bwd.reclassification_grade,
     pi.custom_stationary
 FROM `tabPurchase Invoice Item` pii
 INNER JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent
+INNER JOIN `tabBale Weight Detail` bwd on pii.batch_no = bwd.bale_barcode
         WHERE pii.item_code = %s and qty>0 AND pii.batch_no = %s AND pi.docstatus = 1
             
         ORDER BY pii.creation ASC
@@ -108,7 +110,8 @@ INNER JOIN `tabPurchase Invoice` pi ON pi.name = pii.parent
         "qty": i.qty,
         "lot_number": i.lot_number,
         "grade": i.grade,
-        "sub_grade": i.sub_grade
+        "sub_grade": i.sub_grade,
+        "reclassification_grade": i.reclassification_grade
 
 
     }

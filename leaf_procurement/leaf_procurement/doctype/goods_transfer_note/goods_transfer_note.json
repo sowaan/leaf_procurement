@@ -229,8 +229,7 @@
   {
    "allow_on_submit": 1,
    "fieldname": "gtn_barcode",
-   "fieldtype": "Barcode",
-   "hidden": 1
+   "fieldtype": "Barcode"
   },
   {
    "fieldname": "section_break_dytr",
@@ -252,7 +251,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-18 12:41:26.247174",
+ "modified": "2025-06-18 08:31:55.756313",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -272,6 +271,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
