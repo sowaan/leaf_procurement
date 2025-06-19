@@ -249,6 +249,7 @@ scheduler_events = {
 # }
 override_doctype_class = {
     "Supplier": "leaf_procurement.leaf_procurement.overrides.supplier.CustomSupplier",
+    "Purchase Invoice": "leaf_procurement.leaf_procurement.overrides.purchase_invoice.CustomPurchaseInvoice"
 }
 #
 # each overriding function accepts a `data` argument;
