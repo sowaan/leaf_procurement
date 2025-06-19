@@ -20,8 +20,35 @@ class GoodsTransferNote(Document):
     #     create_stock_entry_from_gtn(self)
 
     def validate(self):
+        check_bale_already_exists(self)
         ensure_unique_tsa_per_warehouse(self)
 
+def check_bale_already_exists(doc):
+    duplicate_barcodes = []
+
+    for item in doc.bale_registration_detail:
+        exists = frappe.db.exists(
+            "Goods Transfer Note Items",
+            {
+                "bale_barcode": item.bale_barcode,
+                "parent": ["!=", doc.name]
+            }
+        )
+
+        if exists:
+            # Check if parent GTN is submitted
+            parent_status = frappe.db.get_value("Goods Transfer Note", exists, "docstatus")
+
+            duplicate_barcodes.append(item.bale_barcode)
+            
+
+    if duplicate_barcodes:
+        frappe.throw(
+            _("The following bale barcodes already exist in submitted Goods Transfer Notes:\n{0}").format(
+                ", ".join(duplicate_barcodes)
+            ),
+            title=_("Duplicate TSA Number")
+        )
 def ensure_unique_tsa_per_warehouse(self):
     if not self.tsa_number or not self.location_warehouse:
         return

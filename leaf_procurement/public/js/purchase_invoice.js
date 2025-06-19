@@ -18,6 +18,29 @@ function update_registration_status(frm) {
     });
 
 }
+function check_day_open_status(frm) {
+    return new Promise((resolve) => {
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Day Setup",
+                filters: {
+                    date: frm.doc.posting_date,
+                    day_open_time: ["is", "set"],
+                    day_close_time: ["is", "not set"]
+                },
+                fields: ["name"]
+            },
+            callback: function (r) {
+                const is_day_open = r.message && r.message.length > 0;
+
+                resolve(is_day_open); // ✅ Now resolves with true or false
+            }
+        });
+    });
+}
+
+
 frappe.ui.form.on('Purchase Invoice', {
     refresh(frm) {
         // hide print button
@@ -26,6 +49,12 @@ frappe.ui.form.on('Purchase Invoice', {
         if (frm.doc.docstatus === 1) {
             if (!frm.doc.custom_stationary) {
                 frm.add_custom_button(__('Print Voucher'), async () => {
+                                        const day_is_open = await check_day_open_status(frm);
+
+                    if (!day_is_open) {
+                        frappe.msgprint(__('Voucher cannot be printed for a closed day.'));
+                        return;
+                    }
                     const { value } = await frappe.prompt([
                         {
                             fieldname: 'stationery',
@@ -72,6 +101,14 @@ frappe.ui.form.on('Purchase Invoice', {
             if (frm.doc.custom_stationary && frm.doc.custom_re_print) {
 
                 frm.add_custom_button(__('Reprint Voucher'), async () => {
+                    const day_is_open = await check_day_open_status(frm);
+
+                    if (!day_is_open) {
+                        frappe.msgprint(__('Voucher cannot be printed for a closed day.'));
+                        return;
+                    }
+
+
                     const { value } = await frappe.prompt([
                         {
                             fieldname: 'stationery',
@@ -106,6 +143,7 @@ frappe.ui.form.on('Purchase Invoice', {
                                     // const docname = frm.doc.name; // or hardcode if needed
                                     // const route = `/app/print/Purchase Invoice/${encodeURIComponent(docname)}`;
                                     // window.open(route, '_blank');
+
                                     frappe.set_route(
                                         "print",
                                         "Purchase Invoice",

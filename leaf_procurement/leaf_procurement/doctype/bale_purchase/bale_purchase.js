@@ -461,17 +461,21 @@ const message_label = frm.fields_dict.message_label.$wrapper;
         $barcode_input.on('keyup', function (e) {
             const barcode = $(this).val();
             const expectedLength = parseInt(frm.doc.barcode_length || 0, 10);
+            console.log(barcode, barcode.length , expectedLength)
             if (e.key === 'Enter' || barcode.length === expectedLength) {
+                console.log('iam here..', frm.doc.bale_registration_code);
                 // If bale_registration_code already exists, skip fetching
                 if (!frm.doc.bale_registration_code) {
+                    console.log('finding code');
                     // Step 1: Get bale_registration_code using barcode
                     frappe.call({
                         method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_bale_registration_code_by_barcode',
                         args: { barcode: barcode },
                         callback: function (r) {
+                            console.log('r-', r);
                             if (r.message) {
                                 frm.set_value('bale_registration_code', r.message);
-
+                                
 
                                 setTimeout(() => {
 
@@ -493,6 +497,7 @@ const message_label = frm.fields_dict.message_label.$wrapper;
                     });
                 }
                 else {
+                    
                     //if (!is_grade_popup_open)
                     proceedWithBarcodeValidationAndGrade(frm, barcode, d);
                 }
@@ -509,18 +514,19 @@ const message_label = frm.fields_dict.message_label.$wrapper;
     },
 
     bale_barcode: async function (frm) {
+
         if (suppress_focus) return;  // Prevent focus if suppress is active
         const barcode = frm.doc.bale_barcode;
+
         if (barcode && barcode.length == frm.doc.barcode_length) {
             if (frm.doc.bale_registration_code) {
                 if (!is_grade_popup_open) await proceedWithBarcodeValidationAndGrade(frm, barcode);
             }
             else{
                const barcode = frm.doc.bale_barcode;
-
     
             frappe.call({
-                method: 'leaf_procurement.leaf_procurement.api.bale_weight_utils.get_bale_registration_code_by_barcode',
+                method: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_bale_registration_code_by_barcode',
                 args: { barcode: barcode },
                 callback: async function (r) {
                     if (r.message) {
@@ -531,6 +537,20 @@ const message_label = frm.fields_dict.message_label.$wrapper;
                         setTimeout(() => {
                             proceedWithBarcodeValidationAndGrade(frm, barcode);
                         }, 300)
+                    }
+                    else{
+                            frappe.show_alert({
+                                message: 'Lot not registered or already purchased.',
+                                indicator: 'red'
+                            });
+                            frm.set_value('bale_registration_code', '');
+                            frm.set_value('bale_barcode', '');
+                            setTimeout(() => {
+                                const $input = frm.fields_dict.bale_barcode.$wrapper.find('input');
+                                if ($input.length) {
+                                    $input.focus();
+                                }
+                            }, 100);                        
                     }
                 }
             });

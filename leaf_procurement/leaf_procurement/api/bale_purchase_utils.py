@@ -67,35 +67,6 @@ def get_bale_registration_code_by_barcode(barcode):
     if frappe.db.exists('Bale Purchase Detail', {'bale_barcode': barcode}):
         return None  # Already used, don't allow reuse
 
-    # Step 3: Check if some bale barcodes from this registration are still pending
-    bale_purchase = []
-    if frappe.db.exists('Bale Purchase', {'bale_registration_code': bale_registration_code, 'docstatus': ['<', 2]}):
-        bale_purchase = frappe.get_all(
-            'Bale Purchase',
-            filters={'bale_registration_code': bale_registration_code, 'docstatus': ['<', 2]},
-            pluck='name'
-        )
-    used_barcodes = frappe.get_all(
-        'Bale Purchase Detail',
-        # filters={'parent': bale_registration_code},
-        filters=[['parent', 'in', bale_purchase]],
-        fields=['bale_barcode'],
-        pluck='bale_barcode'
-    )
-
-    remaining = frappe.get_all(
-        'Bale Registration Detail',
-        filters=[
-            ['parent', '=', bale_registration_code],
-            ['bale_barcode', 'not in', used_barcodes]
-        ],
-        fields=['parent'],
-        pluck='parent',
-        distinct=True
-    )
-
-    if not remaining:
-        return None  # All barcodes from this registration have been used
 
     return bale_registration_code  # Valid and still has unused barcodes
 

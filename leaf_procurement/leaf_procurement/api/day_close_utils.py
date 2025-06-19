@@ -1,10 +1,25 @@
 import frappe # type: ignore
+from frappe import _
+
 
 @frappe.whitelist()
 def check_gtn_and_grade_difference(date):
+   # ----------- 1. Check for Unprinted Vouchers (bale_status != 'Completed') ----------
+    incomplete_vouchers = frappe.get_all(
+        "Bale Registration",
+        filters={"date": date, "bale_status": ["!=", "Completed"]},
+        fields=["name"]
+    )
+
+    if incomplete_vouchers:
+        lot_names = [d["name"] for d in incomplete_vouchers]
+        frappe.throw(_("Please print vouchers for the following lots to continue:\n{0}")
+                     .format(", ".join(lot_names)))    
+        
+    # ----------- 2. Check GTN and Grade Mismatches ----------
     mismatches = []
 
-    # Step 1: Get all bale IDs from Bale Registration Detail for the given date
+    # Get all Bale Registration names and details for the date
     registration_names = frappe.get_all("Bale Registration", filters={"date": date}, pluck="name")
     bale_ids_registered = frappe.get_all(
         "Bale Registration Detail",
@@ -13,18 +28,19 @@ def check_gtn_and_grade_difference(date):
     )
 
     if not bale_ids_registered:
-        return  mismatches# or return None / {} / [] depending on your function
-    
-    # Step 2: Get bale IDs from submitted GTNs
+        return mismatches
+
+    # Get bale IDs present in submitted GTNs
     bale_ids_with_gtn = frappe.db.sql("""
         SELECT gd.bale_barcode
         FROM `tabGoods Transfer Note Items` gd
         JOIN `tabGoods Transfer Note` gtn ON gd.parent = gtn.name
         WHERE gtn.docstatus = 1 AND gd.bale_barcode IN %s
     """, (tuple(bale_ids_registered),), as_dict=True)
+
     bale_ids_with_gtn = {d.bale_barcode for d in bale_ids_with_gtn}
 
-    # Step 3: Now check only bales that are missing in GTN
+    # Identify bales missing in GTN
     bales_missing_gtn = set(bale_ids_registered) - bale_ids_with_gtn
 
     for bale_id in bales_missing_gtn:
@@ -42,18 +58,17 @@ def check_gtn_and_grade_difference(date):
             weight = result[0]["weight"]
         else:
             continue
-        
-        # Get rejection status from Item Grade
+
         is_rejected = frappe.db.get_value("Item Grade", {"item_grade_name": item_grade}, "rejected_grade")
 
-        if not is_rejected :
+        if not is_rejected:
             mismatches.append({
                 "bale_id": bale_id,
                 "item_grade": item_grade or "-",
                 "weight": weight or "-",
                 "rate": rate or "-",
                 "gtn_status": "Missing",
-                "note": "GTN missing and grade is not rejected or grades differ"
+                "note": "GTN missing and grade is not rejected"
             })
 
     return mismatches

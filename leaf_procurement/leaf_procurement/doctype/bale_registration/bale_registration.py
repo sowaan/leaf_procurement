@@ -74,3 +74,26 @@ class BaleRegistration(Document):
             raise ValidationError
         self.bale_status = "In Buying"
         frappe.db.set_value(self.doctype, self.name, "bale_status", "In Buying")
+
+    def validate(self):
+        validate(self)
+
+def validate(doc, method=None):
+    if not doc.supplier_grower:
+        return
+
+    # Step 1: Get Supplier Quota
+    quota = frappe.db.get_value("Supplier", doc.supplier_grower, "custom_quota_allowed") or 0
+
+    # Step 2: Get Total Weight of All Bale Weight Detail Entries for this supplier
+    total_weight = frappe.db.sql("""
+        SELECT SUM(d.weight)
+        FROM `tabBale Weight Detail` d
+        JOIN `tabBale Weight Info` i ON d.parent = i.name
+        WHERE i.supplier_grower = %s AND i.docstatus < 2
+    """, (doc.supplier_grower,), as_list=True)[0][0] or 0
+
+    if total_weight > quota:
+        frappe.throw(_(
+            "Total weight for supplier '{0}' exceeds allowed quota.\nQuota: {1}, Current Total: {2}"
+        ).format(doc.supplier_grower, quota, total_weight))
