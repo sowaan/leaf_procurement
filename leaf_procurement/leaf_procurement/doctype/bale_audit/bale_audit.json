@@ -63,6 +63,7 @@
    "read_only": 1
   },
   {
+   "default": "now",
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date"
@@ -151,7 +152,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-17 15:58:22.557081",
+ "modified": "2025-06-19 00:48:52.672137",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
@@ -172,6 +173,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
