@@ -79,7 +79,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     # Create Purchase Invoice
     invoice = frappe.new_doc("Purchase Invoice")
     invoice.supplier = doc.supplier_grower
-    invoice.posting_date = nowdate()
+    invoice.posting_date = doc.date
     invoice.company = company
     invoice.set_posting_time = 1
     invoice.update_stock = 1
