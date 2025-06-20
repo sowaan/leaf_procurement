@@ -1,3 +1,4 @@
+
 import frappe # type: ignore
 import urllib.parse
 

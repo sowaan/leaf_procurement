@@ -239,11 +239,18 @@ frappe.ui.form.on("Goods Transfer Note Items", {
     delete_row(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
 
-        // Ask for confirmation before deleting
         frappe.confirm(
             `Are you sure you want to delete this row: ${row.bale_barcode}?`,
             function () {
-                // Call server method to delete the child record
+                if (!row.name || row.__islocal) {
+                    frappe.model.clear_doc(cdt, cdn);
+                    frm.refresh_field('bale_registration_detail');
+
+                    // Proper cleanup
+                    safely_close_modal();
+                    return;
+                }
+
                 frappe.call({
                     method: "frappe.client.delete",
                     args: {
@@ -253,20 +260,33 @@ frappe.ui.form.on("Goods Transfer Note Items", {
                     callback: function (response) {
                         if (!response.exc) {
                             frappe.msgprint(__("Row deleted successfully"));
-
-                            // Remove from form UI
                             frappe.model.clear_doc(cdt, cdn);
                             frm.refresh_field('bale_registration_detail');
-
-                            if (cur_dialog) {
-                                cur_dialog.hide();
-                            }
-                            $('.modal-backdrop').remove();
                             frm.reload_doc();
+
+                            // Proper cleanup
+                            safely_close_modal();
                         }
+                    },
+                    error: function () {
+                        frappe.msgprint(__('Unable to delete row. It may not exist in the database.'));
                     }
                 });
             }
         );
-    },
+    }
 });
+
+function safely_close_modal() {
+    try {
+        if (cur_dialog && cur_dialog.$wrapper && cur_dialog.$wrapper.is(':visible')) {
+            cur_dialog.hide();
+        }
+    } catch (e) {
+        console.warn('Dialog cleanup skipped:', e);
+    }
+
+    // Always remove any leftover backdrop
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open');
+}

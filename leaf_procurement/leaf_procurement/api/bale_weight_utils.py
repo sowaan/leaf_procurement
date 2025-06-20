@@ -171,6 +171,8 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
 
 
     invoice.save()
+    frappe.db.set_value("Purchase Invoice", invoice.name, "custom_barcode", invoice.name)
+    invoice.reload()
     invoice.submit()
 
     # Mark the source document as processed and save invoice number to source document

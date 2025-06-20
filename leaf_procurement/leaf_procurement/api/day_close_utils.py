@@ -6,15 +6,21 @@ from frappe import _
 def check_gtn_and_grade_difference(date):
    # ----------- 1. Check for Unprinted Vouchers (bale_status != 'Completed') ----------
     incomplete_vouchers = frappe.get_all(
-        "Bale Registration",
-        filters={"date": date, "bale_status": ["!=", "Completed"]},
+        "Purchase Invoice",
+        filters={
+            "posting_date": date,
+            "custom_stationary": ["in", [None, ""]],
+            "docstatus": 1  # Optional: Only consider submitted invoices
+        },
         fields=["name"]
     )
 
     if incomplete_vouchers:
-        lot_names = [d["name"] for d in incomplete_vouchers]
-        frappe.throw(_("Please print vouchers for the following lots to continue:\n{0}")
-                     .format(", ".join(lot_names)))    
+        invoice_names = [d["name"] for d in incomplete_vouchers]
+        frappe.throw(
+            _("Please print vouchers for the following Purchase Invoices to continue:\n{0}")
+            .format(", ".join(invoice_names))
+        )   
         
     # ----------- 2. Check GTN and Grade Mismatches ----------
     mismatches = []
