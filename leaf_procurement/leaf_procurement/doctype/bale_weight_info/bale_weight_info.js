@@ -409,7 +409,7 @@ async function validate_bale_data(frm) {
     }
 
     // If it's not a rejected grade, apply min/max weight validation
-    
+
     if (!rejected_grade) {
 
         if (!values.reclassification_grade) {
@@ -435,12 +435,12 @@ async function validate_bale_data(frm) {
                 return { valid: false };
             }
         }
-        else{
-                frappe.show_alert({
-                    message: `Quota Setup is not defined please define a Quota for this location.`,
-                    indicator: 'red'
-                });
-                return { valid: false };            
+        else {
+            frappe.show_alert({
+                message: `Quota Setup is not defined please define a Quota for this location.`,
+                indicator: 'red'
+            });
+            return { valid: false };
         }
     }
 
@@ -463,7 +463,7 @@ async function validate_bale_data(frm) {
 }
 
 frappe.ui.form.on("Bale Weight Info", {
-    on_submit: function(frm) {
+    on_submit: function (frm) {
         frappe.msgprint({
             title: __('Success'),
             message: __('Record submitted successfully.'),
@@ -478,10 +478,10 @@ frappe.ui.form.on("Bale Weight Info", {
             }
         }, 1000); // Wait 1 second
 
-             setTimeout(() => {
-                update_grade_box(frm);
- },100);
-    },        
+        setTimeout(() => {
+            update_grade_box(frm);
+        }, 100);
+    },
     save_weight: async function (frm) {
         const result = await validate_bale_data(frm);
         if (!result.valid) {
@@ -657,10 +657,10 @@ frappe.ui.form.on("Bale Weight Info", {
             frm.fields_dict['detail_table'].grid.update_docfield_property(
                 'delete_row', 'hidden', 1
             );
-          
+
         }
         load_bale_barcodes(frm);
-      
+
 
     },
     date: function (frm) {
@@ -709,9 +709,9 @@ frappe.ui.form.on("Bale Weight Info", {
             );
         }
 
-         setTimeout(() => {
-                update_grade_box(frm);
- },100);
+        setTimeout(() => {
+            update_grade_box(frm);
+        }, 100);
         //console.log('before: ',frm);
         setTimeout(() => {
             const $input = frm.fields_dict.scan_barcode.$wrapper.find('input');

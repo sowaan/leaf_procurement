@@ -90,3 +90,22 @@ def get_supplier(bale_registration_code):
     # Get the supplier field from Bale Registration
     supplier = frappe.db.get_value("Bale Registration", bale_registration_code, "supplier_grower")
     return supplier
+
+@frappe.whitelist()
+def get_free_gtn(doctype, txt, searchfield, start, page_len, filters):
+    return frappe.db.sql("""
+        SELECT gtn.name
+        FROM `tabGoods Transfer Note` gtn
+        WHERE NOT EXISTS (
+            SELECT grn.gtn_number FROM `tabGoods Receiving Note` grn
+            WHERE grn.gtn_number = gtn.name
+        )
+        AND gtn.name LIKE %(txt)s
+        AND gtn.docstatus = 1
+        ORDER BY gtn.creation ASC
+        LIMIT %(start)s, %(page_len)s
+    """, {
+        "txt": f"%{txt}%",
+        "start": int(start),
+        "page_len": int(page_len)
+    })
