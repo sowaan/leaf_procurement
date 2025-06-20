@@ -12,6 +12,7 @@
   "driver_mobile",
   "transport_type",
   "tsa_number",
+  "custom_is_sync",
   "column_break_vvyy",
   "location_warehouse",
   "location_short_code",
@@ -246,12 +247,22 @@
    "hidden": 1,
    "label": "Transit Short Code",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "custom_is_sync",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Sync",
+   "no_copy": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-18 08:31:55.756313",
+ "modified": "2025-06-20 15:57:53.687611",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -271,7 +282,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
