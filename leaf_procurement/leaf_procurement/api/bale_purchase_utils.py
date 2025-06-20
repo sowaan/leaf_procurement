@@ -2,6 +2,17 @@ import frappe 	#type: ignore
 
 @frappe.whitelist()
 def get_available_bale_registrations(doctype, txt, searchfield, start, page_len, filters):
+    open_day = frappe.db.get_value(
+        "Day Setup",
+        {"status": "Opened"},
+        "date",
+        order_by="date desc"
+    )
+
+    if not open_day:
+        return []
+    
+
     # Get bale registrations that are not already linked in a Bale Purchase
     return frappe.db.sql("""
         SELECT br.name
@@ -14,6 +25,7 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
         )
         AND br.docstatus = 1
         AND br.name LIKE %(txt)s
+        AND br.date = %(open_day)s
         AND (
             SELECT COUNT(*)
             FROM `tabBale Registration Detail` brd
@@ -30,6 +42,7 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
         ORDER BY br.name
         LIMIT %(start)s, %(page_len)s
     """, {
+        "open_day": open_day,
         "txt": f"%{txt}%",
         "start": start,
         "page_len": page_len
@@ -56,6 +69,16 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
 
 @frappe.whitelist()
 def get_bale_registration_code_by_barcode(barcode):
+    open_day = frappe.db.get_value(
+        "Day Setup",
+        {"status": "Opened"},
+        "date",
+        order_by="date desc"
+    )
+
+    if not open_day:
+        return None
+
     # Step 1: Find the Bale Registration this barcode belongs to
     reg_detail = frappe.db.get_value('Bale Registration Detail', {'bale_barcode': barcode}, 'parent', as_dict=True)
     if not reg_detail:
@@ -64,6 +87,12 @@ def get_bale_registration_code_by_barcode(barcode):
     bale_registration_code = reg_detail.parent
 
     # Step 2: Check if this bale barcode has already been used in any purchase
+    reg_date = frappe.db.get_value("Bale Registration", bale_registration_code, "date")
+
+    if reg_date != open_day:
+        return None  # Already used, don't allow reuse
+    
+    # Step 3: Check if this bale barcode has already been used in any purchase
     if frappe.db.exists('Bale Purchase Detail', {'bale_barcode': barcode}):
         return None  # Already used, don't allow reuse
 

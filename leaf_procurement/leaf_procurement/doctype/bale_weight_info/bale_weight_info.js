@@ -618,7 +618,7 @@ frappe.ui.form.on("Bale Weight Info", {
                             });
                         } else {
                             frappe.show_alert({
-                                message: '⚠️ No Valid Bale Registration not found for scanned barcode.',
+                                message: '⚠️ No Valid Bale Registration found for scanned barcode.',
                                 indicator: 'red'
                             });
                             frm.set_value('bale_registration_code', '');
@@ -646,7 +646,6 @@ frappe.ui.form.on("Bale Weight Info", {
     ,
 
     bale_registration_code: async function (frm) {
-        validate_day_status(frm);
         load_bale_barcodes(frm);
         await check_rejected_purchases(frm);
     },
@@ -682,7 +681,7 @@ frappe.ui.form.on("Bale Weight Info", {
         await cleanupSerial(frm);
         //frappe.msgprint(__('Scale disconnected.'));
     },
-    onload: function (frm) {
+    onload: async function (frm) {
 
         frm.page.sidebar.toggle(false);
         if (!frm.is_new()) {
@@ -723,6 +722,10 @@ frappe.ui.form.on("Bale Weight Info", {
 
         if (!frm.is_new()) return;
 
+        const open_day = await get_open_day_date();
+        if (open_day ) {
+            frm.set_value('date', open_day);
+        }
         //override bale_registration_code query to load 
         //bale registration codes with no purchase record
         frm.set_query('bale_registration_code', function () {
@@ -1319,7 +1322,6 @@ function check_day_open_status(frm) {
 }
 
 async function check_rejected_purchases(frm) {
-    console.log('here i am now...');
     if (!frm.doc.bale_registration_code) return;
     const registration_code = frm.doc.bale_registration_code;
     try {
@@ -1371,7 +1373,7 @@ function load_bale_barcodes(frm) {
         return;
     }
 
-
+    frm.set_df_property('bale_registration_code', 'read_only', 1);
 
     frappe.call({
         method: 'frappe.client.get',
@@ -1412,3 +1414,29 @@ function load_bale_barcodes(frm) {
 //             .hide();
 //     }
 // }
+async function get_open_day_date() {
+    return new Promise((resolve, reject) => {
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Day Setup",
+                filters: {
+                    status: "Opened"
+                },
+                fields: ["date"],
+                limit_page_length: 1,
+                order_by: "date desc"
+            },
+            callback: function (r) {
+                if (r.message && r.message.length > 0) {
+                    resolve(r.message[0].date);
+                } else {
+                    resolve(null);
+                }
+            },
+            error: function (err) {
+                reject(err);
+            }
+        });
+    });
+}

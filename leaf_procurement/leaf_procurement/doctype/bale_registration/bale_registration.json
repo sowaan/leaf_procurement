@@ -142,6 +142,7 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -206,8 +207,10 @@
   },
   {
    "allow_on_submit": 1,
+   "default": "In Registration",
    "fieldname": "bale_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Bale Status",
    "options": "In Registration\nIn Buying\nIn Weighment\nIn Print Voucher\nCompleted",
@@ -218,7 +221,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-18 12:19:41.119324",
+ "modified": "2025-06-20 04:37:05.691059",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
@@ -237,6 +240,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
