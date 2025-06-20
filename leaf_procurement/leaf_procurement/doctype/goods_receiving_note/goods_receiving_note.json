@@ -8,10 +8,12 @@
  "field_order": [
   "company",
   "gtn_number",
+  "date",
   "custom_is_sync",
   "column_break_ydmp",
   "location_warehouse",
-  "date",
+  "dispatch_location",
+  "transit_location",
   "column_break_npwo",
   "location_shortcode",
   "default_item",
@@ -28,9 +30,10 @@
  "fields": [
   {
    "fieldname": "gtn_number",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "GTN Number",
+   "options": "Goods Transfer Note",
    "reqd": 1
   },
   {
@@ -78,7 +81,7 @@
   {
    "fieldname": "detail_table",
    "fieldtype": "Table",
-   "options": "Goods Receiving Detail"
+   "options": "Goods Transfer Note Items"
   },
   {
    "fieldname": "date",
@@ -134,12 +137,26 @@
    "label": "Is Sync",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "fetch_from": "gtn_number.location_warehouse",
+   "fieldname": "dispatch_location",
+   "fieldtype": "Link",
+   "label": "Dispatch Location",
+   "options": "Warehouse"
+  },
+  {
+   "fetch_from": "gtn_number.transit_location",
+   "fieldname": "transit_location",
+   "fieldtype": "Link",
+   "label": "Transit Location",
+   "options": "Warehouse"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-17 11:22:22.836828",
+ "modified": "2025-06-20 17:06:28.033982",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",

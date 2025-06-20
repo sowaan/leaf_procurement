@@ -12,7 +12,13 @@ frappe.ui.form.on("Goods Receiving Note", {
             });
         }
 
-        
+        frm.set_query('gtn_number', function () {
+            return {
+                query: 'leaf_procurement.leaf_procurement.api.bale_purchase_utils.get_free_gtn'
+            };
+        });
+
+
         if (!frm.is_new()) return;
 
         frappe.call({
@@ -21,16 +27,16 @@ frappe.ui.form.on("Goods Receiving Note", {
                 doctype: 'Leaf Procurement Settings',
                 name: 'Leaf Procurement Settings'
             },
-            callback: function(r) {
+            callback: function (r) {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
-                    frm.set_value('location_warehouse', r.message.location_warehouse);    
+                    frm.set_value('location_warehouse', r.message.location_warehouse);
                     frm.set_value('barcode_length', r.message.barcode_length);
                     frm.set_value('default_item', r.message.default_item);
-                }   
+                }
             }
-        });                
-    },  
+        });
+    },
     refresh(frm) {
         //hide_grid_controls(frm);
         frm.set_df_property('detail_table', 'read_only', 1);
@@ -56,32 +62,84 @@ frappe.ui.form.on("Goods Receiving Note", {
             //frappe.msgprint(__('Barcode must be exactly {0} digits.', [expected_length]));
             return;
         }
-        
-        
+
+
         // Check for duplicate barcode
         const exists = frm.doc.detail_table.some(row => row.bale_barcode === barcode);
         if (exists) {
             frappe.msgprint(`Barcode "${barcode}" is already scanned.`);
         } else {
-            const child = frm.add_child('detail_table');
-            child.bale_barcode = barcode;
- 
-            frm.refresh_field('detail_table');
+            frappe.call({
+                method: 'frappe.client.get',
+                args: {
+                    doctype: 'Goods Transfer Note',
+                    name: frm.doc.gtn_number
+                },
+                callback: function (r) {
+                    if (r.message) {
+                        const hasbarcode = r.message.bale_registration_detail.filter(row => row.bale_barcode === barcode);
+                        if (hasbarcode.length > 0) {
+                            hasbarcode.forEach(item => {
+                                const child = frm.add_child('detail_table');
+                                child.bale_barcode = item.bale_barcode;
+                                child.weight = item.weight;
+                                child.rate = item.rate;
+                                child.lot_number = item.lot_number;
+                                child.item_grade = item.item_grade;
+                                child.reclassification_grade = item.reclassification_grade;
+                            });
+                            frm.refresh_field('detail_table');
+                        } else {
+                            frappe.msgprint(`No details found for barcode "${barcode}" in GTN ${frm.doc.gtn_number}.`);
+                        }
+                    } else {
+                        frappe.msgprint(__('No details found for the provided GTN number.'));
+                    }
+                }
+            });
         }
         frm.set_value('scan_barcode', '');  // Clear scan input
+    },
 
-    }    
+    gtn_number(frm) {
+        if (!frm.doc.gtn_number) return;
+
+        frappe.call({
+            method: 'frappe.client.get',
+            args: {
+                doctype: 'Goods Transfer Note',
+                name: frm.doc.gtn_number
+            },
+            callback: function (r) {
+                if (r.message) {
+                    frm.clear_table('detail_table');
+                    r.message.bale_registration_detail.forEach(item => {
+                        const child = frm.add_child('detail_table');
+                        child.bale_barcode = item.bale_barcode;
+                        child.weight = item.weight;
+                        child.rate = item.rate;
+                        child.lot_number = item.lot_number;
+                        child.item_grade = item.item_grade;
+                        child.reclassification_grade = item.reclassification_grade;
+                    });
+                    frm.refresh_field('detail_table');
+                } else {
+                    frappe.msgprint(__('No details found for the provided GTN number.'));
+                }
+            }
+        });
+    }
 });
-frappe.ui.form.on('Goods Receiving Detail', {
+frappe.ui.form.on('Goods Transfer Note Items', {
     delete_row(frm, cdt, cdn) {
         frappe.model.clear_doc(cdt, cdn);  // delete the row
         frm.refresh_field('detail_table');
 
-            if (cur_dialog) {
-                cur_dialog.hide();
-            }
+        if (cur_dialog) {
+            cur_dialog.hide();
+        }
 
-            // Remove any lingering modal backdrop
-            $('.modal-backdrop').remove();        
+        // Remove any lingering modal backdrop
+        $('.modal-backdrop').remove();
     }
 });
