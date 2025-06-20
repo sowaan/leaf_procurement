@@ -662,10 +662,6 @@ frappe.ui.form.on("Bale Weight Info", {
 
 
     },
-    date: function (frm) {
-        validate_day_status(frm);
-
-    },
     onUnload: function (frm) {
         // Optional: if you want to close on leaving the module
         cleanupSerial(frm);
