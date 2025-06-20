@@ -1,11 +1,12 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:LP-DS-{#####}",
+ "autoname": "naming_series:",
  "creation": "2025-05-10 15:47:22.473500",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "company",
   "date",
   "payment_method",
@@ -94,15 +95,23 @@
    "options": "Draft\nOpened\nClosed",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "LP-DS-.#####",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-16 18:51:37.608311",
+ "modified": "2025-06-20 14:49:29.089311",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Day Setup",
- "naming_rule": "Expression",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
