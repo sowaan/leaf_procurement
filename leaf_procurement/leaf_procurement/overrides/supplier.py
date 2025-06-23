@@ -8,8 +8,10 @@ from frappe.utils import today
 class CustomSupplier(Supplier):
     def autoname(self):
         if getattr(self, "skip_autoname", False):
+            print("Skipping autoname for CustomSupplier", self.name)
             return  
         
+        print("Running autoname for CustomSupplier", self.name)
         from datetime import datetime
 
         year = datetime.today().strftime('%Y') 

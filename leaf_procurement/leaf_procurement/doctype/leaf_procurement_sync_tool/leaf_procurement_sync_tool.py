@@ -148,8 +148,8 @@ def sync_up():
 						doc_data.check_validations = 0
 						doc_data.day_setup = ""
 
-					doc_data.skip_autoname = True
 					doc_data = json.loads(doc_data.as_json())
+					doc_data["skip_autoname"] = True
 					doc_data["__islocal"] = 0
 					print(f"Syncing {doctype} record")
 					response = requests.post(url, headers=headers, json=doc_data)
