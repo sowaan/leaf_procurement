@@ -19,6 +19,8 @@ from leaf_procurement.api_functions import (
 	create_transport_type
 )
 
+from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
+
 
 class LeafProcurementSyncTool(Document):
 	pass
@@ -149,6 +151,12 @@ def sync_up():
 				if doctype == "Bale Registration":
 					doc_data.check_validations = 0
 					doc_data.day_setup = ""
+
+				if doctype == "Purchase Invoice":
+					for item in doc_data.items:
+						if item.batch_no:
+							ensure_batch_exists(item.batch_no, item.item_code, item.qty)
+
 
 				doc_data = json.loads(doc_data.as_json())
 				doc_data["skip_autoname"] = True
