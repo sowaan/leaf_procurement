@@ -5,6 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 import requests
+import traceback
 import json
 from leaf_procurement.api_functions import (
 	create_company,
@@ -111,7 +112,7 @@ def process_sync(doctype, data):
 @frappe.whitelist()
 def sync_up():
 	try:
-		"""Sync up data from the local database to the server."""
+		# Load settings
 		settings = frappe.get_doc("Leaf Procurement Settings")
 		if not settings.instance_url:
 			frappe.throw(_("Instance URL is not set in Leaf Procurement Settings."))
@@ -137,43 +138,56 @@ def sync_up():
 			("goods_transfer_note", "Goods Transfer Note"),
 		]
 
-		print(f"Syncing up data to the server... {doctypes}")
-
 		for field, doctype in doctypes:
-			if not doc.get(field): continue
+			if not doc.get(field):
+				continue
 
-			print(f"Syncing from {doctype} to server...")
-			url = f'{settings.instance_url}/api/resource/{doctype}'
-			data = frappe.get_all(doctype, filters={"custom_is_sync": 0, 'docstatus': ['<', 2]}, pluck='name')
-			print(f"\n\n--------Data Variable: {data} to server...\n\n")
+			url = f"{settings.instance_url}/api/resource/{doctype}"
+
+			try:
+				data = frappe.get_all(
+					doctype,
+					filters={"custom_is_sync": 0, "docstatus": ["<", 2]},
+					pluck="name"
+				)
+			except Exception as e:
+				frappe.log_error(traceback.format_exc(), f"Failed to fetch {doctype}")
+				continue
+
 			for name in data:
-				doc_data = frappe.get_doc(doctype, name)
-				if doctype == "Bale Registration":
-					doc_data.check_validations = 0
-					doc_data.day_setup = ""
-
-				if doctype == "Purchase Invoice":
-					for item in doc_data.items:
-						if item.batch_no:
-							ensure_batch_exists(item.batch_no, item.item_code, item.qty)
-
-
-				doc_data = json.loads(doc_data.as_json())
-				doc_data["skip_autoname"] = True
-				doc_data["__islocal"] = 0
-				doc_data["servername"] = name
-
 				try:
-					response = requests.post(url, headers=headers, json=doc_data)
-					if response.status_code == 200 or response.status_code == 201:
-						frappe.db.set_value(doctype, name, 'custom_is_sync', 1)
-						#frappe.msgprint(_(f"Synced record {doc_data['name']} for {doctype}."))
-					else:
-						print(f"Failed to sync {doctype} {doc_data['name']}: {response.text}")
-						frappe.log_error(response.text, f"Failed to sync {doctype} {doc_data['name']}")
-				except Exception as e:
-					frappe.log_error(f"Error saving {name} value: \n" + str(e), "Error Sync " + doctype,)
+					doc_data = frappe.get_doc(doctype, name)
 
-				
+					# Special handling per doctype
+					if doctype == "Bale Registration":
+						doc_data.check_validations = 0
+						doc_data.day_setup = ""
+					if doctype == "Purchase Invoice":
+						for item in doc_data.items:
+							if item.batch_no:
+								ensure_batch_exists(item.batch_no, item.item_code, item.qty)
+
+					# Prepare data for sync
+					doc_data = json.loads(doc_data.as_json())
+					doc_data["skip_autoname"] = True
+					doc_data["__islocal"] = 0
+					doc_data["servername"] = name
+
+					# Send request
+					response = requests.post(url, headers=headers, json=doc_data)
+
+					if response.status_code in [200, 201]:
+						frappe.db.set_value(doctype, name, "custom_is_sync", 1)
+						print(f"✅ Synced {doctype}: {name}")
+					else:
+						try:
+							error_msg = response.json().get("message", response.text)
+						except:
+							error_msg = response.text
+						frappe.log_error(error_msg, f"❌ Failed to sync {doctype} {name}")
+
+				except Exception as e:
+					frappe.log_error(traceback.format_exc(), f"❌ Exception syncing {doctype} {name}")
+
 	except Exception as e:
-		frappe.log_error(str(e), "Sync Up Error",)
+		frappe.log_error(traceback.format_exc(), "❌ Sync Up Failed")
