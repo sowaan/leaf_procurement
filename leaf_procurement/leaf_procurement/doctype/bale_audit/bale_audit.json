@@ -141,7 +141,8 @@
   {
    "fieldname": "captured_weight",
    "fieldtype": "Float",
-   "label": "Captured Weight"
+   "label": "Captured Weight",
+   "read_only": 1
   },
   {
    "fieldname": "disconnect_scale",
@@ -152,7 +153,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-19 00:48:52.672137",
+ "modified": "2025-06-23 01:54:11.208670",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
