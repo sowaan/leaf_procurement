@@ -67,7 +67,10 @@ frappe.ui.form.on("Goods Receiving Note", {
         // Check for duplicate barcode
         const exists = frm.doc.detail_table.some(row => row.bale_barcode === barcode);
         if (exists) {
-            frappe.msgprint(`Barcode "${barcode}" is already scanned.`);
+            frappe.show_alert({
+    message: `Barcode "${barcode}" is already scanned.`,
+    indicator: 'red' // You can use 'orange', 'green', etc. based on severity
+});
         } else {
             frappe.call({
                 method: 'frappe.client.get',
@@ -90,10 +93,16 @@ frappe.ui.form.on("Goods Receiving Note", {
                             });
                             frm.refresh_field('detail_table');
                         } else {
-                            frappe.msgprint(`No details found for barcode "${barcode}" in GTN ${frm.doc.gtn_number}.`);
+                            frappe.show_alert({
+    message: `No details found for barcode "${barcode}" in GTN ${frm.doc.gtn_number}.`,
+    indicator: 'orange' // You can use 'green', 'red', 'blue', etc.
+});
                         }
                     } else {
-                        frappe.msgprint(__('No details found for the provided GTN number.'));
+                        frappe.show_alert({
+    message: __('No details found for the provided GTN number.'),
+    indicator: 'orange' // Optional: color of the alert
+});
                     }
                 }
             });

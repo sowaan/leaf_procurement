@@ -4,13 +4,28 @@ from frappe.utils import nowdate 	#type: ignore
 
 @frappe.whitelist()
 def get_bale_registration_code_by_barcode(barcode):
+    open_day = frappe.db.get_value(
+        "Day Setup",
+        {"status": "Opened"},
+        "date",
+        order_by="date desc"
+    )
+
+    if not open_day:
+        return None
+        
     # Step 1: Get parent Bale Registration Code
     result = frappe.db.get_value('Bale Registration Detail', {'bale_barcode': barcode}, 'parent')
     if not result:
         return None
 
     bale_registration_code = result
+    # Step 2: Check if this bale barcode has already been used in any purchase
+    reg_date = frappe.db.get_value("Bale Registration", bale_registration_code, "date")
 
+    if reg_date != open_day:
+        return None  # Already used, don't allow reuse
+    
     # Step 2: Check if already exists in Bale Purchase with submitted status
     existing_bale_purchase = frappe.db.get_value(
         'Bale Purchase',
@@ -220,6 +235,16 @@ def ensure_batch_exists(batch_no: str, item_code: str, batch_qty: float) -> None
 
 @frappe.whitelist()
 def get_available_bale_registrations(doctype, txt, searchfield, start, page_len, filters):
+    open_day = frappe.db.get_value(
+        "Day Setup",
+        {"status": "Opened"},
+        "date",
+        order_by="date desc"
+    )
+
+    if not open_day:
+        return []
+    
     return frappe.db.sql("""
         SELECT br.name
         FROM `tabBale Registration` br
@@ -232,9 +257,11 @@ def get_available_bale_registrations(doctype, txt, searchfield, start, page_len,
         )
         AND br.name LIKE %(txt)s
         AND br.docstatus = 1 AND bp.docstatus = 1
+        AND br.date = %(open_day)s
         ORDER BY br.creation ASC
         LIMIT %(start)s, %(page_len)s
     """, {
+        "open_day": open_day,
         "txt": f"%{txt}%",
         "start": int(start),
         "page_len": int(page_len)

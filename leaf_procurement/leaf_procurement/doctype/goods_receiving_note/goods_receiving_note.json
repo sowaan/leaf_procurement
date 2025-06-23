@@ -84,9 +84,11 @@
    "options": "Goods Transfer Note Items"
   },
   {
+   "default": "now",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Date",
+   "reqd": 1
   },
   {
    "fieldname": "company",
@@ -97,9 +99,10 @@
    "reqd": 1
   },
   {
+   "fetch_from": "gtn_number.receiving_location",
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
-   "label": "Location (Warehouse)",
+   "label": "Warehouse (Receiving)",
    "options": "Warehouse",
    "read_only": 1,
    "reqd": 1
@@ -143,20 +146,22 @@
    "fieldname": "dispatch_location",
    "fieldtype": "Link",
    "label": "Dispatch Location",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   },
   {
    "fetch_from": "gtn_number.transit_location",
    "fieldname": "transit_location",
    "fieldtype": "Link",
    "label": "Transit Location",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-20 17:06:28.033982",
+ "modified": "2025-06-22 22:08:08.249050",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
@@ -176,6 +181,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

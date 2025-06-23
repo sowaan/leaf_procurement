@@ -77,7 +77,7 @@ frappe.ui.form.on("Bale Registration", {
         frm.set_value('scan_barcode', '');
 
     },
-    onload: function (frm) {
+    onload: async function (frm) {
         frm.page.sidebar.toggle(false);
         if (frm.doc.docstatus === 1) {
             frm.fields_dict['bale_registration_detail'].grid.update_docfield_property(
@@ -86,6 +86,13 @@ frappe.ui.form.on("Bale Registration", {
         }
 
         if (!frm.is_new()) return;
+
+        const open_day = await get_open_day_date();
+        if (open_day ) {
+            frm.set_value('date', open_day);
+            console.log('date', open_day);
+        }
+
         if (frm.doc.date) {
             update_lot_counter(frm);
         }
@@ -242,4 +249,30 @@ function recalculate_bale_counts(frm) {
 
     frm.set_value('bales_in_lot', balesCount);
     frm.set_value('remaining_bales', lotSize - balesCount);
+}
+async function get_open_day_date() {
+    return new Promise((resolve, reject) => {
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Day Setup",
+                filters: {
+                    status: "Opened"
+                },
+                fields: ["date"],
+                limit_page_length: 1,
+                order_by: "date desc"
+            },
+            callback: function (r) {
+                if (r.message && r.message.length > 0) {
+                    resolve(r.message[0].date);
+                } else {
+                    resolve(null);
+                }
+            },
+            error: function (err) {
+                reject(err);
+            }
+        });
+    });
 }

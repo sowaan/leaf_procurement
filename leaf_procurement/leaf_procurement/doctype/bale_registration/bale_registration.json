@@ -142,6 +142,7 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -206,8 +207,10 @@
   },
   {
    "allow_on_submit": 1,
+   "default": "In Registration",
    "fieldname": "bale_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Bale Status",
    "options": "In Registration\nIn Buying\nIn Weighment\nIn Print Voucher\nCompleted",
@@ -239,6 +242,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
