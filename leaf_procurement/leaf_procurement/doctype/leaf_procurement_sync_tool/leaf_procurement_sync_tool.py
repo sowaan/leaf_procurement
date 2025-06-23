@@ -151,6 +151,7 @@ def sync_up():
 					doc_data = json.loads(doc_data.as_json())
 					doc_data["skip_autoname"] = True
 					doc_data["__islocal"] = 0
+					doc_data["name"] = name
 					print(f"Syncing {doctype} record")
 					response = requests.post(url, headers=headers, json=doc_data)
 					print(doctype, name, 'custom_is_sync', "Want to check save record values")
