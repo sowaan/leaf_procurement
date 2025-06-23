@@ -153,7 +153,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
                 "sub_grade": detail.item_sub_grade,
             })  
         else:
-            ensure_batch_exists(a.bale_barcode, doc.item, detail.weight)
+            ensure_batch_exists(detail.bale_barcode, doc.item, detail.weight)
             invoice.append("items", {
                 "item_code": doc.item,
                 "qty": detail.weight,
