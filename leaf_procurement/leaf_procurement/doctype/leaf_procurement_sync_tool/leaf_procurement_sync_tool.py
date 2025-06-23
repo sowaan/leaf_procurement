@@ -163,13 +163,17 @@ def sync_up():
 				doc_data["__islocal"] = 0
 				doc_data["servername"] = name
 
-				response = requests.post(url, headers=headers, json=doc_data)
+				try:
+					response = requests.post(url, headers=headers, json=doc_data)
+					if response.status_code == 200 or response.status_code == 201:
+						frappe.db.set_value(doctype, name, 'custom_is_sync', 1)
+						#frappe.msgprint(_(f"Synced record {doc_data['name']} for {doctype}."))
+					else:
+						print(f"Failed to sync {doctype} {doc_data['name']}: {response.text}")
+						frappe.log_error(response.text, f"Failed to sync {doctype} {doc_data['name']}")
+				except Exception as e:
+					frappe.log_error(f"Error saving {name} value: \n" + str(e), "Error Sync " + doctype,)
 
-				if response.status_code == 200 or response.status_code == 201:
-					frappe.db.set_value(doctype, name, 'custom_is_sync', 1)
-					#frappe.msgprint(_(f"Synced record {doc_data['name']} for {doctype}."))
-				else:
-					print(f"Failed to sync {doctype} {doc_data['name']}: {response.text}")
-					frappe.log_error(response.text, f"Failed to sync {doctype} {doc_data['name']}")
+				
 	except Exception as e:
 		frappe.log_error(str(e), "Sync Up Error",)
