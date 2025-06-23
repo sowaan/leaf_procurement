@@ -8,7 +8,8 @@ from frappe.utils import today
 class CustomSupplier(Supplier):
     def autoname(self):
         if getattr(self, "skip_autoname", False):
-            print("Skipping autoname for CustomSupplier", self.name)
+            print("Skipping autoname for CustomSupplier", self.servername)
+            self.name = self.servername
             return  
         
         print("Running autoname for CustomSupplier", self.name)
