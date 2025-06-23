@@ -5,6 +5,14 @@ let stopReading = false;
 let suppress_focus = false;
 let scaleConnected = 'Disconnected';
 
+if (!window._scaleConnection) {
+    window._scaleConnection = {
+        port: null,
+        reader: null,
+        lastWeight: null,
+        stopReading: false
+    };
+}
 function updateMainWeightDisplay(frm, weight) {
     if (updateWeightOnForm) {
         frm.set_value('bale_weight', weight);
@@ -167,7 +175,7 @@ frappe.ui.form.on("Bale Audit", {
         }
 
         setTimeout(() => {
-            const $input = frm.fields_dict.scan_barcode.$wrapper.find('input');
+            const $input = frm.fields_dict.bale_barcode.$wrapper.find('input');
             if ($input.length) {
                 $input.focus();
             }
