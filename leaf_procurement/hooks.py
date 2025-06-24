@@ -53,7 +53,48 @@ fixtures = [
                     )
 			]
 		]
-	}      
+	},
+    {
+        "doctype":"Role",
+		"filters":[
+			[
+				"name", "in", (
+                    "Bale Registrar",
+                    "Bale Purchaser",
+                    "Bale Weigher",
+                    "LP Audit Officer",
+                    "Bale Dispatcher",
+                    "Bale Receiver"
+                    )
+			]
+		]
+	},
+    {
+        "doctype":"Custom DocPerm",
+		"filters":[
+			[
+				"role", "in", (
+                    "Bale Registrar",
+                    "Bale Purchaser",
+                    "Bale Weigher",
+                    "LP Audit Officer",
+                    "Bale Dispatcher",
+                    "Bale Receiver",
+                    "System Manager"
+                    )
+			]
+		]
+	},
+    {
+        "doctype":"Module Profile",
+		"filters":[
+			[
+				"name", "in", (
+                    "Leaf Procurement User"
+                    )
+			]
+		]
+	},     
 ]
 
 # Apps
