@@ -30,8 +30,8 @@
   "bale_audit",
   "bale_registration",
   "purchase_invoice",
-  "goods_receiving_note",
   "goods_transfer_note",
+  "goods_receiving_note",
   "leaf_sync_detail_tab",
   "leaf_sync_detail"
  ],
@@ -200,7 +200,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-17 12:31:50.300009",
+ "modified": "2025-06-24 11:26:27.274796",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Sync Tool",

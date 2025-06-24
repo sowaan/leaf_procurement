@@ -20,8 +20,8 @@ const sync_up_checkboxes = [
     "bale_audit",
     "bale_registration",
     "purchase_invoice",
-    "goods_receiving_note",
-    "goods_transfer_note"
+    "goods_transfer_note",
+    "goods_receiving_note"
 ];
 
 let is_bulk_update = false;

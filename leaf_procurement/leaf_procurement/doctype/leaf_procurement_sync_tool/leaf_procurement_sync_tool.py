@@ -133,8 +133,8 @@ def sync_up():
 			("bale_audit", "Bale Audit"),
 			("bale_registration", "Bale Registration"),
 			("purchase_invoice", "Purchase Invoice"),
-			("goods_receiving_note", "Goods Receiving Note"),
 			("goods_transfer_note", "Goods Transfer Note"),
+			# ("goods_receiving_note", "Goods Receiving Note"),
 		]
 
 		for field, doctype in doctypes:
@@ -199,11 +199,14 @@ def sync_up():
 def create_supplier_contact(url, headers, supplier_doc):
 	if supplier_doc.get("supplier_primary_contact"):
 		contact = frappe.get_doc("Contact", supplier_doc.get("supplier_primary_contact"))
-
+		if contact.custom_is_sync:
+			print(f"⚠️ Contact {contact.name} already synced. Skipping...")
+			return
 		response = requests.post(url, headers=headers, json=contact)
 
 		if response.status_code in [200, 201]:
 			print(f"✅ Synced Supplier Contact: {contact.name}")
+			frappe.db.set_value("Contact", contact.name, "custom_is_sync", 1)
 		else:
 			try:
 				error_msg = response.json().get("message", response.text)
@@ -216,7 +219,10 @@ def ensure_batch_exists(url, headers, batch_no, item_code, qty):
 	if batch_no:
 		try:
 			batch = frappe.get_doc("Batch", batch_no)
-			print(f"🔄 Ensuring Batch exists: {batch.name} {url}")
+			# ✅ Only sync if not already synced
+			if batch.custom_is_sync:
+				print(f"⚠️ Batch {batch.name} already synced. Skipping...")
+				return
 
 			# Convert batch doc to a dictionary for JSON serialization
 			batch_data = json.loads(batch.as_json())
@@ -228,6 +234,7 @@ def ensure_batch_exists(url, headers, batch_no, item_code, qty):
 
 			if response.status_code in [200, 201]:
 				print(f"✅ Synced Batch: {batch.name}")
+				frappe.db.set_value("Batch", batch.name, "custom_is_sync", 1)
 			else:
 				try:
 					error_msg = response.json().get("message", response.text)
