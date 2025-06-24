@@ -25,8 +25,7 @@ def create_stock_entry_from_gtn(grn_doc):
     stock_entry.custom_gtn_number = grn_doc.name  # custom field if needed
 
     for row in grn_doc.detail_table:
-
-        stock_entry.append("items", {
+        item = {
             "item_code": grn_doc.default_item,
             "qty": row.weight,
             "basic_rate": row.rate,
@@ -40,7 +39,11 @@ def create_stock_entry_from_gtn(grn_doc):
 			"to_lot_number": row.lot_number,
 			"to_grade": row.item_grade,
 			"to_sub_grade": row.item_sub_grade,   
-		})
-
+            "doctype": "Stock Entry Detail",
+            "parentfield": "items",
+            "parenttype": "Stock Entry"
+		}
+        stock_entry.append("items", item)
+    stock_entry.flags.ignore_mandatory = True
     stock_entry.insert()
     #stock_entry.submit()

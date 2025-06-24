@@ -20,7 +20,6 @@ from leaf_procurement.api_functions import (
 	create_transport_type
 )
 
-from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 
 
 class LeafProcurementSyncTool(Document):
@@ -157,7 +156,9 @@ def sync_up():
 			for name in data:
 				try:
 					doc_data = frappe.get_doc(doctype, name)
-
+					if doctype == "Supplier":
+						contactUrl = f"{settings.instance_url}/api/resource/Contact"
+						create_supplier_contact(contactUrl, headers, doc_data)
 					# Special handling per doctype
 					if doctype == "Bale Registration":
 						doc_data.check_validations = 0
@@ -165,7 +166,8 @@ def sync_up():
 					if doctype == "Purchase Invoice":
 						for item in doc_data.items:
 							if item.batch_no:
-								ensure_batch_exists(item.batch_no, item.item_code, item.qty)
+								batchUrl = f"{settings.instance_url}/api/resource/Batch"
+								ensure_batch_exists(batchUrl, headers, item.batch_no, item.item_code, item.qty)
 
 					# Prepare data for sync
 					doc_data = json.loads(doc_data.as_json())
@@ -191,3 +193,48 @@ def sync_up():
 
 	except Exception as e:
 		frappe.log_error(traceback.format_exc(), "❌ Sync Up Failed")
+
+
+
+def create_supplier_contact(url, headers, supplier_doc):
+	if supplier_doc.get("supplier_primary_contact"):
+		contact = frappe.get_doc("Contact", supplier_doc.get("supplier_primary_contact"))
+
+		response = requests.post(url, headers=headers, json=contact)
+
+		if response.status_code in [200, 201]:
+			print(f"✅ Synced Supplier Contact: {contact.name}")
+		else:
+			try:
+				error_msg = response.json().get("message", response.text)
+			except:
+				error_msg = response.text
+			frappe.log_error(error_msg, f"❌ Failed to sync Supplier Contact {contact.name}")
+
+
+def ensure_batch_exists(url, headers, batch_no, item_code, qty):
+	if batch_no:
+		try:
+			batch = frappe.get_doc("Batch", batch_no)
+			print(f"🔄 Ensuring Batch exists: {batch.name} {url}")
+
+			# Convert batch doc to a dictionary for JSON serialization
+			batch_data = json.loads(batch.as_json())
+			batch_data["skip_autoname"] = True
+			batch_data["__islocal"] = 0
+			batch_data["servername"] = batch_no
+
+			response = requests.post(url, headers=headers, json=batch_data)
+
+			if response.status_code in [200, 201]:
+				print(f"✅ Synced Batch: {batch.name}")
+			else:
+				try:
+					error_msg = response.json().get("message", response.text)
+				except:
+					error_msg = response.text
+				frappe.log_error(error_msg, f"❌ Failed to sync Batch {batch.name}")
+
+		except Exception as e:
+			frappe.log_error(traceback.format_exc(), f"❌ Exception ensuring Batch {batch_no} for Item {item_code} with Qty {qty}")
+			frappe.throw(_("Failed to ensure batch exists: {0}").format(str(e)))

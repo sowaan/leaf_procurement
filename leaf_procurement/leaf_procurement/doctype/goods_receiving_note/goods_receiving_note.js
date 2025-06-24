@@ -89,6 +89,7 @@ frappe.ui.form.on("Goods Receiving Note", {
                                 child.rate = item.rate;
                                 child.lot_number = item.lot_number;
                                 child.item_grade = item.item_grade;
+                                child.item_sub_grade = item.item_sub_grade;
                                 child.reclassification_grade = item.reclassification_grade;
                             });
                             frm.refresh_field('detail_table');
@@ -129,6 +130,7 @@ frappe.ui.form.on("Goods Receiving Note", {
                         child.rate = item.rate;
                         child.lot_number = item.lot_number;
                         child.item_grade = item.item_grade;
+                        child.item_sub_grade = item.item_sub_grade;
                         child.reclassification_grade = item.reclassification_grade;
                     });
                     frm.refresh_field('detail_table');

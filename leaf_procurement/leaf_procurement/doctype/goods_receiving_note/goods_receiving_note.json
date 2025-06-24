@@ -1,11 +1,12 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{location_shortcode}-GRN-{YYYY}-{######}",
+ "autoname": "naming_series:",
  "creation": "2025-05-28 13:40:55.912026",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "company",
   "gtn_number",
   "date",
@@ -156,16 +157,23 @@
    "label": "Transit Location",
    "options": "Warehouse",
    "read_only": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": ".{location_shortcode}.-GRN-.YYYY.-.######"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-22 22:08:08.249050",
+ "modified": "2025-06-24 10:53:21.218188",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
- "naming_rule": "Expression",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -181,7 +189,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
