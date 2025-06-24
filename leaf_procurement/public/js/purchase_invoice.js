@@ -45,7 +45,20 @@ frappe.ui.form.on('Purchase Invoice', {
     refresh(frm) {
         // hide print button
         // frm.page.set_inner_btn_group_as_primary('print');
-        $('[data-original-title="Print"]').hide();
+        // $('[data-original-title="Print"]').hide();
+        
+        // Mubashir: Hide Print button from the menu
+        const printButton = document.querySelector('button[data-original-title="Print"]');
+        if (printButton) {
+            printButton.remove();
+        }
+        const printItem = document.querySelector('li .menu-item-label[data-label="Print"]');
+        if (printItem) {
+            printItem.closest('li').remove();
+        }
+        //END Mubashir
+
+
         if (frm.doc.docstatus === 1) {
             if (!frm.doc.custom_stationary) {
                 frm.add_custom_button(__('Print Voucher'), async () => {
