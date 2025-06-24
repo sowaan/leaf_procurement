@@ -138,6 +138,7 @@ fixtures = [
 doctype_js = {
     "Supplier" : "public/js/supplier.js",
     "Purchase Invoice" : "public/js/purchase_invoice.js",
+    "Driver" : "public/js/driver.js",
 }
 doctype_list_js = {"Purchase Invoice" : "public/js/purchase_invoice_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -290,6 +291,7 @@ scheduler_events = {
 # }
 override_doctype_class = {
     "Supplier": "leaf_procurement.leaf_procurement.overrides.supplier.CustomSupplier",
+    "Driver": "leaf_procurement.leaf_procurement.overrides.driver.CustomDriver",
     #"Purchase Invoice": "leaf_procurement.leaf_procurement.overrides.purchase_invoice.CustomPurchaseInvoice"
 }
 #

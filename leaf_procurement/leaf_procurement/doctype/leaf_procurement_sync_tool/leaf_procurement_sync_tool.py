@@ -154,11 +154,9 @@ def sync_up():
 				continue
 
 			for name in data:
+				print(f"Syncing {doctype}: {name}")
 				try:
 					doc_data = frappe.get_doc(doctype, name)
-					if doctype == "Supplier":
-						contactUrl = f"{settings.instance_url}/api/resource/Contact"
-						create_supplier_contact(contactUrl, headers, doc_data)
 					# Special handling per doctype
 					if doctype == "Bale Registration":
 						doc_data.check_validations = 0
@@ -180,6 +178,9 @@ def sync_up():
 
 					if response.status_code in [200, 201]:
 						frappe.db.set_value(doctype, name, "custom_is_sync", 1)
+						if doctype == "Supplier":
+							contactUrl = f"{settings.instance_url}/api/resource/Contact"
+							create_supplier_contact(contactUrl, headers, doc_data)
 						print(f"✅ Synced {doctype}: {name}")
 					else:
 						try:
@@ -202,7 +203,12 @@ def create_supplier_contact(url, headers, supplier_doc):
 		if contact.custom_is_sync:
 			print(f"⚠️ Contact {contact.name} already synced. Skipping...")
 			return
-		response = requests.post(url, headers=headers, json=contact)
+
+		contact_data = json.loads(contact.as_json())
+		contact_data["skip_autoname"] = True
+		contact_data["__islocal"] = 0
+		contact_data["servername"] = contact.name
+		response = requests.post(url, headers=headers, json=contact_data)
 
 		if response.status_code in [200, 201]:
 			print(f"✅ Synced Supplier Contact: {contact.name}")
