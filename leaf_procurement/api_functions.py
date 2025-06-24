@@ -1,6 +1,9 @@
 import frappe
 import requests
 from frappe import _
+import json
+from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
+
 
 def create_company(settings, headers, data):
 	"""Update company records with the received data."""
@@ -36,7 +39,6 @@ def create_company(settings, headers, data):
 		frappe.log_error("\n".join(errors), "Company Sync Errors")
 
 	frappe.msgprint(_(message))
-
 
 def create_company_accounts(settings, headers, company_name):
 	"""Create company accounts for the given company name."""
@@ -359,3 +361,130 @@ def update_bale_status(purchase_invoice):
             return {'status': 'success', 'updated': bale_registration_code}
 
     return {'status': 'no_bale_found'}
+
+
+@frappe.whitelist()
+def supplier(supplier):
+	if isinstance(supplier, str):
+		supplier = json.loads(supplier)
+
+	doc = frappe.new_doc("Supplier")
+	doc.update(supplier)
+	doc.insert()
+	return doc.name
+
+
+@frappe.whitelist()
+def driver(driver):
+	if isinstance(driver, str):
+		driver = json.loads(driver)
+
+	doc = frappe.new_doc("Driver")
+	doc.update(driver)
+	doc.insert()
+	return doc.name
+
+
+@frappe.whitelist()
+def bale_audit(bale_audit):
+	if isinstance(bale_audit, str):
+		bale_audit = json.loads(bale_audit)
+
+	doc = frappe.new_doc("Bale Audit")
+	doc.update(bale_audit)
+	doc.insert()
+	return doc.name
+
+
+@frappe.whitelist()
+def bale_registration(bale_registration):
+	if isinstance(bale_registration, str):
+		bale_registration = json.loads(bale_registration)
+
+	doc = frappe.new_doc("Bale Registration")
+	doc.update(bale_registration)
+	doc.insert()
+	return doc.name
+
+
+@frappe.whitelist()
+def purchase_invoice(purchase_invoice):
+	if isinstance(purchase_invoice, str):
+		purchase_invoice = json.loads(purchase_invoice)
+
+	print("Received purchase invoice data:", purchase_invoice, "\n\n\n\n\n")
+	# doc = frappe.new_doc("Purchase Invoice")
+	# doc.update(purchase_invoice)
+	# doc.insert()
+	invoice = frappe.new_doc("Purchase Invoice")
+	invoice.name = purchase_invoice.get("name")
+	invoice.return_against = purchase_invoice.get("return_against")
+	invoice.update_outstanding_for_self = purchase_invoice.get("update_outstanding_for_self", 0)
+	invoice.supplier = purchase_invoice.get("supplier")
+	invoice.posting_date = purchase_invoice.get("posting_date")
+	invoice.company = purchase_invoice.get("company")
+	invoice.set_posting_time = purchase_invoice.get("set_posting_time")
+	invoice.update_stock = purchase_invoice.get("update_stock")
+	invoice.set_warehouse = purchase_invoice.get("warehouse")
+	invoice.rejected_warehouse = purchase_invoice.get("rejected_warehouse")
+	invoice.due_date = purchase_invoice.get("due_date")
+	invoice.custom_barcode = purchase_invoice.get("custom_barcode")
+	invoice.currency = purchase_invoice.get("currency")
+	invoice.conversion_rate = purchase_invoice.get("conversion_rate")
+	invoice.is_return = purchase_invoice.get("is_return")
+	invoice.buying_price_list = purchase_invoice.get("buying_price_list")
+	invoice.price_list_currency = purchase_invoice.get("price_list_currency")
+	invoice.plc_conversion_rate = purchase_invoice.get("plc_conversion_rate")
+	invoice.docstatus = purchase_invoice.get("docstatus", 0)
+
+	for detail in purchase_invoice.get("items"):
+		print(detail.get("batch_no"), "\n\n\n\n\n")
+		if detail["batch_no"]:
+			ensure_batch_exists(detail.get("batch_no"), detail.get("item_code"), detail.get("weight"))
+		item_data = {
+			"item_code": detail.get("item_code"),
+			"qty": detail.get("qty"),
+			"rate": detail.get("rate"),
+			"uom": detail.get("uom"),
+			"description": detail.get("description"),
+		}
+
+		# Only include optional fields if they have a meaningful value
+		optional_fields = [
+			"received_qty", "warehouse", "use_serial_batch_fields",
+			"batch_no", "lot_number", "grade", "sub_grade"
+		]
+
+		for key in optional_fields:
+			value = detail.get(key)
+			if value:
+				item_data[key] = value
+		invoice.append("items", item_data)   
+
+	invoice.save()
+	return invoice.name
+
+
+@frappe.whitelist()
+def goods_transfer_note(goods_transfer_note):
+	if isinstance(goods_transfer_note, str):
+		goods_transfer_note = json.loads(goods_transfer_note)
+
+	doc = frappe.new_doc("Goods Transfer Note")
+	doc.update(goods_transfer_note)
+	doc.insert()
+	return doc.name
+
+
+@frappe.whitelist()
+def goods_receiving_note(goods_receiving_note):
+	if isinstance(goods_receiving_note, str):
+		goods_receiving_note = json.loads(goods_receiving_note)
+
+	doc = frappe.new_doc("Goods Receiving Note")
+	doc.update(goods_receiving_note)
+	doc.insert()
+	return doc.name
+
+
+

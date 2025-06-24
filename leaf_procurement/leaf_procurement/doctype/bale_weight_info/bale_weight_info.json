@@ -284,8 +284,7 @@
    "fieldname": "bale_weight",
    "fieldtype": "Float",
    "label": "Bale Weight",
-   "precision": "2",
-   "read_only": 1
+   "precision": "2"
   },
   {
    "default": "0",
@@ -368,7 +367,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-23 01:54:38.981605",
+ "modified": "2025-06-24 14:46:20.563828",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
@@ -388,7 +387,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

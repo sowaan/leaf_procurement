@@ -134,15 +134,15 @@ def sync_up():
 			("bale_registration", "Bale Registration"),
 			("purchase_invoice", "Purchase Invoice"),
 			("goods_transfer_note", "Goods Transfer Note"),
-			# ("goods_receiving_note", "Goods Receiving Note"),
+			("goods_receiving_note", "Goods Receiving Note"),
 		]
 
 		for field, doctype in doctypes:
 			if not doc.get(field):
 				continue
 
-			url = f"{settings.instance_url}/api/resource/{doctype}"
-
+			url = f"{settings.instance_url}/api/method/leaf_procurement.api_functions.{field}"
+			print(f"Syncing {doctype} to {url}")
 			try:
 				data = frappe.get_all(
 					doctype,
@@ -161,11 +161,6 @@ def sync_up():
 					if doctype == "Bale Registration":
 						doc_data.check_validations = 0
 						doc_data.day_setup = ""
-					if doctype == "Purchase Invoice":
-						for item in doc_data.items:
-							if item.batch_no:
-								batchUrl = f"{settings.instance_url}/api/resource/Batch"
-								ensure_batch_exists(batchUrl, headers, item.batch_no, item.item_code, item.qty)
 
 					# Prepare data for sync
 					doc_data = json.loads(doc_data.as_json())
@@ -174,7 +169,7 @@ def sync_up():
 					doc_data["servername"] = name
 
 					# Send request
-					response = requests.post(url, headers=headers, json=doc_data)
+					response = requests.post(url, headers=headers, json={field: doc_data})
 
 					if response.status_code in [200, 201]:
 						frappe.db.set_value(doctype, name, "custom_is_sync", 1)
@@ -224,6 +219,7 @@ def create_supplier_contact(url, headers, supplier_doc):
 def ensure_batch_exists(url, headers, batch_no, item_code, qty):
 	if batch_no:
 		try:
+			batch_url = f"{url}/api/resource/Batch"
 			batch = frappe.get_doc("Batch", batch_no)
 			# ✅ Only sync if not already synced
 			if batch.custom_is_sync:
@@ -236,10 +232,34 @@ def ensure_batch_exists(url, headers, batch_no, item_code, qty):
 			batch_data["__islocal"] = 0
 			batch_data["servername"] = batch_no
 
-			response = requests.post(url, headers=headers, json=batch_data)
+			response = requests.post(batch_url, headers=headers, json=batch_data)
 
 			if response.status_code in [200, 201]:
 				print(f"✅ Synced Batch: {batch.name}")
+				# sync Serial and Batch Bundle
+				# ser_and_batch_bundle_list = frappe.get_all(
+				# 	"Serial and Batch Bundle",
+				# 	filters=[["Serial and Batch Entry","batch_no","=",batch.name]],
+				# 	pluck="name"
+				# )
+				# for bundle in ser_and_batch_bundle_list:
+				# 	bundle_doc = frappe.get_doc("Serial and Batch Bundle", bundle)
+				# 	bundle_data = json.loads(bundle_doc.as_json())
+				# 	bundle_data["skip_autoname"] = True
+				# 	bundle_data["__islocal"] = 0
+				# 	bundle_data["servername"] = bundle_doc.name
+				# 	response_bundle = requests.post(
+				# 		f"{url}/api/resource/Serial and Batch Bundle",
+				# 		headers=headers,
+				# 		json=bundle_data
+				# 	)
+				# 	if response_bundle.status_code not in [200, 201]:
+				# 		try:
+				# 			error_msg = response_bundle.json().get("message", response_bundle.text)
+				# 		except:
+				# 			error_msg = response_bundle.text
+				# 		frappe.log_error(error_msg, f"❌ Failed to sync Serial and Batch Bundle {bundle_doc.name}")
+						
 				frappe.db.set_value("Batch", batch.name, "custom_is_sync", 1)
 			else:
 				try:

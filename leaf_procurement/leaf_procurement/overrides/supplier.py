@@ -2,7 +2,6 @@ import frappe # type: ignore
 from frappe import _ # type: ignore
 from erpnext.buying.doctype.supplier.supplier import Supplier # type: ignore
 from frappe.model.naming import make_autoname
-from frappe.utils import today
 
 
 class CustomSupplier(Supplier):
@@ -12,12 +11,12 @@ class CustomSupplier(Supplier):
             self.name = self.servername
             return  
         
-        print("Running autoname for CustomSupplier", self.name)
         from datetime import datetime
 
         year = datetime.today().strftime('%Y') 
         
-        settings = frappe.get_doc("Leaf Procurement Settings", ["custom_company","custom_location_warehouse"])
+        settings = frappe.get_doc("Leaf Procurement Settings")
+        self.custom_company = settings.get("company_name") if settings else None
         self.custom_location_short_code = frappe.db.get_value(
             "Warehouse",
             settings.get("location_warehouse"),
