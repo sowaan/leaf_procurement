@@ -98,17 +98,20 @@
   {
    "fieldname": "api_key",
    "fieldtype": "Data",
-   "label": "API Key"
+   "label": "API Key",
+   "permlevel": 1
   },
   {
    "fieldname": "api_secret",
    "fieldtype": "Data",
-   "label": "API Secret"
+   "label": "API Secret",
+   "permlevel": 1
   },
   {
    "fieldname": "instance_url",
    "fieldtype": "Data",
-   "label": "Instance URL"
+   "label": "Instance URL",
+   "permlevel": 1
   },
   {
    "default": "0",
@@ -121,7 +124,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-17 12:51:02.392464",
+ "modified": "2025-06-24 09:51:00.925172",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

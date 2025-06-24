@@ -1,0 +1,80 @@
+[
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": "/app/leaf-procurement",
+  "is_custom": 0,
+  "modified": "2025-06-23 16:13:09.201216",
+  "name": "Bale Registrar",
+  "restrict_to_domain": null,
+  "role_name": "Bale Registrar",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": "/app/leaf-procurement",
+  "is_custom": 0,
+  "modified": "2025-06-23 16:13:26.645150",
+  "name": "Bale Purchaser",
+  "restrict_to_domain": null,
+  "role_name": "Bale Purchaser",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": "/app/leaf-procurement",
+  "is_custom": 0,
+  "modified": "2025-06-23 16:14:50.456321",
+  "name": "Bale Weigher",
+  "restrict_to_domain": null,
+  "role_name": "Bale Weigher",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": "/app/leaf-procurement",
+  "is_custom": 0,
+  "modified": "2025-06-23 16:15:16.845892",
+  "name": "LP Audit Officer",
+  "restrict_to_domain": null,
+  "role_name": "LP Audit Officer",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": "/app/leaf-procurement",
+  "is_custom": 0,
+  "modified": "2025-06-23 16:15:58.525793",
+  "name": "Bale Dispatcher",
+  "restrict_to_domain": null,
+  "role_name": "Bale Dispatcher",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": "/app/leaf-procurement",
+  "is_custom": 0,
+  "modified": "2025-06-23 16:16:07.980102",
+  "name": "Bale Receiver",
+  "restrict_to_domain": null,
+  "role_name": "Bale Receiver",
+  "two_factor_auth": 0
+ }
+]
