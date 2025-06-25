@@ -185,7 +185,7 @@ def sync_up():
 						frappe.log_error(error_msg, f"❌ Failed to sync {doctype} ")
 
 				except Exception as e:
-					frappe.log_error(traceback.format_exc(), f"❌ Exception syncing {doctype} {name}")
+					frappe.log_error(traceback.format_exc(), f"❌ Failed to sync {doctype}")
 
 	except Exception as e:
 		frappe.log_error(traceback.format_exc(), "❌ Sync Up Failed")
@@ -213,7 +213,7 @@ def create_supplier_contact(url, headers, supplier_doc):
 				error_msg = response.json().get("message", response.text)
 			except:
 				error_msg = response.text
-			frappe.log_error(error_msg, f"❌ Failed to sync Supplier Contact {contact.name}")
+			frappe.log_error(error_msg, f"❌ Faild Supplier Contact Sync")
 
 
 def ensure_batch_exists(url, headers, batch_no, item_code, qty):
@@ -269,5 +269,5 @@ def ensure_batch_exists(url, headers, batch_no, item_code, qty):
 				frappe.log_error(error_msg, f"❌ Failed to sync Batch {batch.name}")
 
 		except Exception as e:
-			frappe.log_error(traceback.format_exc(), f"❌ Exception ensuring Batch {batch_no} for Item {item_code} with Qty {qty}")
+			frappe.log_error(traceback.format_exc(), f"❌ Exception Saving Batch {batch_no}")
 			frappe.throw(_("Failed to ensure batch exists: {0}").format(str(e)))
