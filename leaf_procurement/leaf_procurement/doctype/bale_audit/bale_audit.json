@@ -23,6 +23,8 @@
   "bale_barcode",
   "column_break_arkr",
   "captured_weight",
+  "section_break_psgv",
+  "bale_comments",
   "add_audit_weight",
   "section_break_ynis",
   "detail_table",
@@ -59,6 +61,7 @@
    "fetch_from": "location_warehouse.custom_short_code",
    "fieldname": "location_shortcode",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Shortcode",
    "read_only": 1
   },
@@ -78,6 +81,7 @@
   {
    "fieldname": "barcode_length",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Barcode Length"
   },
   {
@@ -139,21 +143,30 @@
    "label": "Bale BarCode"
   },
   {
+   "default": "0",
    "fieldname": "captured_weight",
    "fieldtype": "Float",
-   "label": "Captured Weight",
-   "read_only": 1
+   "label": "Captured Weight"
   },
   {
    "fieldname": "disconnect_scale",
    "fieldtype": "Button",
    "label": "Disconnect Scale"
+  },
+  {
+   "fieldname": "section_break_psgv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bale_comments",
+   "fieldtype": "Small Text",
+   "label": "Bale Comments"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-23 01:54:11.208670",
+ "modified": "2025-06-25 22:24:37.973594",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",

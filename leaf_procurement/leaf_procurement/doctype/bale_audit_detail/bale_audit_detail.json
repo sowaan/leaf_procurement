@@ -8,7 +8,7 @@
   "section_break_6w4s",
   "bale_barcode",
   "weight",
-  "remarks",
+  "bale_remarks",
   "amended_from",
   "delete_row"
  ],
@@ -49,8 +49,9 @@
    "label": "Delete"
   },
   {
-   "fieldname": "remarks",
+   "fieldname": "bale_remarks",
    "fieldtype": "Small Text",
+   "in_preview": 1,
    "label": "Remarks"
   }
  ],
@@ -58,7 +59,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-18 23:35:26.588277",
+ "modified": "2025-06-25 22:25:53.309097",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit Detail",

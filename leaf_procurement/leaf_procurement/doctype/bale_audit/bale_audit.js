@@ -4,7 +4,7 @@ let lastWeight = null;
 let stopReading = false;
 let suppress_focus = false;
 let scaleConnected = 'Disconnected';
-
+let updateWeightOnForm = true;
 if (!window._scaleConnection) {
     window._scaleConnection = {
         port: null,
@@ -15,7 +15,7 @@ if (!window._scaleConnection) {
 }
 function updateMainWeightDisplay(frm, weight) {
     if (updateWeightOnForm) {
-        frm.set_value('bale_weight', weight);
+        frm.set_value('captured_weight', weight);
     }
     let color = scaleConnected === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
@@ -157,7 +157,8 @@ frappe.ui.form.on("Bale Audit", {
         await cleanupSerial(frm);
         //frappe.msgprint(__('Scale disconnected.'));
     },
-    onload: function (frm) {
+    onload: async function (frm) {
+        frm.page.sidebar.toggle(false);
         updateScaleStatus(frm, scaleConnected);
         if (scaleConnected == 'Connected') {
             frm.fields_dict.connect_scale.$wrapper.hide();
@@ -199,99 +200,18 @@ frappe.ui.form.on("Bale Audit", {
                 }
             }
         });
+
+        const open_day = await get_open_day_date();
+        if (open_day ) {
+            frm.set_value('date', open_day);
+        }
+        else
+        {
+            frappe.msgprint(__('There is no open audit day, you cannot add audit records.'));
+            return;            
+        }
     },
     add_audit_weight: function (frm) {
-        // const d = new frappe.ui.Dialog({
-        //     title: 'Capture Weight Information',
-        //     fields: [
-        //         {
-        //             fieldtype: 'Section Break'
-        //         },
-        //         {
-        //             fieldtype: 'Column Break'
-        //         },
-        //         {
-        //             fieldname: 'p_bale_barcode',
-        //             label: 'Bale BarCode',
-        //             fieldtype: 'Data',
-        //             reqd: 1,
-        //         },
-
-        //         {
-        //             fieldtype: 'Column Break'
-        //         },
-        //         {
-        //             fieldname: 'p_weight',
-        //             label: 'Captured Weight',
-        //             fieldtype: 'Float',
-        //             reqd: 1,
-        //             read_only: 0
-        //         },
-        //         {
-        //             fieldtype: 'Section Break'
-        //         }
-        //     ],
-        //     primary_action_label: 'Add Weight',
-        //     primary_action: function (values) {
-        //         const expectedLength = frm.doc.barcode_length || 0;
-        //         if (values.p_bale_barcode.length != expectedLength) {
-        //             frappe.msgprint(__('Please enter a valid barcode of {0} digits.', [expectedLength]));
-        //             return;
-        //         }
-
-        //         frm.add_child('detail_table', {
-        //             bale_barcode: values.p_bale_barcode,
-        //             weight: values.p_weight,
-        //         });
-
-        //         frm.refresh_field('detail_table');
-
-        //         // Reset fields
-        //         d.set_value('p_bale_barcode', '');
-        //         d.set_value('p_weight', '');
-
-        //         // Reset weight display
-        //         updateWeightDisplay("0.00");
-
-        //         // Focus barcode field again
-        //         setTimeout(() => {
-        //             suppress_focus = false;
-        //             const $barcode_input = d.fields_dict.p_bale_barcode.$wrapper.find('input');
-        //             $barcode_input.focus();
-
-        //         }, 300);
-
-
-        //     }
-
-        // });
-
-        // d.onhide = function () {
-        //     //console.log('on hide');
-        //     if (document.activeElement) {
-        //         document.activeElement.blur();
-        //     }
-        //     cleanupSerial();
-        // };
-        // // Prevent Enter key from submitting dialog
-        // setTimeout(() => {
-        //     const barcode_input = d.fields_dict.p_bale_barcode.$wrapper.find('input').get(0);
-        //     if (barcode_input) {
-        //         barcode_input.addEventListener('keydown', function (e) {
-        //             if (e.key === 'Enter') {
-        //                 e.preventDefault();
-        //                 e.stopPropagation();
-        //                 // Optionally, you can trigger your add_weight logic here manually
-        //                 // or just prevent Enter from submitting form on barcode input
-        //             }
-        //         });
-        //     }
-        // }, 100);
-
-
-        // d.show();
-
-
         const expectedLength = frm.doc.barcode_length || 0;
         if (frm.doc.bale_barcode.length != expectedLength) {
             frappe.msgprint(__('Please enter a valid barcode of {0} digits.', [expectedLength]));
@@ -301,6 +221,7 @@ frappe.ui.form.on("Bale Audit", {
         frm.add_child('detail_table', {
             bale_barcode: frm.doc.bale_barcode,
             weight: frm.doc.captured_weight,
+            bale_remarks: frm.doc.bale_comments
         });
 
         frm.refresh_field('detail_table');
@@ -308,9 +229,9 @@ frappe.ui.form.on("Bale Audit", {
         // Reset fields
         frm.set_value('bale_barcode', '');
         frm.set_value('captured_weight', '');
-
+        frm.set_value('bale_comments', '');
         // Reset weight display
-        updateWeightDisplay("0.00");
+        updateMainWeightDisplay(frm, "0.00");
 
         // Focus barcode field again
         setTimeout(() => {
@@ -352,10 +273,7 @@ frappe.ui.form.on("Bale Audit", {
         `);
         $footer.before($weightDisplay);
 
-        function updateWeightDisplay(weight) {
-            $weightDisplay.text(weight + " kg");
-            frm.set_value('captured_weight', weight);
-        }
+
 
         const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
         $footer.prepend(connectBtn);
@@ -380,7 +298,7 @@ frappe.ui.form.on("Bale Audit", {
                         const weight = parseFloat(value.trim());
                         if (!isNaN(weight)) {
                             lastWeight = weight.toFixed(2);
-                            updateWeightDisplay(lastWeight);
+                            updateMainWeightDisplay(lastWeight);
                         }
                     }
                 }
@@ -414,32 +332,29 @@ frappe.ui.form.on("Bale Audit Detail", {
 
 
 });
-// async function cleanupSerial() {
-//     try {
-//         if (scaleReader) {
-//             await scaleReader.cancel();  // triggers done
-//             scaleReader.releaseLock();   // unlocks stream
-//             scaleReader = null;
-//         }
-//     } catch (e) {
-//         console.warn('Reader cleanup error:', e);
-//     }
-
-//     try {
-//         if (window._readableStreamClosed) {
-//             await window._readableStreamClosed;
-//             window._readableStreamClosed = null;
-//         }
-//     } catch (e) {
-//         console.warn('Readable stream close error:', e);
-//     }
-
-//     try {
-//         if (scalePort) {
-//             await scalePort.close();
-//             scalePort = null;
-//         }
-//     } catch (e) {
-//         console.warn('Port close error:', e);
-//     }
-// }
+async function get_open_day_date() {
+    return new Promise((resolve, reject) => {
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Audit Day Setup",
+                filters: {
+                    status: "Opened"
+                },
+                fields: ["date"],
+                limit_page_length: 1,
+                order_by: "date desc"
+            },
+            callback: function (r) {
+                if (r.message && r.message.length > 0) {
+                    resolve(r.message[0].date);
+                } else {
+                    resolve(null);
+                }
+            },
+            error: function (err) {
+                reject(err);
+            }
+        });
+    });
+}
