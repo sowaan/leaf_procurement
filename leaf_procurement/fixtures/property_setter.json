@@ -157,7 +157,7 @@
   "property": "search_fields",
   "property_type": "Data",
   "row_name": null,
-  "value": "supplier_name,custom_nic_number"
+  "value": "supplier_name"
  },
  {
   "default_value": null,
