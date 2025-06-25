@@ -182,7 +182,7 @@ def sync_up():
 							error_msg = response.json().get("message", response.text)
 						except:
 							error_msg = response.text
-						frappe.log_error(error_msg, f"❌ Failed to sync {doctype} {name}")
+						frappe.log_error(error_msg, f"❌ Failed to sync {doctype} ")
 
 				except Exception as e:
 					frappe.log_error(traceback.format_exc(), f"❌ Exception syncing {doctype} {name}")
