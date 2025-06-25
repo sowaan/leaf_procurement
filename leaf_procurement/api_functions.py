@@ -368,6 +368,14 @@ def supplier(supplier):
 	if isinstance(supplier, str):
 		supplier = json.loads(supplier)
 
+	supplier_name = supplier.get("name")
+	if not supplier_name:
+		frappe.throw(_("Supplier name is required."))
+
+	# ✅ Check if the supplier already exists
+	if frappe.db.exists("Supplier", supplier_name):
+		return supplier_name
+
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.insert()
@@ -378,6 +386,13 @@ def supplier(supplier):
 def driver(driver):
 	if isinstance(driver, str):
 		driver = json.loads(driver)
+
+	driver_name = driver.get("name")
+	if not driver_name:
+		frappe.throw(_("Driver name is required."))
+
+	if frappe.db.exists("Driver", driver_name):
+		return driver_name
 
 	doc = frappe.new_doc("Driver")
 	doc.update(driver)
@@ -401,6 +416,13 @@ def bale_registration(bale_registration):
 	if isinstance(bale_registration, str):
 		bale_registration = json.loads(bale_registration)
 
+	bale_name = bale_registration.get("name")
+	if not bale_name:
+		frappe.throw(_("Bale Registration name is required."))
+	
+	if frappe.db.exists("Bale Registration", bale_name):
+		return bale_name
+
 	doc = frappe.new_doc("Bale Registration")
 	doc.update(bale_registration)
 	doc.insert()
@@ -412,12 +434,15 @@ def purchase_invoice(purchase_invoice):
 	if isinstance(purchase_invoice, str):
 		purchase_invoice = json.loads(purchase_invoice)
 
-	print("Received purchase invoice data:", purchase_invoice, "\n\n\n\n\n")
-	# doc = frappe.new_doc("Purchase Invoice")
-	# doc.update(purchase_invoice)
-	# doc.insert()
+	purchase_name = purchase_invoice.get("name")
+	if not purchase_name:
+		frappe.throw(_("Purchase Invoice name is required."))
+
+	if frappe.db.exists("Purchase Invoice", purchase_name):
+		return purchase_name
+
 	invoice = frappe.new_doc("Purchase Invoice")
-	invoice.name = purchase_invoice.get("name")
+	invoice.name = purchase_name
 	invoice.return_against = purchase_invoice.get("return_against")
 	invoice.update_outstanding_for_self = purchase_invoice.get("update_outstanding_for_self", 0)
 	invoice.supplier = purchase_invoice.get("supplier")
@@ -435,7 +460,11 @@ def purchase_invoice(purchase_invoice):
 	invoice.buying_price_list = purchase_invoice.get("buying_price_list")
 	invoice.price_list_currency = purchase_invoice.get("price_list_currency")
 	invoice.plc_conversion_rate = purchase_invoice.get("plc_conversion_rate")
+	invoice.custom_short_code = purchase_invoice.get("custom_short_code")
+	invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 	invoice.docstatus = purchase_invoice.get("docstatus", 0)
+	invoice.is_paid = purchase_invoice.get("is_paid", 0)
+	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
 
 	for detail in purchase_invoice.get("items"):
 		print(detail.get("batch_no"), "\n\n\n\n\n")
@@ -460,7 +489,7 @@ def purchase_invoice(purchase_invoice):
 			if value:
 				item_data[key] = value
 		invoice.append("items", item_data)   
-
+	# invoice.set_name(purchase_name)
 	invoice.save()
 	return invoice.name
 
@@ -469,6 +498,13 @@ def purchase_invoice(purchase_invoice):
 def goods_transfer_note(goods_transfer_note):
 	if isinstance(goods_transfer_note, str):
 		goods_transfer_note = json.loads(goods_transfer_note)
+
+	goods_transfer_note_name = goods_transfer_note.get("name")
+	if not goods_transfer_note_name:
+		frappe.throw(_("Goods Transfer Note name is required."))
+
+	if frappe.db.exists("Goods Transfer Note", goods_transfer_note_name):
+		return goods_transfer_note_name
 
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
@@ -480,6 +516,13 @@ def goods_transfer_note(goods_transfer_note):
 def goods_receiving_note(goods_receiving_note):
 	if isinstance(goods_receiving_note, str):
 		goods_receiving_note = json.loads(goods_receiving_note)
+
+	goods_receiving_note_name = goods_receiving_note.get("name")
+	if not goods_receiving_note_name:
+		frappe.throw(_("Goods Receiving Note name is required."))
+	
+	if frappe.db.exists("Goods Receiving Note", goods_receiving_note_name):
+		return goods_receiving_note_name
 
 	doc = frappe.new_doc("Goods Receiving Note")
 	doc.update(goods_receiving_note)
