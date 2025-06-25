@@ -27,8 +27,10 @@ def create_company(settings, headers, data):
 				# doc.update(item)
 				doc.save(ignore_permissions=True)
 				created.append(doc.name)
+				frappe.db.commit()
 				frappe.logger().info(f"Created Company: {doc.name}")
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Company {item['name']}: {e}")
 		else:
 			skipped.append(item['name'])
@@ -54,9 +56,11 @@ def create_company_accounts(settings, headers, company_name):
 					doc = frappe.new_doc("Account")
 					doc.update(data)
 					doc.insert(ignore_permissions=True)
+					frappe.db.commit()
 			else:
 				frappe.throw(_("Failed to fetch data for Account: {0}").format(response.text))
 		except Exception as e:
+			frappe.db.rollback()
 			frappe.throw(_("Error fetching data for Account: {0}").format(e))
 
 
@@ -102,9 +106,11 @@ def create_warehouse(settings, headers, data):
 						doc.set("__islocal", False)
 						doc.db_insert()
 						created.append(doc.name)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Warehouse: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Warehouse {item['name']}: {e}")
 		else:
 			skipped.append(item['name'])
@@ -135,9 +141,11 @@ def create_quota_setup(settings, headers, data):
 						doc.update(item)
 						doc.insert(ignore_permissions=True)
 						created.append(doc.name)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Quota Setup: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Quota Setup {item['name']}: {e}")
 		else:
 			skipped.append(item['name'])
@@ -168,9 +176,11 @@ def create_item(settings, headers, data):
 						doc.update(item)
 						doc.insert(ignore_permissions=True)
 						created.append(doc.name)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Item: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Item {item['name']}: {e}")
 		else:
 			skipped.append(item['name'])
@@ -200,9 +210,11 @@ def create_item_grade(settings, headers, data):
 						doc.item_grade_name = item.get('item_grade_name', item['name'])
 						doc.rejected_grade = item.get('rejected_grade', False)
 						doc.insert(ignore_permissions=True)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Item Grade {item['name']}: {e}")
 
 	if errors:
@@ -226,9 +238,11 @@ def create_item_sub_grade(settings, headers, data):
 						doc.item_grade = item.get('item_grade', item['name'])
 						doc.item_sub_grade = item.get('item_sub_grade', item['name'])
 						doc.insert(ignore_permissions=True)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Item Sub Grade: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Item Sub Grade {item['name']}: {e}")
 
 	if errors:
@@ -258,9 +272,11 @@ def create_item_grade_price(settings, headers, data):
 						doc.uom = item.get('uom', 'Nos')
 						doc.rate = item.get('rate', 0.0)
 						doc.insert(ignore_permissions=True)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade Price: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Item Grade Price {item['name']}: {e}")
 
 	if errors:
@@ -284,9 +300,11 @@ def create_bale_status(settings, headers, data):
 						doc.bale_status_name = item.get('bale_status_name', item['name'])
 						doc.default_status = item.get('default_status', False)
 						doc.insert(ignore_permissions=True)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Bale Status: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Bale Status {item['name']}: {e}")
 
 	if errors:
@@ -309,9 +327,11 @@ def create_reclassification_grade(settings, headers, data):
 						doc.name = item.get('name', item['name'])
 						doc.reclassification_grade_name = item.get('reclassification_grade_name', item['name'])
 						doc.insert(ignore_permissions=True)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Reclassification Grade: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Reclassification Grade {item['name']}: {e}")
 
 	if errors:
@@ -333,9 +353,11 @@ def create_transport_type(settings, headers, data):
 						doc.name = item.get('name', item['name'])
 						doc.transport_type = item.get('transport_type', item['name'])
 						doc.insert(ignore_permissions=True)
+						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Transport Type: {0}").format(response.text))
 			except Exception as e:
+				frappe.db.rollback()
 				errors.append(f"Error creating Transport Type {item['name']}: {e}")
 
 	if errors:
@@ -379,6 +401,7 @@ def supplier(supplier):
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.insert()
+	frappe.db.commit()
 	return doc.name
 
 
@@ -397,6 +420,7 @@ def driver(driver):
 	doc = frappe.new_doc("Driver")
 	doc.update(driver)
 	doc.insert()
+	frappe.db.commit()
 	return doc.name
 
 
@@ -408,6 +432,7 @@ def bale_audit(bale_audit):
 	doc = frappe.new_doc("Bale Audit")
 	doc.update(bale_audit)
 	doc.insert()
+	frappe.db.commit()
 	return doc.name
 
 
@@ -426,6 +451,7 @@ def bale_registration(bale_registration):
 	doc = frappe.new_doc("Bale Registration")
 	doc.update(bale_registration)
 	doc.insert()
+	frappe.db.commit()
 	return doc.name
 
 
@@ -491,6 +517,7 @@ def purchase_invoice(purchase_invoice):
 		invoice.append("items", item_data)   
 	# invoice.set_name(purchase_name)
 	invoice.save()
+	frappe.db.commit()
 	return invoice.name
 
 
@@ -509,6 +536,7 @@ def goods_transfer_note(goods_transfer_note):
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
 	doc.insert()
+	frappe.db.commit()
 	return doc.name
 
 
@@ -527,6 +555,7 @@ def goods_receiving_note(goods_receiving_note):
 	doc = frappe.new_doc("Goods Receiving Note")
 	doc.update(goods_receiving_note)
 	doc.insert()
+	frappe.db.commit()
 	return doc.name
 
 
