@@ -290,6 +290,7 @@ scheduler_events = {
 # 	"frappe.desk.doctype.event.event.get_events": "leaf_procurement.event.get_events"
 # }
 override_doctype_class = {
+    "Warehouse": "leaf_procurement.leaf_procurement.overrides.warehouse.CustomWarehouse",
     "Supplier": "leaf_procurement.leaf_procurement.overrides.supplier.CustomSupplier",
     "Driver": "leaf_procurement.leaf_procurement.overrides.driver.CustomDriver",
     "Purchase Invoice": "leaf_procurement.leaf_procurement.overrides.purchase_invoice.CustomPurchaseInvoice"
