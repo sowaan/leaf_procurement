@@ -469,6 +469,8 @@ def purchase_invoice(purchase_invoice):
 
 	invoice = frappe.new_doc("Purchase Invoice")
 	invoice.name = purchase_name
+	invoice.skip_autoname = True
+	invoice.servername = purchase_invoice.get("servername", purchase_name)
 	invoice.return_against = purchase_invoice.get("return_against")
 	invoice.update_outstanding_for_self = purchase_invoice.get("update_outstanding_for_self", 0)
 	invoice.supplier = purchase_invoice.get("supplier")
@@ -493,7 +495,6 @@ def purchase_invoice(purchase_invoice):
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
 
 	for detail in purchase_invoice.get("items"):
-		print(detail.get("batch_no"), "\n\n\n\n\n")
 		if detail["batch_no"]:
 			ensure_batch_exists(detail.get("batch_no"), detail.get("item_code"), detail.get("weight"))
 		item_data = {
@@ -515,7 +516,7 @@ def purchase_invoice(purchase_invoice):
 			if value:
 				item_data[key] = value
 		invoice.append("items", item_data)   
-	# invoice.set_name(purchase_name)
+
 	invoice.save()
 	frappe.db.commit()
 	return invoice.name
