@@ -22,10 +22,10 @@
   "day_setup",
   "section_break_xyxs",
   "bale_barcode",
+  "bale_comments",
   "column_break_arkr",
   "captured_weight",
   "section_break_psgv",
-  "bale_comments",
   "add_audit_weight",
   "section_break_ynis",
   "detail_table",
@@ -159,8 +159,8 @@
   },
   {
    "fieldname": "bale_comments",
-   "fieldtype": "Small Text",
-   "label": "Bale Comments"
+   "fieldtype": "Data",
+   "label": "Comments"
   },
   {
    "fieldname": "day_setup",
@@ -174,7 +174,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-26 11:59:01.868991",
+ "modified": "2025-06-26 13:41:56.923427",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
