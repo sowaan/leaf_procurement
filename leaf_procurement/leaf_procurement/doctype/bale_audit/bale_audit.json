@@ -50,8 +50,7 @@
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
    "label": "Location (Warehouse)",
-   "options": "Warehouse",
-   "read_only": 1
+   "options": "Warehouse"
   },
   {
    "fieldname": "column_break_irkq",
@@ -166,7 +165,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-25 22:24:37.973594",
+ "modified": "2025-06-26 11:26:36.288791",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
