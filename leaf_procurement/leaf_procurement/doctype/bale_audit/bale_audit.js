@@ -202,13 +202,11 @@ frappe.ui.form.on("Bale Audit", {
         });
 
         const open_day = await get_open_day_date();
-        if (open_day ) {
-            frm.set_value('date', open_day);
-        }
-        else
-        {
+        if (open_day) {
+            frm.set_value('date', open_day.date);
+            frm.set_value('day_setup', open_day.name);
+        } else {
             frappe.msgprint(__('There is no open audit day, you cannot add audit records.'));
-            return;            
         }
     },
     add_audit_weight: function (frm) {
@@ -341,13 +339,16 @@ async function get_open_day_date() {
                 filters: {
                     status: "Opened"
                 },
-                fields: ["date"],
+                fields: ["name", "date"],
                 limit_page_length: 1,
                 order_by: "date desc"
             },
             callback: function (r) {
                 if (r.message && r.message.length > 0) {
-                    resolve(r.message[0].date);
+                    resolve({
+                        date: r.message[0].date,
+                        name: r.message[0].name
+                    });
                 } else {
                     resolve(null);
                 }

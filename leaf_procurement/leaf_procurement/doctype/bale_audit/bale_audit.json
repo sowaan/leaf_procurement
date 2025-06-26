@@ -19,6 +19,7 @@
   "disconnect_scale",
   "column_break_irkq",
   "scale_status",
+  "day_setup",
   "section_break_xyxs",
   "bale_barcode",
   "column_break_arkr",
@@ -160,12 +161,20 @@
    "fieldname": "bale_comments",
    "fieldtype": "Small Text",
    "label": "Bale Comments"
+  },
+  {
+   "fieldname": "day_setup",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Day Setup",
+   "options": "Audit Day Setup",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-26 11:26:36.288791",
+ "modified": "2025-06-26 11:59:01.868991",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
