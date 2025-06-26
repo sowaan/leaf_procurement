@@ -6,6 +6,23 @@ from frappe.model.document import Document # type: ignore
 from frappe import _ # type: ignore
 
 class ItemGradePrice(Document):
+    def autoname(self):
+        """Override the default method to set a custom name."""
+        if getattr(self, "skip_autoname", False):
+            self.name = self.servername
+            return  
+
+        settings = frappe.get_doc("Leaf Procurement Settings")
+        self.short_code = frappe.db.get_value(
+            "Warehouse",
+            settings.get("location_warehouse"),
+            "custom_short_code"
+        )
+
+        prefix = f"{self.abbr}-{self.short_code}-{self.item_sub_grade}-"
+        self.name = frappe.model.naming.make_autoname(prefix + ".###")
+
+
     def validate(self):
         # Check if another entry with the same composite key exists
         existing = frappe.db.exists(

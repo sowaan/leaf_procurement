@@ -3,8 +3,31 @@
 
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
+from frappe.model.naming import make_autoname # type: ignore
+
 
 class GoodsReceivingNote(Document):
+    def autoname(self):
+        """Override the default method to set a custom name."""
+        if getattr(self, "skip_autoname", False):
+            # print("Skipping autoname for CustomSupplier", self.servername)
+            self.name = self.servername
+            return  
+        
+        from datetime import datetime
+
+        year = datetime.today().strftime('%Y') 
+        
+        settings = frappe.get_doc("Leaf Procurement Settings")
+        self.location_short_code = frappe.db.get_value(
+            "Warehouse",
+            settings.get("location_warehouse"),
+            "custom_short_code"
+        )
+        prefix = f"{self.location_short_code}-GRN-{year}-"
+
+        self.name = make_autoname(prefix + ".######")
+
     def on_submit(self):
         create_stock_entry_from_gtn(self)
 

@@ -5,8 +5,30 @@ import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
+from frappe.model.naming import make_autoname # type: ignore
 
 class BaleAudit(Document):
+    def autoname(self):
+        if getattr(self, "skip_autoname", False):
+            self.name = self.servername
+            return
+
+        from datetime import datetime
+
+        year = datetime.today().strftime('%Y')
+
+        settings = frappe.get_doc("Leaf Procurement Settings")
+        self.custom_location = settings.get("location_warehouse")
+        self.location_shortcode = frappe.db.get_value(
+            "Warehouse",
+            settings.get("location_warehouse"),
+            "custom_short_code"
+        )
+
+
+        prefix = f"{self.location_shortcode}-AUD-{year}-"
+        self.name = make_autoname(prefix + ".######")
+
     def on_submit(self):
         # if check validations is false, no need to check validations
         # as this is a sync operation

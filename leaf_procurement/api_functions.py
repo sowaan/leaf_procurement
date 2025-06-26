@@ -99,6 +99,8 @@ def create_warehouse(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Warehouse")
+						doc.skip_autoname = True
+						doc.servername = item.get("servername", item['name'])
 						doc.name = item.get('name', item['name'])
 						doc.warehouse_name = item.get('warehouse_name', item['name'])
 						doc.custom_short_code = item.get('custom_short_code', '')
@@ -138,6 +140,8 @@ def create_quota_setup(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Quota Setup")
+						doc.skip_autoname = True
+						doc.servername = item.get("servername", item['name'])
 						doc.update(item)
 						doc.insert(ignore_permissions=True)
 						created.append(doc.name)
@@ -262,6 +266,8 @@ def create_item_grade_price(settings, headers, data):
 					data = response.json().get("data", [])
 					if data:
 						doc = frappe.new_doc("Item Grade Price")
+						doc.skip_autoname = True
+						doc.servername = item.get("servername", item['name'])
 						doc.name = item.get('name', item['name'])
 						doc.company = item.get('company', item['name'])
 						doc.location_warehouse = item.get('location_warehouse', 'Default Warehouse')
