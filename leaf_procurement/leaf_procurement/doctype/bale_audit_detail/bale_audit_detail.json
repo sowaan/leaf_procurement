@@ -50,7 +50,8 @@
   },
   {
    "fieldname": "bale_remarks",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
+   "in_list_view": 1,
    "in_preview": 1,
    "label": "Remarks"
   }
@@ -59,7 +60,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-25 22:25:53.309097",
+ "modified": "2025-06-26 13:42:42.836300",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit Detail",

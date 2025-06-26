@@ -19,12 +19,13 @@
   "disconnect_scale",
   "column_break_irkq",
   "scale_status",
+  "day_setup",
   "section_break_xyxs",
   "bale_barcode",
+  "bale_comments",
   "column_break_arkr",
   "captured_weight",
   "section_break_psgv",
-  "bale_comments",
   "add_audit_weight",
   "section_break_ynis",
   "detail_table",
@@ -50,8 +51,7 @@
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
    "label": "Location (Warehouse)",
-   "options": "Warehouse",
-   "read_only": 1
+   "options": "Warehouse"
   },
   {
    "fieldname": "column_break_irkq",
@@ -159,14 +159,22 @@
   },
   {
    "fieldname": "bale_comments",
-   "fieldtype": "Small Text",
-   "label": "Bale Comments"
+   "fieldtype": "Data",
+   "label": "Comments"
+  },
+  {
+   "fieldname": "day_setup",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Day Setup",
+   "options": "Audit Day Setup",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-25 22:24:37.973594",
+ "modified": "2025-06-26 13:41:56.923427",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
