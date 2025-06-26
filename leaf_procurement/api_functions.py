@@ -489,10 +489,16 @@ def purchase_invoice(purchase_invoice):
 	invoice.price_list_currency = purchase_invoice.get("price_list_currency")
 	invoice.plc_conversion_rate = purchase_invoice.get("plc_conversion_rate")
 	invoice.custom_short_code = purchase_invoice.get("custom_short_code")
-	invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 	invoice.docstatus = purchase_invoice.get("docstatus", 0)
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
+	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
+
+	for rejected in purchase_invoice.get("custom_rejected_items", []):
+		if rejected["batch_no"]:
+			ensure_batch_exists(rejected.get("batch_no"), rejected.get("item_code"), rejected.get("weight"))
+		invoice.append("custom_rejected_items", rejected)
+ 
 
 	for detail in purchase_invoice.get("items"):
 		if detail["batch_no"]:
@@ -517,7 +523,7 @@ def purchase_invoice(purchase_invoice):
 				item_data[key] = value
 		invoice.append("items", item_data)   
 
-	invoice.save()
+	invoice.insert()
 	frappe.db.commit()
 	return invoice.name
 
