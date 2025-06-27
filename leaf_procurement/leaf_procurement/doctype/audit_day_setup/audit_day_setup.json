@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "format:AUD-{location_short_code}-{###}",
  "creation": "2025-06-25 21:35:55.728549",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -13,6 +13,7 @@
   "allow_sunday_open",
   "column_break_iqnk",
   "location_warehouse",
+  "location_short_code",
   "status",
   "day_close_time"
  ],
@@ -63,8 +64,7 @@
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
    "label": "Location (Warehouse)",
-   "options": "Warehouse",
-   "read_only": 1
+   "options": "Warehouse"
   },
   {
    "fieldname": "day_close_time",
@@ -82,15 +82,22 @@
    "options": "Draft\nOpened\nClosed",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fetch_from": "location_warehouse.custom_short_code",
+   "fieldname": "location_short_code",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Location Short Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-25 21:38:52.782512",
+ "modified": "2025-06-27 16:32:40.520636",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Audit Day Setup",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

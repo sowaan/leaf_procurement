@@ -141,10 +141,83 @@ async function cleanupSerial(frm) {
     }
 }
 
+    function update_audit_display(frm) {
+        let total_bales = frm.doc.detail_table.length;
+        let total_weight = 0;
+
+        frm.doc.detail_table.forEach(row => {
+            if (row.weight) {
+                total_weight += flt(row.weight);
+            }
+        });
+
+        let html = `
+            <div style="padding: 10px; font-size: 14px;">
+                <b>Total Scanned Bales:</b> ${total_bales} <br>
+                <b>Total Weight:</b> ${total_weight} kg
+            </div>
+        `;
+
+        frm.set_df_property("audit_display", "options", html);
+        frm.refresh_field("audit_display");
+    }
+    async function validate_bale_data(frm) {
+        if (!frm.doc.bale_barcode && frm.doc.detail_table.length === 0) 
+        {
+            frappe.show_alert({ 
+                message: __('You must add at least one row in the Detail Table before saving.'), 
+                indicator: "red" 
+            });            
+            return { valid: false };            
+      
+        }
+            
+        if (!frm.doc.bale_barcode)return{valid:true};
+
+        const values = frm.doc;
+        const weight = values.captured_weight;
+
+        const expectedLength = frm.doc.barcode_length || 0;
+        if (frm.doc.bale_barcode.length != expectedLength) {
+            frappe.show_alert({ 
+                message: __('Please enter a valid barcode of {0} digits.', [expectedLength]), 
+                indicator: "red" 
+            });
+            return { valid: false };
+        }
+
+    
+        const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
+        if (existing) {
+            frappe.show_alert({
+                message: `Bale with barcode ${values.bale_barcode} already exists in the table.`,
+                indicator: 'red'
+            });
+            return { valid: false };
+        }
+
+        if(weight<=0){
+            frappe.show_alert({ message: __("Please enter weight information to continue."), indicator: "red" });
+            return { valid: false };
+        }
+
+        return {valid:true};
+
+    }
 frappe.ui.form.on("Bale Audit", {
     onUnload: function (frm) {
         // Optional: if you want to close on leaving the module
         cleanupSerial(frm);
+    },
+    location_warehouse: async function(frm){
+        const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
+        if (open_day) {
+            frm.set_value('date', open_day.date);
+            frm.set_value('day_setup', open_day.name);
+        } else {
+            frappe.msgprint(__('There is no open audit day, you cannot add audit records.'));
+        }
+
     },
     connect_scale: async function (frm) {
         if (!window._scaleConnection.port) {
@@ -158,6 +231,7 @@ frappe.ui.form.on("Bale Audit", {
         //frappe.msgprint(__('Scale disconnected.'));
     },
     onload: async function (frm) {
+        update_audit_display(frm);
         frm.page.sidebar.toggle(false);
         updateScaleStatus(frm, scaleConnected);
         if (scaleConnected == 'Connected') {
@@ -183,7 +257,7 @@ frappe.ui.form.on("Bale Audit", {
         }, 100);
 
         if (!frm.is_new()) return;
-        //get company and location records from settings
+    const settings = await new Promise((resolve, reject) => {
         frappe.call({
             method: 'frappe.client.get',
             args: {
@@ -194,25 +268,67 @@ frappe.ui.form.on("Bale Audit", {
                 if (r.message) {
                     frm.set_value('company', r.message.company_name);
                     frm.set_value('location_warehouse', r.message.location_warehouse);
-
                     frm.set_value('item', r.message.default_item);
                     frm.set_value('barcode_length', r.message.barcode_length);
+                    resolve(r.message);  // ✅ pass settings forward
+                } else {
+                    reject("Could not fetch settings");
                 }
             }
         });
+    });
 
-        const open_day = await get_open_day_date();
-        if (open_day) {
-            frm.set_value('date', open_day.date);
-            frm.set_value('day_setup', open_day.name);
-        } else {
-            frappe.msgprint(__('There is no open audit day, you cannot add audit records.'));
-        }
     },
-    add_audit_weight: function (frm) {
-        const expectedLength = frm.doc.barcode_length || 0;
-        if (frm.doc.bale_barcode.length != expectedLength) {
-            frappe.msgprint(__('Please enter a valid barcode of {0} digits.', [expectedLength]));
+    after_save: async function (frm){
+            update_audit_display(frm);
+
+
+    },
+    validate: async function (frm) {
+        const result = await validate_bale_data(frm);
+        if (!result.valid) {
+            frappe.validated = false;
+            return;
+        }
+        
+        const values = frm.doc;
+        const weight = values.captured_weight;
+        if(!values.bale_barcode) return;
+       // console.log('is rejected:', is_rejected_grade);
+        frm.doc.detail_table.push({
+            bale_barcode: values.bale_barcode,
+            weight: weight,
+            bale_remarks: values.bale_comments,
+        });        
+
+                // Reset fields
+        frm.set_value('bale_barcode', '');
+        frm.set_value('captured_weight', '');
+        frm.set_value('bale_comments', '');
+        // Reset weight display
+
+
+        // Focus barcode field again
+        setTimeout(() => {
+            suppress_focus = false;
+            const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
+            $barcode_input.focus();
+
+        }, 300);
+    },
+    add_audit_weight: async function (frm) {
+
+        if (!frm.doc.bale_barcode) {
+            frappe.show_alert({ 
+                message: __('Please enter a valid barcode to add audit information.'), 
+                indicator: "red" 
+            });        
+            return;
+        };
+
+        const result = await validate_bale_data(frm);
+
+        if (!result.valid) {
             return;
         }
 
@@ -234,6 +350,7 @@ frappe.ui.form.on("Bale Audit", {
         // Focus barcode field again
         setTimeout(() => {
             suppress_focus = false;
+            update_audit_display(frm);
             const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
             $barcode_input.focus();
 
@@ -315,29 +432,59 @@ frappe.ui.form.on("Bale Audit", {
 frappe.ui.form.on("Bale Audit Detail", {
     refresh: function (frm) {
         // frm is defined here
+        update_audit_display(frm);
     },
-    delete_row(frm, cdt, cdn) {
-        frappe.model.clear_doc(cdt, cdn);  // delete the row
-        frm.refresh_field('detail_table');
+delete_row: function(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
 
-        if (cur_dialog) {
-            cur_dialog.hide();
+    frappe.confirm(
+        `Are you sure you want to delete this row: ${row.bale_barcode}?`,
+        function () {
+            // Call server method to delete the child record
+            frappe.call({
+                method: "frappe.client.delete",
+                args: {
+                    doctype: row.doctype,
+                    name: row.name
+                },
+                callback: function (response) {
+                    if (!response.exc) {
+                        frappe.msgprint(__("Row deleted successfully"));
+
+                        // Fully remove the row from locals and doc
+                        frappe.model.clear_doc(cdt, cdn);
+
+                        // Remove from doc.detail_table (redundant but safe)
+                        frm.doc.detail_table = frm.doc.detail_table.filter(r => r.name !== row.name);
+
+                        // Refresh field & mark dirty
+                        frm.refresh_field('detail_table');
+                        frm.dirty(); // OR frm.set_dirty();
+
+                        frm.trigger("update_audit_display");
+
+                        if (cur_dialog) cur_dialog.hide();
+                        $('.modal-backdrop').remove();
+                    }
+                }
+            });
         }
+    );
+}
 
-        // Remove any lingering modal backdrop
-        $('.modal-backdrop').remove();
-    },
 
 
 });
-async function get_open_day_date() {
+async function get_open_day_date(location_name) {
+    console.log('location: ', location_name);
     return new Promise((resolve, reject) => {
         frappe.call({
             method: "frappe.client.get_list",
             args: {
                 doctype: "Audit Day Setup",
                 filters: {
-                    status: "Opened"
+                    status: "Opened",
+                    location_warehouse: location_name
                 },
                 fields: ["name", "date"],
                 limit_page_length: 1,
@@ -345,6 +492,7 @@ async function get_open_day_date() {
             },
             callback: function (r) {
                 if (r.message && r.message.length > 0) {
+                    console.log('message: ', r.message);
                     resolve({
                         date: r.message[0].date,
                         name: r.message[0].name
