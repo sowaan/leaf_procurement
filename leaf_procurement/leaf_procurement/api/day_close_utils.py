@@ -1,6 +1,17 @@
 import frappe # type: ignore
 from frappe import _
 
+# In audit_day_setup.py or any relevant file
+@frappe.whitelist()
+def get_user_audit_day_status():
+    return frappe.get_all(
+        "Audit Day Setup",
+        filters={
+            "date": frappe.utils.today()
+        },
+        fields=["name", "location_warehouse", "day_open_time", "day_close_time"]
+    )
+
 
 @frappe.whitelist()
 def check_gtn_and_grade_difference(date):

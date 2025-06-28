@@ -1,0 +1,81 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"1Ta13-ugjd\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"KdHSMSthoq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"View Audit Lists\",\"col\":4}}]",
+ "creation": "2025-06-28 12:23:16.365005",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Bale Audit Day Block",
+   "label": "Bale Audit Day Block"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "milestone",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Audit Section",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "View Audit Lists",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Day Setup",
+   "link_count": 0,
+   "link_to": "Audit Day Setup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bale Audit",
+   "link_count": 0,
+   "link_to": "Bale Audit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-06-28 12:58:48.114206",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Audit Section",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 7.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Create Bale Audit",
+   "link_to": "Bale Audit",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "New",
+   "label": "Create Audit Day",
+   "link_to": "Audit Day Setup",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Audit Section"
+}
