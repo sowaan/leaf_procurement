@@ -31,6 +31,7 @@
    "label": "Allow Day Open On Sunday"
   },
   {
+   "default": "12",
    "fieldname": "lot_size",
    "fieldtype": "Int",
    "label": "Lot Size"
@@ -40,6 +41,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "11",
    "fieldname": "barcode_length",
    "fieldtype": "Int",
    "label": "Barcode Length"
@@ -127,7 +129,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-27 16:53:08.797355",
+ "modified": "2025-06-30 00:48:05.401890",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

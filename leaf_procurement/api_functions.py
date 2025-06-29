@@ -546,6 +546,14 @@ def goods_transfer_note(goods_transfer_note):
 	if frappe.db.exists("Goods Transfer Note", goods_transfer_note_name):
 		return goods_transfer_note_name
 
+	# Dear Saad, here we need to check if the batch doesn't exist
+	# we need to create the batch as if the invoice is not synced
+	# there will be no batch informtaion
+	# ===========================================================
+	# for detail in purchase_invoice.get("items"):
+	# 	if detail["batch_no"]:
+	# 		ensure_batch_exists(detail.get("batch_no"), detail.get("item_code"), detail.get("weight"))
+
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
 	doc.insert()
