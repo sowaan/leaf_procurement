@@ -5,14 +5,11 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "sync_down_tab",
   "section_break_bogd",
   "sync_down_select_all",
   "column_break_ctdr",
   "sync_down",
-  "column_break_mjua",
-  "sync_up_select_all",
-  "column_break_jefq",
-  "sync_up",
   "section_break_xxtu",
   "company_check",
   "warehouse",
@@ -24,14 +21,38 @@
   "bale_status",
   "reclassification_grade",
   "transport_type",
-  "column_break_sjov",
+  "sync_up_tab",
+  "sync_up_select_all",
+  "column_break_lgyf",
+  "sync_up",
+  "section_break_wxmg",
   "supplier",
+  "column_break_sjph",
+  "supplier_label",
+  "section_break_yenk",
   "driver",
+  "column_break_fakq",
+  "driver_label",
+  "section_break_zwht",
   "bale_audit",
+  "column_break_ijgj",
+  "bale_audit_label",
+  "section_break_rijc",
   "bale_registration",
+  "column_break_nnwn",
+  "bale_registration_label",
+  "section_break_ifdz",
   "purchase_invoice",
+  "column_break_lwjl",
+  "purchase_invoice_label",
+  "section_break_wsos",
   "goods_transfer_note",
+  "column_break_neya",
+  "goods_transfer_note_label",
+  "section_break_snhw",
   "goods_receiving_note",
+  "column_break_ckob",
+  "goods_receiving_note_label",
   "leaf_sync_detail_tab",
   "leaf_sync_detail"
  ],
@@ -85,10 +106,6 @@
    "label": "Transport Type"
   },
   {
-   "fieldname": "column_break_sjov",
-   "fieldtype": "Column Break"
-  },
-  {
    "default": "0",
    "fieldname": "bale_registration",
    "fieldtype": "Check",
@@ -125,18 +142,10 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_mjua",
-   "fieldtype": "Column Break"
-  },
-  {
    "default": "0",
    "fieldname": "sync_up_select_all",
    "fieldtype": "Check",
    "label": "Select All"
-  },
-  {
-   "fieldname": "column_break_jefq",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "section_break_xxtu",
@@ -195,12 +204,110 @@
    "fieldname": "bale_audit",
    "fieldtype": "Check",
    "label": "Bale Audit"
+  },
+  {
+   "fieldname": "supplier_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "driver_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "bale_audit_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "bale_registration_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "purchase_invoice_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "goods_transfer_note_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "goods_receiving_note_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "sync_up_tab",
+   "fieldtype": "Tab Break",
+   "label": "Sync Up"
+  },
+  {
+   "fieldname": "sync_down_tab",
+   "fieldtype": "Tab Break",
+   "label": "Sync Down"
+  },
+  {
+   "fieldname": "column_break_lgyf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_wxmg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_sjph",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_yenk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fakq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_zwht",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ijgj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_rijc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_nnwn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ifdz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_lwjl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_wsos",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_neya",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_snhw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ckob",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-24 11:26:27.274796",
+ "modified": "2025-06-28 14:48:05.162117",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Sync Tool",
@@ -217,6 +324,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

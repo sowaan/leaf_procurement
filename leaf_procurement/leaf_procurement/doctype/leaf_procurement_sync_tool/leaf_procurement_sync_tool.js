@@ -27,6 +27,46 @@ const sync_up_checkboxes = [
 let is_bulk_update = false;
 
 frappe.ui.form.on("Leaf Procurement Sync Tool", {
+	onload: function(frm) {
+		// Mapping checkboxes to Doctypes
+		const doctype_map = {
+			"supplier": "Supplier",
+			"driver": "Driver",
+			"bale_audit": "Bale Audit",
+			"bale_registration": "Bale Registration",
+			"purchase_invoice": "Purchase Invoice",
+			"goods_transfer_note": "Goods Transfer Note",
+			"goods_receiving_note": "Goods Receiving Note"
+		};
+
+				sync_up_checkboxes.forEach(fieldname => {
+			if (frm.doc[fieldname]) {
+				const doctype = doctype_map[fieldname];
+				frappe.call({
+					method: "frappe.client.get_count",
+					args: {
+						doctype: doctype,
+						filters: {
+							"custom_is_sync": 0,
+							"docstatus": ["<", 2]
+						}
+					},
+					callback: function(r) {
+						if (!r.exc) {
+                            
+							const label_field = fieldname + "_label";
+                            console.log(label_field, " : ", r.message);
+							let count = r.message;
+                            let color = count > 0 ? "red" : "green";
+                            let html = `<span style="color:${color}; font-weight: bold;margin-top:1px; margin-bottom:10px">${count} to sync</span>`;
+
+                            frm.fields_dict[label_field].$wrapper.html(html);
+						}
+					}
+				});
+			}
+		});
+	},    
     refresh(frm) {
         frm.fields_dict.sync_down_select_all.df.label = frm.doc.sync_down_select_all ? 'Unselect All' : 'Select All';
         frm.fields_dict.sync_up_select_all.df.label = frm.doc.sync_up_select_all ? 'Unselect All' : 'Select All';
@@ -35,6 +75,9 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
     sync_down(frm) {
         frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.sync_down",
+            args: {
+                values: frm.doc
+            },
             freeze: true,
             freeze_message: __('Syncing down data...'),
             callback: function (r) {
@@ -56,6 +99,9 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
     sync_up(frm) {
         frappe.call({
             method: "leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.sync_up",
+            args: {
+                values: frm.doc
+            },
             freeze: true,
             freeze_message: __('Syncing up data...'),
             callback: function (r) {
