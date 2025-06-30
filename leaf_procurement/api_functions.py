@@ -260,7 +260,7 @@ def create_item_grade_price(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Item Grade Price", item['name']):
 			try:
-				url = f'{settings.get("instance_url")}/api/resource/Item Grade Price?fields=["*"]'
+				url = f'{settings.get("instance_url").rstrip("/")}/api/resource/Item Grade Price?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
@@ -281,6 +281,19 @@ def create_item_grade_price(settings, headers, data):
 						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade Price: {0}").format(response.text))
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), "Sync Item Grade Price Error")
+		else:
+			# Update existing record's rate and uom
+			try:
+				doc = frappe.get_doc("Item Grade Price", item['name'])
+				doc.rate = item.get('rate', doc.rate)
+				doc.uom = item.get('uom', doc.uom)
+				doc.save(ignore_permissions=True)
+				frappe.db.commit()
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), "Update Item Grade Price Error")
+
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Item Grade Price {item['name']}: {e}")
