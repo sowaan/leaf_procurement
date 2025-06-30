@@ -26,7 +26,8 @@ fixtures = [
         "doctype":"Custom HTML Block",
 		"filters":[
 			[
-				"name", "in", ("Leaf Buying Day Block")
+				"name", "in", ("Leaf Buying Day Block", "Bale Audit Day Block")
+        
 			]
 		]
 	},

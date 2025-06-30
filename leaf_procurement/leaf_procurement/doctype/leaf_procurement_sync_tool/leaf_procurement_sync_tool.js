@@ -105,6 +105,7 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
                 }
             }
         });
+                            sync_up_status_update(frm);
     },
 
     sync_up(frm) {
@@ -121,8 +122,9 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
                         message: __('Sync up completed successfully.'),
                         indicator: 'green'
                     });
-                    sync_up_status_update(frm);
+
                 } else {
+
                     frappe.show_alert({
                         message: __('No data to sync up.'),
                         indicator: 'orange'
@@ -130,6 +132,7 @@ frappe.ui.form.on("Leaf Procurement Sync Tool", {
                 }
             }
         });
+        sync_up_status_update(frm);
     },
 
     sync_down_select_all(frm) {

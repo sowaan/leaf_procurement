@@ -9,5 +9,16 @@
   "roles": [],
   "script": "frappe.call({\n      method: \"frappe.client.get_list\",\n      args: {\n        doctype: \"Day Setup\",\n        filters: {\n          date: frappe.datetime.get_today()\n        },\n        fields: [\"day_open_time\", \"day_close_time\"],\n        limit_page_length: 1\n      },\n      callback: function (r) {\n        let el = root_element.querySelector('#day-status');\n        console.log(el)\n        if (r.message && r.message.length > 0) {\n          const day = r.message[0];\n          if (day.day_open_time && !day.day_close_time) {\n            el.classList.add(\"indicator-pill\", \"green\");\n            el.innerText = \"Day is open for today\";\n          } else {\n            el.classList.add(\"indicator-pill\", \"orange\");\n            el.innerText = \"Day is not open for today\";\n          }\n        } else {\n          el.classList.add(\"indicator-pill\", \"orange\");\n          el.innerText = \"Day is not open for today\";\n        }\n      }\n    });",
   "style": null
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Custom HTML Block",
+  "html": "<div id=\"day-status\"></div>\n",
+  "modified": "2025-06-30 11:17:13.314266",
+  "name": "Bale Audit Day Block",
+  "private": 0,
+  "roles": [],
+  "script": "frappe.call({\n  method: \"leaf_procurement.leaf_procurement.api.day_close_utils.get_user_audit_day_status\",\n  callback: function (r) {\n    const el = root_element.querySelector('#day-status');\n    el.innerHTML = \"\"; // Clear previous content\n\n    if (!r.message || r.message.length === 0) {\n      el.classList.add(\"indicator-pill\", \"orange\");\n      el.innerText = \"No audit day found for your warehouses today\";\n      return;\n    }\n\n    // Split records into open and closed days\n    const openDays = [];\n    const closedDays = [];\n\n    r.message.forEach(day => {\n      const statusText = `${day.location_warehouse}`;\n      if (day.day_open_time && !day.day_close_time) {\n        openDays.push(`<div class=\"indicator-pill green\">${statusText}</div>`);\n      } else {\n        closedDays.push(`<div class=\"indicator-pill orange\">${statusText}</div>`);\n      }\n    });\n\n    // Render the sections\n    if (openDays.length) {\n      el.innerHTML += `<h4>Open Days</h4>${openDays.join('')}`;\n    }\n    if (closedDays.length) {\n      el.innerHTML += `<h4>Closed/Not Open Days</h4>${closedDays.join('')}`;\n    }\n  }\n});\n",
+  "style": "#day-status h4 {\n  margin-top: 1em;\n  margin-bottom: 0.5em;\n}\n.indicator-pill {\n  display: inline-block;\n  padding: 6px 12px;\n  border-radius: 20px;\n  margin: 3px;\n  font-size: 90%;\n  color: white;\n}\n.green {\n  background-color: #28a745;\n}\n.orange {\n  background-color: #fd7e14;\n}\n"
  }
 ]
