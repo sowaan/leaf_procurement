@@ -15,52 +15,57 @@ def execute(filters=None):
 		WITH 
 			grand_today AS (
 				SELECT 
-					SUM(IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) AS total_amount_today
-				FROM `tabBale Weight Info` AS parent
-				JOIN `tabBale Weight Detail` AS child ON parent.name = child.parent
-				WHERE parent.docstatus = 1 AND DATE(parent.date) = %(to_date)s
+					SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_today
+			FROM `tabPurchase Invoice` pi
+			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+					  LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+					   AND DATE(pi.posting_date) = %(to_date)s
 			),
 			grand_todate AS (
-				SELECT 
-					SUM(IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) AS total_amount_todate
-				FROM `tabBale Weight Info` AS parent
-				JOIN `tabBale Weight Detail` AS child ON parent.name = child.parent
-				WHERE parent.docstatus = 1 AND DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s
+								SELECT 
+					SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_todate
+			FROM `tabPurchase Invoice` pi
+			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+					  LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+					  AND DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s
 			)
 
 		SELECT 
-			parent.location_warehouse AS depot_name,
+			supp.custom_location_warehouse AS depot_name,
 
 			-- Today
-			COUNT(CASE WHEN DATE(parent.date) = %(to_date)s THEN child.name ELSE NULL END) AS bales_today,
-			SUM(CASE WHEN DATE(parent.date) = %(to_date)s THEN IFNULL(child.weight, 0) ELSE 0 END) AS kgs_today,
-			SUM(CASE WHEN DATE(parent.date) = %(to_date)s THEN (IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) ELSE 0 END) AS amount_today,
+			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name ELSE NULL END) AS bales_today,
+			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_today,
+			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END) AS amount_today,
 			(
-				SUM(CASE WHEN DATE(parent.date) = %(to_date)s THEN (IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) ELSE 0 END)
-				/ NULLIF(SUM(CASE WHEN DATE(parent.date) = %(to_date)s THEN IFNULL(child.weight, 0) ELSE 0 END), 0)
+				SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
+				/ NULLIF(SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END), 0)
 			) AS avg_today,
 			(
-				SUM(CASE WHEN DATE(parent.date) = %(to_date)s THEN (IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) ELSE 0 END)
+				SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
 				/ NULLIF((SELECT total_amount_today FROM grand_today), 0)
 			) * 100 AS percentage_today,
 
 			-- ToDate
-			COUNT(CASE WHEN DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s THEN child.name ELSE NULL END) AS bales_todate,
-			SUM(CASE WHEN DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(child.weight, 0) ELSE 0 END) AS kgs_todate,
-			SUM(CASE WHEN DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) ELSE 0 END) AS amount_todate,
+			COUNT(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN pii.name ELSE NULL END) AS bales_todate,
+			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_todate,
+			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END) AS amount_todate,
 			(
-				SUM(CASE WHEN DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) ELSE 0 END)
-				/ NULLIF(SUM(CASE WHEN DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(child.weight, 0) ELSE 0 END), 0)
+				SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
+				/ NULLIF(SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END), 0)
 			) AS avg_todate,
 			(
-				SUM(CASE WHEN DATE(parent.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(child.weight, 0) * IFNULL(child.rate, 0)) ELSE 0 END)
+				SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
 				/ NULLIF((SELECT total_amount_todate FROM grand_todate), 0)
 			) * 100 AS percentage_todate
 
-		FROM `tabBale Weight Info` AS parent
-		JOIN `tabBale Weight Detail` AS child ON parent.name = child.parent
-		WHERE parent.docstatus = 1
-		GROUP BY parent.location_warehouse
+			FROM `tabPurchase Invoice` pi
+			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+					  LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+		GROUP BY supp.custom_location_warehouse
 	""", {
 		"from_date": from_date,
 		"to_date": to_date

@@ -14,82 +14,68 @@ def execute(filters=None):
 	
 	if filters.get("supplier"):
 		supplier_list = ", ".join([f"'{s}'" for s in filters.get("supplier")])
-		supplier_filter = f"AND p.supplier_grower IN ({supplier_list})"
+		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
 
 
 	if filters.get("grade_type") == "Reclassification Grade":
 		grade_type = "reclassification_grade"
 	elif filters.get("grade_type") == "Buying Grade":
-		grade_type = "item_grade"
+		grade_type = "grade"
 
 	data = frappe.db.sql(f"""
 		WITH totals AS (
 			SELECT
-				SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) * IFNULL(c.rate, 0) ELSE 0 END) AS total_today,
-				SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(c.weight, 0) * IFNULL(c.rate, 0) ELSE 0 END) AS total_todate
-			FROM `tabBale Weight Info` p
-			JOIN `tabBale Weight Detail` c ON p.name = c.parent
-			WHERE p.docstatus = 1
+				SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) ELSE 0 END) AS total_today,
+				SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) ELSE 0 END) AS total_todate
+			FROM `tabPurchase Invoice` pi
+			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
 		)
+
 		SELECT
-			c.{grade_type} AS grade,
+			pii.{grade_type} AS grade,
 
 			-- Today
-			COUNT(CASE WHEN DATE(p.date) = %(to_date)s THEN c.name ELSE NULL END) AS bales_today,
-SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) AS kgs_today,
-SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END) AS amount_today,
-CASE
-    WHEN SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) = 0 THEN 0
-    ELSE
-        SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END)
-        /
-        SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END)
-END AS avg_today,			(
-				SUM(CASE WHEN DATE(p.date) = %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END)
+			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name END) AS bales_today,
+			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) END) AS kgs_today,
+			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) END) AS amount_today,
+			CASE
+				WHEN SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) END) = 0 THEN 0
+				ELSE
+					SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) END) /
+					SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) END)
+			END AS avg_today,
+			(
+				SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) END)
 				/ NULLIF((SELECT total_today FROM totals), 0)
 			) * 100 AS percentage_today,
 
-			-- ToDate
-			COUNT(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN c.name ELSE NULL END) AS bales_todate,
-SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
-         THEN IFNULL(c.weight, 0) 
-         ELSE 0 
-    END) AS kgs_todate,
-
-SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
-         THEN IFNULL(c.weight, 0) * IFNULL(c.rate, 0) 
-         ELSE 0 
-    END) AS amount_todate,
-
-CASE 
-    WHEN SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(c.weight, 0) ELSE 0 END) = 0
-    THEN 0
-    ELSE
-        SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
-                 THEN IFNULL(c.weight, 0) * IFNULL(c.rate, 0) 
-                 ELSE 0 
-            END) 
-        / 
-        SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s 
-                 THEN IFNULL(c.weight, 0) 
-                 ELSE 0 
-            END)
-END AS avg_todate,	
+			-- To Date
+			COUNT(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN pii.name END) AS bales_todate,
+			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) END) AS kgs_todate,
+			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) END) AS amount_todate,
+			CASE
+				WHEN SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) END) = 0 THEN 0
+				ELSE
+					SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) END) /
+					SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) END)
+			END AS avg_todate,
 			(
-				SUM(CASE WHEN DATE(p.date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(c.weight, 0) * IFNULL(c.rate, 0)) ELSE 0 END)
+				SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0) END)
 				/ NULLIF((SELECT total_todate FROM totals), 0)
 			) * 100 AS percentage_todate
 
-		FROM `tabBale Weight Info` p
-		JOIN `tabBale Weight Detail` c ON p.name = c.parent
-		WHERE p.docstatus = 1
+		FROM `tabPurchase Invoice` pi
+		JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+		WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
 		{supplier_filter}
-		GROUP BY c.{grade_type}
+		GROUP BY pii.{grade_type}
+		ORDER BY pii.{grade_type}
 	""", {
 		"from_date": from_date,
-		"to_date": to_date,
-		"grade_type": grade_type
+		"to_date": to_date
 	}, as_dict=True)
+
 
 	columns = [
 		{"label": filters.get("grade_type"), "fieldname": "grade", "fieldtype": "Data", "width": 200, "align": "left"},

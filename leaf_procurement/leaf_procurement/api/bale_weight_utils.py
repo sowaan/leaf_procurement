@@ -167,6 +167,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
                 "lot_number": registration_code,
                 "grade": detail.item_grade,
                 "sub_grade": detail.item_sub_grade,
+                "reclassification_grade": detail.reclassification_grade
             })   
             invoice_weight += detail.weight             
 

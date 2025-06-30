@@ -533,7 +533,7 @@ def purchase_invoice(purchase_invoice):
 		# Only include optional fields if they have a meaningful value
 		optional_fields = [
 			"received_qty", "warehouse", "use_serial_batch_fields",
-			"batch_no", "lot_number", "grade", "sub_grade"
+			"batch_no", "lot_number", "grade", "sub_grade", "reclassification_grade"
 		]
 
 		for key in optional_fields:

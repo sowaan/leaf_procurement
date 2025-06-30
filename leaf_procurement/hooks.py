@@ -18,7 +18,7 @@ fixtures = [
         "doctype":"Inventory Dimension",
 		"filters":[
 			[
-				"name", "in", ("Sub Grade","Grade", "Lot Number")
+				"name", "in", ("Sub Grade","Grade", "Lot Number", "Reclassification Grade")
 			]
 		]
 	},
