@@ -32,6 +32,10 @@ class BaleAudit(Document):
     def on_submit(self):
         # if check validations is false, no need to check validations
         # as this is a sync operation
+
+        if not self.check_validations:
+            return
+        
         day_open = frappe.get_all("Audit Day Setup",
             filters={
                 "location_warehouse": self.location_warehouse,

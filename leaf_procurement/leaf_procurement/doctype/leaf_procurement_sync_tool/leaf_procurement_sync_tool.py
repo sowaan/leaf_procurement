@@ -250,6 +250,9 @@ def sync_up(values=None):
 						doc_data.check_validations = 0
 						doc_data.day_setup = ""
 
+					if doctype == "Bale Audit":
+						doc_data.check_validations = 0
+						doc_data.day_setup = ""
 					# Prepare data for sync
 					doc_data = json.loads(doc_data.as_json())
 					doc_data["skip_autoname"] = True

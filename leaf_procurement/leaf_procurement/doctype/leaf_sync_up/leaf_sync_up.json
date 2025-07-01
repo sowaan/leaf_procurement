@@ -5,6 +5,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "sync_up_select_all",
+  "section_break_uuzv",
   "supplier",
   "column_break_wgge",
   "supplier_label",
@@ -24,10 +26,16 @@
   "goods_transfer_note",
   "column_break_wrxn",
   "goods_transfer_note_label",
+  "section_break_rdte",
+  "bale_audit",
+  "column_break_uzpr",
+  "bale_audit_label",
   "section_break_weax",
   "sync_status",
   "column_break_occz",
   "sync_now",
+  "section_break_lffr",
+  "sync_history",
   "section_break_igeu",
   "last_sync_message"
  ],
@@ -116,6 +124,7 @@
   {
    "fieldname": "sync_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Sync Status",
    "options": "Queued\nIn Progress\nCompleted\nFailed"
   },
@@ -125,7 +134,8 @@
   },
   {
    "fieldname": "section_break_igeu",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "last_sync_message",
@@ -136,6 +146,7 @@
   {
    "fieldname": "sync_now",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Sync Now"
   },
   {
@@ -147,13 +158,52 @@
   {
    "fieldname": "bale_registration_label",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_lffr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sync_history",
+   "fieldtype": "Table",
+   "label": "Sync History",
+   "options": "Leaf Sync Log",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_rdte",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "bale_audit",
+   "fieldtype": "Check",
+   "label": "Bale Audit"
+  },
+  {
+   "fieldname": "column_break_uzpr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bale_audit_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_up_select_all",
+   "fieldtype": "Check",
+   "label": "Unselect All"
+  },
+  {
+   "fieldname": "section_break_uuzv",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-30 14:33:19.845213",
+ "modified": "2025-07-01 17:03:55.161062",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Sync Up",
