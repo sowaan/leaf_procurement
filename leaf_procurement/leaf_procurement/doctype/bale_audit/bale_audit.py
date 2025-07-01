@@ -17,13 +17,13 @@ class BaleAudit(Document):
 
         year = datetime.today().strftime('%Y')
 
-        settings = frappe.get_doc("Leaf Procurement Settings")
-        self.custom_location = settings.get("location_warehouse")
-        self.location_shortcode = frappe.db.get_value(
-            "Warehouse",
-            settings.get("location_warehouse"),
-            "custom_short_code"
-        )
+        # settings = frappe.get_doc("Leaf Procurement Settings")
+        # self.custom_location = settings.get("location_warehouse")
+        # self.location_shortcode = frappe.db.get_value(
+        #     "Warehouse",
+        #     settings.get("location_warehouse"),
+        #     "custom_short_code"
+        # )
 
 
         prefix = f"{self.location_shortcode}-AUD-{year}-"
@@ -34,6 +34,7 @@ class BaleAudit(Document):
         # as this is a sync operation
         day_open = frappe.get_all("Audit Day Setup",
             filters={
+                "location_warehouse": self.location_warehouse,
                 "date": self.date,
                 "day_open_time": ["is", "set"],
                 "day_close_time": ["is", "not set"]
@@ -42,4 +43,10 @@ class BaleAudit(Document):
         )
 
         if not day_open:
-            frappe.throw(_("⚠️ Audit no permitted because the day is either not opened or already closed."))
+            frappe.throw(_("⚠️ Audit not permitted because the day is either not opened or already closed for location: " + self.location_warehouse))
+        
+
+    
+    def validate(self):
+        if not self.detail_table or len(self.detail_table) == 0:
+            frappe.throw(_("Please add at least one row in the Bale Audit Detail table."))

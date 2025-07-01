@@ -1,0 +1,177 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-30 13:56:24.603868",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "supplier",
+  "column_break_wgge",
+  "supplier_label",
+  "section_break_helo",
+  "driver",
+  "column_break_wlxu",
+  "driver_label",
+  "section_break_vujz",
+  "bale_registration",
+  "column_break_cryo",
+  "bale_registration_label",
+  "section_break_wvan",
+  "purchase_invoice",
+  "column_break_xslr",
+  "purchase_invoice_label",
+  "section_break_tckx",
+  "goods_transfer_note",
+  "column_break_wrxn",
+  "goods_transfer_note_label",
+  "section_break_weax",
+  "sync_status",
+  "column_break_occz",
+  "sync_now",
+  "section_break_igeu",
+  "last_sync_message"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "supplier",
+   "fieldtype": "Check",
+   "label": "Supplier"
+  },
+  {
+   "fieldname": "column_break_wgge",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_helo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "driver",
+   "fieldtype": "Check",
+   "label": "Driver"
+  },
+  {
+   "fieldname": "column_break_wlxu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vujz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_cryo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_wvan",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Check",
+   "label": "Purchase Invoice"
+  },
+  {
+   "fieldname": "column_break_xslr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_tckx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "goods_transfer_note",
+   "fieldtype": "Check",
+   "label": "GTN (Goods Transfer Note)"
+  },
+  {
+   "fieldname": "column_break_wrxn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0 rows to sync",
+   "fieldname": "supplier_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "driver_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "purchase_invoice_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "goods_transfer_note_label",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_weax",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sync_status",
+   "fieldtype": "Select",
+   "label": "Sync Status",
+   "options": "Queued\nIn Progress\nCompleted\nFailed"
+  },
+  {
+   "fieldname": "column_break_occz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_igeu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_sync_message",
+   "fieldtype": "Small Text",
+   "label": "Last Sync Message",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sync_now",
+   "fieldtype": "Button",
+   "label": "Sync Now"
+  },
+  {
+   "default": "0",
+   "fieldname": "bale_registration",
+   "fieldtype": "Check",
+   "label": "Bale Registration"
+  },
+  {
+   "fieldname": "bale_registration_label",
+   "fieldtype": "HTML"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-06-30 14:33:19.845213",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Leaf Sync Up",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

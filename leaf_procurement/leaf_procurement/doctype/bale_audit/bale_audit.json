@@ -20,13 +20,17 @@
   "column_break_irkq",
   "scale_status",
   "day_setup",
+  "section_break_pqzk",
+  "gtn_detail",
   "section_break_xyxs",
   "bale_barcode",
-  "bale_comments",
   "column_break_arkr",
   "captured_weight",
   "section_break_psgv",
+  "bale_comments",
   "add_audit_weight",
+  "column_break_uvyt",
+  "audit_display",
   "section_break_ynis",
   "detail_table",
   "amended_from"
@@ -169,12 +173,30 @@
    "label": "Day Setup",
    "options": "Audit Day Setup",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_uvyt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "audit_display",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_pqzk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gtn_detail",
+   "fieldtype": "Table",
+   "label": "Truck/GTN Details",
+   "options": "Bale Audit GTN"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-26 13:41:56.923427",
+ "modified": "2025-06-27 15:27:16.672490",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",

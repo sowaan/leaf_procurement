@@ -31,6 +31,7 @@
    "label": "Allow Day Open On Sunday"
   },
   {
+   "default": "12",
    "fieldname": "lot_size",
    "fieldtype": "Int",
    "label": "Lot Size"
@@ -40,6 +41,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "11",
    "fieldname": "barcode_length",
    "fieldtype": "Int",
    "label": "Barcode Length"
@@ -65,12 +67,14 @@
   {
    "fieldname": "rejected_location_warehouse",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Rejected Location (Warehouse)",
    "options": "Warehouse"
   },
   {
    "fieldname": "rejected_item_grade",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Rejected Item Grade",
    "options": "Item Grade"
   },
@@ -83,6 +87,7 @@
   {
    "fieldname": "rejected_item_sub_grade",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Rejected Item Sub Grade",
    "options": "Item Sub Grade"
   },
@@ -124,7 +129,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-24 09:51:00.925172",
+ "modified": "2025-06-30 00:48:05.401890",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

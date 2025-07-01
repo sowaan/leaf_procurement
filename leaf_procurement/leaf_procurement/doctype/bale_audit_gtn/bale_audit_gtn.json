@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-27 15:10:19.793419",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "truck_number",
+  "gtn_number",
+  "total_bales",
+  "bales_scanned"
+ ],
+ "fields": [
+  {
+   "fieldname": "truck_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Truck Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gtn_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "GTN Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_bales",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Bales",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bales_scanned",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Bales Scanned",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-27 15:11:36.801310",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Bale Audit GTN",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

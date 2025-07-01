@@ -26,7 +26,12 @@ class LeafProcurementSyncTool(Document):
 	pass
 
 @frappe.whitelist()
-def sync_down():
+def sync_down(values=None):
+	if not values: return
+
+	if isinstance(values, str):
+		values = json.loads(values)
+	
 	try:
 		"""Sync down data from the server to the local database."""
 		settings = frappe.get_doc("Leaf Procurement Settings")
@@ -37,7 +42,8 @@ def sync_down():
 		if not settings.api_secret:
 			frappe.throw(_("API Secret is not set in Leaf Procurement Settings."))
 
-		doc = frappe.get_doc("Leaf Procurement Sync Tool")
+		#doc = frappe.get_doc("Leaf Procurement Sync Tool")
+		parsedurl = settings.instance_url.rstrip('/')
 
 		headers = {
 			"Authorization": f"token {settings.api_key}:{settings.api_secret}",
@@ -58,25 +64,27 @@ def sync_down():
 		]
 
 		for field, doctype in doctypes:
-			if doc.get(field):
-				url = f'{settings.instance_url}/api/resource/{doctype}?fields=["*"]&limit_page_length=1000000'
-				response = requests.get(url, headers=headers)
-				if response.status_code == 200:
-					data = response.json().get("data", [])
-					if len(data) > 20:
-						frappe.enqueue(
-							"leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.process_sync",
-							queue='default',
-							doctype=doctype,
-							data=data
-						)
-						frappe.msgprint(_(f"Sync for {doctype} is queued in the background."))
-					else:
-						process_sync(doctype, data)
+			#if sync down check for current doctype is false continue to next record
+			if not values.get(field): continue
 
-						frappe.msgprint(_(f"Synced {len(data)} records for {doctype}."))
+			url = f'{parsedurl}/api/resource/{doctype}?fields=["*"]&limit_page_length=1000000'
+			response = requests.get(url, headers=headers)
+			if response.status_code == 200:
+				data = response.json().get("data", [])
+				if len(data) > 20:
+					frappe.enqueue(
+						"leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.process_sync",
+						queue='default',
+						doctype=doctype,
+						data=data
+					)
+					frappe.msgprint(_(f"Sync for {doctype} is queued in the background."))
 				else:
-					frappe.throw(_("Failed to sync {0}: {1}").format(doctype, response.text))
+					process_sync(doctype, data)
+
+					frappe.msgprint(_(f"Synced {len(data)} records for {doctype}."))
+			else:
+				frappe.throw(_("Failed to sync {0}: {1}").format(doctype, response.text))
 	except Exception as e:
 		frappe.log_error(str(e), "Sync Down Error")
 
@@ -109,7 +117,12 @@ def process_sync(doctype, data):
 
 
 @frappe.whitelist()
-def sync_up():
+def sync_up(values=None):
+	if not values: return
+
+	if isinstance(values, str):
+		values = json.loads(values)
+	
 	try:
 		# Load settings
 		settings = frappe.get_doc("Leaf Procurement Settings")
@@ -120,7 +133,8 @@ def sync_up():
 		if not settings.api_secret:
 			frappe.throw(_("API Secret is not set in Leaf Procurement Settings."))
 
-		doc = frappe.get_doc("Leaf Procurement Sync Tool")
+		#doc = frappe.get_doc("Leaf Procurement Sync Tool")
+		parsedurl = settings.instance_url.rstrip('/')
 
 		headers = {
 			"Authorization": f"token {settings.api_key}:{settings.api_secret}",
@@ -138,10 +152,9 @@ def sync_up():
 		]
 
 		for field, doctype in doctypes:
-			if not doc.get(field):
-				continue
+			if not values.get(field): continue
 
-			url = f"{settings.instance_url}/api/method/leaf_procurement.api_functions.{field}"
+			url = f"{parsedurl}/api/method/leaf_procurement.api_functions.{field}"
 			print(f"Syncing {doctype} to {url}")
 			try:
 				data = frappe.get_all(
@@ -186,7 +199,6 @@ def sync_up():
 
 				except Exception as e:
 					frappe.log_error(f"❌ Exception syncing {doctype} {name}", traceback.format_exc())
-
 	except Exception as e:
 		frappe.log_error("❌ Sync Up Failed", traceback.format_exc())
 

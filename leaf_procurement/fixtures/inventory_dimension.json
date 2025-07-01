@@ -58,5 +58,25 @@
   "target_fieldname": "item_sub_grade",
   "type_of_transaction": "Both",
   "validate_negative_stock": 0
+ },
+ {
+  "apply_to_all_doctypes": 1,
+  "condition": null,
+  "dimension_name": "Reclassification Grade",
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Inventory Dimension",
+  "document_type": null,
+  "fetch_from_parent": "Reclassification Grade",
+  "istable": 0,
+  "mandatory_depends_on": null,
+  "modified": "2025-07-01 01:08:51.437599",
+  "name": "Reclassification Grade",
+  "reference_document": "Reclassification Grade",
+  "reqd": 0,
+  "source_fieldname": "reclassification_grade",
+  "target_fieldname": "reclassification_grade",
+  "type_of_transaction": "Both",
+  "validate_negative_stock": 0
  }
 ]

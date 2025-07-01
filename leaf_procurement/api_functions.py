@@ -260,7 +260,7 @@ def create_item_grade_price(settings, headers, data):
 	for item in data:
 		if not frappe.db.exists("Item Grade Price", item['name']):
 			try:
-				url = f'{settings.get("instance_url")}/api/resource/Item Grade Price?fields=["*"]'
+				url = f'{settings.get("instance_url").rstrip("/")}/api/resource/Item Grade Price?fields=["*"]'
 				response = requests.get(url, headers=headers)
 				if response.status_code == 200:
 					data = response.json().get("data", [])
@@ -281,6 +281,19 @@ def create_item_grade_price(settings, headers, data):
 						frappe.db.commit()
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade Price: {0}").format(response.text))
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), "Sync Item Grade Price Error")
+		else:
+			# Update existing record's rate and uom
+			try:
+				doc = frappe.get_doc("Item Grade Price", item['name'])
+				doc.rate = item.get('rate', doc.rate)
+				doc.uom = item.get('uom', doc.uom)
+				doc.save(ignore_permissions=True)
+				frappe.db.commit()
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), "Update Item Grade Price Error")
+
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Item Grade Price {item['name']}: {e}")
@@ -520,7 +533,7 @@ def purchase_invoice(purchase_invoice):
 		# Only include optional fields if they have a meaningful value
 		optional_fields = [
 			"received_qty", "warehouse", "use_serial_batch_fields",
-			"batch_no", "lot_number", "grade", "sub_grade"
+			"batch_no", "lot_number", "grade", "sub_grade", "reclassification_grade"
 		]
 
 		for key in optional_fields:
@@ -545,6 +558,14 @@ def goods_transfer_note(goods_transfer_note):
 
 	if frappe.db.exists("Goods Transfer Note", goods_transfer_note_name):
 		return goods_transfer_note_name
+
+	# Dear Saad, here we need to check if the batch doesn't exist
+	# we need to create the batch as if the invoice is not synced
+	# there will be no batch informtaion
+	# ===========================================================
+	# for detail in purchase_invoice.get("items"):
+	# 	if detail["batch_no"]:
+	# 		ensure_batch_exists(detail.get("batch_no"), detail.get("item_code"), detail.get("weight"))
 
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
