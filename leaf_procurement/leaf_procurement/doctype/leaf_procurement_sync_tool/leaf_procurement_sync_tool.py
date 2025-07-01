@@ -9,6 +9,7 @@ import traceback
 import json
 from leaf_procurement.api_functions import (
 	create_company,
+	create_fiscal_year,
 	create_warehouse,
 	create_quota_setup,
 	create_item,
@@ -52,6 +53,7 @@ def sync_down(values=None):
 
 		doctypes = [
 			("company_check", "Company"),
+			("fiscal_year", "Fiscal Year"),
 			("warehouse", "Warehouse"),
 			("quota_setup", "Quota Setup"),
 			("item", "Item"),
@@ -96,6 +98,8 @@ def process_sync(doctype, data):
 	}
 	if doctype == "Company":
 		create_company(settings, headers, data)
+	if doctype == "Fiscal Year":
+		create_fiscal_year(settings, headers, data)
 	if doctype == "Warehouse":
 		create_warehouse(settings, headers, data)
 	if doctype == "Quota Setup":

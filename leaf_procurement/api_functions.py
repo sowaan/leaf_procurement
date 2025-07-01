@@ -5,6 +5,47 @@ import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 
 
+
+def create_fiscal_year(settings, headers, data):
+	"""Update fiscal year records with the received data."""
+	created = []
+	skipped = []
+	errors = []
+
+	for item in data:
+		if not frappe.db.exists("Fiscal Year", item['name']):
+			try:
+				doc = frappe.new_doc("Fiscal Year")
+				doc.name = item.get('name', item['name'])
+				doc.skip_autoname = True
+				doc.servername = item.get('servername', item['name'])
+				doc.disabled = item.get('disabled', 0)
+				doc.is_short_year = item.get('is_short_year', 0)
+				doc.year_start_date = item.get('year_start_date')
+				doc.year_end_date = item.get('year_end_date')
+				doc.year = item.get('year', item['name'])
+				for company in item.get("companies", []):
+					if frappe.db.exists("Company", company):
+						doc.append("companies", {"company": company})
+					else:
+						errors.append(f"Company {company} does not exist for Fiscal Year {item['name']}")
+				doc.insert(ignore_permissions=True)
+				created.append(doc.name)
+				frappe.db.commit()
+			except Exception as e:
+				frappe.db.rollback()
+				errors.append(f"Error creating Fiscal Year {item['name']}: {e}")
+		else:
+			skipped.append(item['name'])
+
+	message = f"Fiscal Year records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
+	if errors:
+		message += f"<br>Errors: {len(errors)}"
+		frappe.log_error("\n".join(errors), "Fiscal Year Sync Errors")
+
+	frappe.msgprint(_(message))
+
+
 def create_company(settings, headers, data):
 	"""Update company records with the received data."""
 	created = []

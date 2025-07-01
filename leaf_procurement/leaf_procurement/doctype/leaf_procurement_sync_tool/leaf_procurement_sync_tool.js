@@ -3,6 +3,7 @@
 
 const sync_down_checkboxes = [
     "company_check",
+    "fiscal_year",
     "warehouse",
     "quota_setup",
     "item",

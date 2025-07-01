@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-01 12:27:04.881530",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "location",
+  "last_sync_down",
+  "column_break_kuru",
+  "api_key",
+  "last_sync_up",
+  "section_break_xinq",
+  "users"
+ ],
+ "fields": [
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "last_sync_down",
+   "fieldtype": "Datetime",
+   "label": "Last Sync Down"
+  },
+  {
+   "fieldname": "column_break_kuru",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "last_sync_up",
+   "fieldtype": "Datetime",
+   "label": "Last Sync Up"
+  },
+  {
+   "fieldname": "section_break_xinq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "users",
+   "fieldtype": "Table",
+   "label": "Users",
+   "options": "Instance Users"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-01 12:35:58.875468",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Local Server Instance",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
