@@ -22,7 +22,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "View Audit Lists",
-   "link_count": 5,
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -50,35 +50,15 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sync Tool",
-   "link_count": 0,
-   "link_to": "Leaf Procurement Sync Tool",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Settings",
+   "label": "Leaf Procurement Settings",
    "link_count": 0,
    "link_to": "Leaf Procurement Settings",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Sync Up (new)",
-   "link_count": 0,
-   "link_to": "Leaf Sync Up",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2025-07-01 17:42:14.305184",
+ "modified": "2025-07-01 17:49:45.845441",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Audit Section",
