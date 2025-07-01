@@ -20,7 +20,8 @@ from leaf_procurement.api_functions import (
 	create_reclassification_grade,
 	create_transport_type
 )
-
+from frappe.utils import now
+from datetime import datetime
 
 
 class LeafProcurementSyncTool(Document):
@@ -50,6 +51,41 @@ def sync_down(values=None):
 			"Authorization": f"token {settings.api_key}:{settings.api_secret}",
 			"Content-Type": "application/json"
 		}
+
+		# local_server_instance(api_key, location, sync_down_date, sync_up_date, users)
+		localsUrl = f"{parsedurl}/api/method/leaf_procurement.api_functions.local_server_instance"
+
+		user_list = frappe.get_all(
+			"User",
+			fields=["name", "email", 'enabled', 'creation'],
+		)
+
+		# Convert datetime to string
+		for user in user_list:
+			if isinstance(user.get("creation"), datetime):
+				user["creation"] = user["creation"].isoformat()
+
+		current_datetime = now()
+
+		try:
+			response = requests.post(localsUrl, headers=headers, json={
+				"api_key": settings.api_key,
+				"location": settings.location_warehouse,
+				"users": user_list,
+				"sync_up_date": None,
+				"sync_down_date": str(current_datetime),
+			})
+			if response.status_code not in [200, 201]:
+				try:
+					error_msg = response.json().get("message", response.text)
+				except:
+					error_msg = response.text
+				frappe.throw(_("Failed to connect to local server instance: {0}").format(error_msg))
+			print("✅ Local server instance connected successfully.")
+		except Exception as e:
+			frappe.log_error(f"❌ Exception connecting to local server instance: {traceback.format_exc()}")
+			return
+
 
 		doctypes = [
 			("company_check", "Company"),
@@ -145,6 +181,40 @@ def sync_up(values=None):
 			"Content-Type": "application/json"
 		}
 
+		# local_server_instance(api_key, location, sync_down_date, sync_up_date, users)
+		localsUrl = f"{parsedurl}/api/method/leaf_procurement.api_functions.local_server_instance"
+
+		user_list = frappe.get_all(
+			"User",
+			fields=["name", "email", 'enabled', 'creation'],
+		)
+		# Convert datetime to string
+		for user in user_list:
+			if isinstance(user.get("creation"), datetime):
+				user["creation"] = user["creation"].isoformat()
+		# user_list = json.loads(user_list.as_json())
+		current_datetime = now()
+
+		try:
+			response = requests.post(localsUrl, headers=headers, json={
+				"api_key": settings.api_key,
+				"location": settings.location_warehouse,
+				"users": user_list,
+				"sync_up_date": str(current_datetime),
+				"sync_down_date":None,
+			})
+			if response.status_code not in [200, 201]:
+				try:
+					error_msg = response.json().get("message", response.text)
+				except:
+					error_msg = response.text
+				frappe.throw(_("Failed to connect to local server instance: {0}").format(error_msg))
+			print("✅ Local server instance connected successfully.")
+		except Exception as e:
+			frappe.log_error(f"❌ Exception connecting to local server instance", traceback.format_exc())
+			return
+
+
 		doctypes = [
 			("supplier", "Supplier"),
 			("driver", "Driver"),
@@ -160,6 +230,7 @@ def sync_up(values=None):
 
 			url = f"{parsedurl}/api/method/leaf_procurement.api_functions.{field}"
 			print(f"Syncing {doctype} to {url}")
+			data = []
 			try:
 				data = frappe.get_all(
 					doctype,

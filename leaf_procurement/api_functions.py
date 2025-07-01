@@ -5,6 +5,42 @@ import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 
 
+def create_company(settings, headers, data):
+	"""Update company records with the received data."""
+	created = []
+	skipped = []
+	errors = []
+
+	for item in data:
+		if item.get("default_letter_head"):
+			create_letterHead(settings, headers, item.get("default_letter_head"))
+		if not frappe.db.exists("Company", item['name']):
+			try:
+				doc = frappe.new_doc("Company")
+				doc.name = item.get('name', item['name'])
+				doc.company_name = item['name']
+				doc.abbr = item.get('abbr', item['name'])
+				doc.default_currency = item.get('default_currency', 'USD')
+				doc.country = item.get('country', 'United States')
+				doc.insert(ignore_permissions=True)
+				# create_company_accounts(settings, headers, item['name'])
+				# doc.update(item)
+				doc.save(ignore_permissions=True)
+				created.append(doc.name)
+				frappe.db.commit()
+				frappe.logger().info(f"Created Company: {doc.name}")
+			except Exception as e:
+				frappe.db.rollback()
+				errors.append(f"Error creating Company {item['name']}: {e}")
+		else:
+			skipped.append(item['name'])
+
+	message = f"Company records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
+	if errors:
+		message += f"<br>Errors: {len(errors)}"
+		frappe.log_error("\n".join(errors), "Company Sync Errors")
+
+	frappe.msgprint(_(message))
 
 def create_fiscal_year(settings, headers, data):
 	"""Update fiscal year records with the received data."""
@@ -45,43 +81,6 @@ def create_fiscal_year(settings, headers, data):
 
 	frappe.msgprint(_(message))
 
-
-def create_company(settings, headers, data):
-	"""Update company records with the received data."""
-	created = []
-	skipped = []
-	errors = []
-
-	for item in data:
-		if item.get("default_letter_head"):
-			create_letterHead(settings, headers, item.get("default_letter_head"))
-		if not frappe.db.exists("Company", item['name']):
-			try:
-				doc = frappe.new_doc("Company")
-				doc.name = item.get('name', item['name'])
-				doc.company_name = item['name']
-				doc.abbr = item.get('abbr', item['name'])
-				doc.default_currency = item.get('default_currency', 'USD')
-				doc.country = item.get('country', 'United States')
-				doc.insert(ignore_permissions=True)
-				# create_company_accounts(settings, headers, item['name'])
-				# doc.update(item)
-				doc.save(ignore_permissions=True)
-				created.append(doc.name)
-				frappe.db.commit()
-				frappe.logger().info(f"Created Company: {doc.name}")
-			except Exception as e:
-				frappe.db.rollback()
-				errors.append(f"Error creating Company {item['name']}: {e}")
-		else:
-			skipped.append(item['name'])
-
-	message = f"Company records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
-	if errors:
-		message += f"<br>Errors: {len(errors)}"
-		frappe.log_error("\n".join(errors), "Company Sync Errors")
-
-	frappe.msgprint(_(message))
 
 def create_company_accounts(settings, headers, company_name):
 	"""Create company accounts for the given company name."""
@@ -422,6 +421,63 @@ def create_transport_type(settings, headers, data):
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Transport Type Sync Errors")
+
+
+
+# sync up 
+
+@frappe.whitelist()
+def local_server_instance(api_key=None, location=None, users=[], sync_up_date=None, sync_down_date=None):
+	"""Set the local server instance details."""
+	if not api_key:
+		frappe.throw(_("API Key is required."))
+
+	print(f"Setting up local server instance with API Key: {api_key}")
+	print(f"Location: {location}")
+	# print(f"Sync Up Date: {sync_up_date}")
+	# print(f"Sync Down Date: {sync_down_date}")
+	local_server_instance = frappe.db.exists("Local Server Instance", {"api_key": api_key})
+
+	if local_server_instance:
+		doc = frappe.get_doc("Local Server Instance", local_server_instance)
+		doc.location = location
+		doc.api_key = api_key
+		doc.last_sync_down = sync_down_date if sync_down_date else doc.last_sync_down
+		doc.last_sync_up = sync_up_date if sync_up_date else doc.last_sync_up
+		doc.users = []  # Clear existing users
+		# Append new users
+		if isinstance(users, str):
+			users = json.loads(users)
+		for user in users:
+			doc.append("users", {
+				"user_name": user.get("name"),
+				"email": user.get("email"),
+				"creation_date": user.get("creation"),
+				"active": user.get("enabled", 0)
+			})
+		doc.save()
+		frappe.db.commit()
+		return doc.name
+	
+	doc = frappe.new_doc("Local Server Instance")
+	doc.api_key = api_key
+	doc.location = location
+	doc.sync_down_date = sync_down_date
+	doc.sync_up_date = sync_up_date
+	if isinstance(users, str):
+		users = json.loads(users)
+		
+	for user in users:
+		doc.append("users", {
+			"user_name": user.get("name"),
+			"email": user.get("email"),
+			"creation_date": user.get("creation"),
+			"active": user.get("enabled", 0)
+		})
+
+	doc.insert()
+	frappe.db.commit()
+	return doc.name
 
 
 @frappe.whitelist()
