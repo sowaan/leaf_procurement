@@ -7,26 +7,25 @@ from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from frappe.model.naming import make_autoname # type: ignore
 
+from frappe.model.naming import make_autoname
+from datetime import datetime
+
 class BaleAudit(Document):
     def autoname(self):
         if getattr(self, "skip_autoname", False):
             self.name = self.servername
             return
 
-        from datetime import datetime
+        # Ensure self.date exists
+        if not self.date:
+            frappe.throw("Date is required for generating name")
 
-        year = datetime.today().strftime('%Y')
+        # Parse and format the date
+        doc_date = datetime.strptime(str(self.date), "%Y-%m-%d")
+        date_part = doc_date.strftime("%Y%m%d")  # Format: YYYYMMDD
 
-        # settings = frappe.get_doc("Leaf Procurement Settings")
-        # self.custom_location = settings.get("location_warehouse")
-        # self.location_shortcode = frappe.db.get_value(
-        #     "Warehouse",
-        #     settings.get("location_warehouse"),
-        #     "custom_short_code"
-        # )
-
-
-        prefix = f"{self.location_shortcode}-AUD-{year}-"
+        # Generate prefix
+        prefix = f"{self.location_shortcode}-AUD-{date_part}-"
         self.name = make_autoname(prefix + ".######")
 
     def on_submit(self):

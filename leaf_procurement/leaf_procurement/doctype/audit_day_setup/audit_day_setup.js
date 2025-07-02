@@ -23,11 +23,23 @@ frappe.ui.form.on("Audit Day Setup", {
             frm.add_custom_button(__('Day Close'), async function () {
                 try {
 
+            const response = await frappe.call({
+                method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_draft_audits_exist",
+                args: {
+                    date: frm.doc.date,
+                    location: frm.doc.location_warehouse
+                }
+            });
 
+            if (response.message && response.message.exists) {
+                frappe.msgprint(__('There are Draft Bale Audit records for this date. Please submit or cancel them before closing the day.'));
+                return;
+            }
                     // No mismatches, proceed with day close
                     frappe.confirm(
                         __("Are you sure you want to close the day?"),
                         async function () {
+                            return;
                             const now = frappe.datetime.now_datetime();
                             frm.set_value('day_close_time', now);
                             frm.set_value('status', "Closed");
@@ -48,7 +60,7 @@ frappe.ui.form.on("Audit Day Setup", {
                     );
 
                 } catch (err) {
-                    frappe.msgprint(__('Error checking GTN and grade differences.'));
+                    frappe.msgprint(__('Error checking draft audit records.'));
                     console.error(err);
                 }
             });
@@ -63,8 +75,6 @@ frappe.ui.form.on("Audit Day Setup", {
         }
     },
     date: function (frm) {
-        frm.events.set_due_date_min(frm);
-
         // Compare with today's date
         let today = frappe.datetime.get_today();
         if (frm.doc.date !== today) {

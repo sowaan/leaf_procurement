@@ -165,7 +165,7 @@
   {
    "fieldname": "bale_comments",
    "fieldtype": "Data",
-   "label": "Comments"
+   "label": "Remarks"
   },
   {
    "fieldname": "day_setup",
@@ -204,7 +204,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-01 16:55:33.701641",
+ "modified": "2025-07-03 00:38:44.286373",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",

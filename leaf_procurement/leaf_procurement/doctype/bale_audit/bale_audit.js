@@ -162,6 +162,15 @@ async function cleanupSerial(frm) {
         frm.refresh_field("audit_display");
     }
     async function validate_bale_data(frm) {
+
+        const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
+        if (!open_day) {
+            frappe.show_alert({ 
+                message: __('There is no open audit day you cannot add audit records.'), 
+                indicator: "red" 
+            });            
+            return { valid: false };         
+        }
         if (!frm.doc.bale_barcode && frm.doc.detail_table.length === 0) 
         {
             frappe.show_alert({ 
@@ -186,20 +195,11 @@ async function cleanupSerial(frm) {
             return { valid: false };
         }
 
-    
-        const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
-        if (existing) {
-            frappe.show_alert({
-                message: `Bale with barcode ${values.bale_barcode} already exists in the table.`,
-                indicator: 'red'
-            });
-            return { valid: false };
-        }
-
         if(weight<=0){
             frappe.show_alert({ message: __("Please enter weight information to continue."), indicator: "red" });
             return { valid: false };
         }
+
 
         return {valid:true};
 
@@ -230,6 +230,70 @@ frappe.ui.form.on("Bale Audit", {
         await cleanupSerial(frm);
         //frappe.msgprint(__('Scale disconnected.'));
     },
+    onload_post_render(frm) {
+        setTimeout(() => {
+            const $input = frm.get_field('bale_barcode')?.$wrapper.find('input');
+
+            if ($input && $input.length) {
+                // Restrict to max 11 characters
+                $input.attr('maxlength', 11);
+
+                $input.on('input', function () {
+                    if (this.value.length > 11) {
+                        this.value = this.value.slice(0, 11);
+                    }
+                });
+
+                // Handle Enter key press
+                $input.on('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Move focus to add_audit_weight button
+                        const nextField = frm.get_field('add_audit_weight');
+                        if (nextField) {
+                            nextField.$wrapper.find('button').focus();
+                        }
+                    }
+                });
+            }
+        }, 300); // Delay to ensure DOM elements are rendered
+
+        setTimeout(() => {
+            const $btn = frm.get_field('add_audit_weight')?.$wrapper.find('button');
+
+            if ($btn && $btn.length) {
+                // Handle Enter key to trigger click
+                $btn.on('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("🔁 ENTER pressed on 'add_audit_weight' button");
+                        $btn.trigger('click');
+                    }
+                });
+
+                // Change color on focus
+                $btn.on('focus', function () {
+                    $(this).css({
+                        'background-color': '#007bff',
+                        'color': '#fff',
+                        'border-color': '#007bff'
+                    });
+                });
+
+                // Revert color on blur
+                $btn.on('blur', function () {
+                    $(this).css({
+                        'background-color': '',
+                        'color': '',
+                        'border-color': ''
+                    });
+                });
+            }
+        }, 300);
+    },
     onload: async function (frm) {
         update_audit_display(frm);
         frm.page.sidebar.toggle(false);
@@ -255,6 +319,7 @@ frappe.ui.form.on("Bale Audit", {
                 $input.focus();
             }
         }, 100);
+
 
         if (!frm.is_new()) return;
         updateWeightOnForm = true;
@@ -291,10 +356,20 @@ frappe.ui.form.on("Bale Audit", {
             frappe.validated = false;
             return;
         }
-        
-        const values = frm.doc;
+        const values = frm.doc
+        const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
+        if (existing) {
+            frappe.show_alert({
+                message: `Bale with barcode ${values.bale_barcode} already exists in the table.`,
+                indicator: 'red'
+            });
+            frappe.validated = false;
+            return;
+        }
+
         const weight = values.captured_weight;
-        if(!values.bale_barcode) return;
+        if(!values.bale_barcode)return; 
+
        // console.log('is rejected:', is_rejected_grade);
         frm.doc.detail_table.push({
             bale_barcode: values.bale_barcode,
@@ -333,11 +408,35 @@ frappe.ui.form.on("Bale Audit", {
             return;
         }
 
-        frm.add_child('detail_table', {
-            bale_barcode: frm.doc.bale_barcode,
-            weight: frm.doc.captured_weight,
-            bale_remarks: frm.doc.bale_comments
-        });
+        
+const values = frm.doc;
+
+const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
+
+if (existing) {
+    // Update existing row
+    existing.weight = values.captured_weight;
+    existing.bale_remarks = values.bale_comments;
+
+    frappe.show_alert({
+        message: `✅ Bale ${values.bale_barcode} updated in the table.`,
+        indicator: 'green'
+    });
+} else {
+    // Add new row
+    frm.add_child('detail_table', {
+        bale_barcode: values.bale_barcode,
+        weight: values.captured_weight,
+        bale_remarks: values.bale_comments
+    });
+
+    frappe.show_alert({
+        message: `➕ Bale ${values.bale_barcode} added to the table.`,
+        indicator: 'blue'
+    });
+}
+
+frm.refresh_field('detail_table');
 
         frm.refresh_field('detail_table');
 
@@ -357,20 +456,6 @@ frappe.ui.form.on("Bale Audit", {
 
         }, 300);
         const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
-
-        $barcode_input.on('keyup', function (e) {
-            const barcode = $(this).val();
-            const expectedLength = frm.doc.barcode_length || 0;
-
-            if (e.key === 'Enter' || barcode.length === expectedLength) {
-                //d.set_primary_action_state('enabled');
-
-            }
-            else {
-                // d.set_primary_action_state('disabled');
-
-            }
-        });
 
         const $footer = frm.$wrapper.find('.modal-footer');
         const $weightDisplay = $(`
@@ -434,6 +519,7 @@ frappe.ui.form.on("Bale Audit Detail", {
     refresh: function (frm) {
         // frm is defined here
         update_audit_display(frm);
+        frm.events.onload_post_render(frm);
     },
 delete_row: function(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
