@@ -14,12 +14,12 @@ if (!window._scaleConnection) {
     };
 }
 function updateMainWeightDisplay(frm, weight) {
-    if (updateWeightOnForm) {
-        frm.set_value('captured_weight', weight);
-    }
     let color = scaleConnected === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
-    frm.fields_dict.scale_status.$wrapper.html(html);
+    if (updateWeightOnForm) {
+        frm.set_value('captured_weight', weight);
+        frm.fields_dict.scale_status.$wrapper.html(html);
+    }
 }
 
 function updateScaleStatus(frm, status) {
@@ -257,6 +257,7 @@ frappe.ui.form.on("Bale Audit", {
         }, 100);
 
         if (!frm.is_new()) return;
+        updateWeightOnForm = true;
     const settings = await new Promise((resolve, reject) => {
         frappe.call({
             method: 'frappe.client.get',

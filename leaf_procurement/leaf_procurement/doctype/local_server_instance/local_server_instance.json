@@ -34,7 +34,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "API Key",
-   "reqd": 1,
    "unique": 1
   },
   {
@@ -55,7 +54,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 11:40:20.825931",
+ "modified": "2025-07-02 12:03:15.408163",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Local Server Instance",
