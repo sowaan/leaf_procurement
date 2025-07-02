@@ -8,12 +8,11 @@ from ..utils.sync_down import sync_down_worker
 def trigger_sync_up(values=None):
     if not values:
         return
-
     if isinstance(values, str):
         values = json.loads(values)
 
     frappe.enqueue(
-        method=sync_down_worker,
+        method=sync_up_worker,
         queue="long",
         values=values,
         user=frappe.session.user
@@ -21,12 +20,13 @@ def trigger_sync_up(values=None):
 
 @frappe.whitelist()
 def trigger_sync_down(values=None):
+
     if not values:
         return
 
     if isinstance(values, str):
         values = json.loads(values)
-
+    print(f"\n\n⚠️ calling.... worker 1...\n\n")
     frappe.enqueue(
         method=sync_up_worker,
         queue="long",

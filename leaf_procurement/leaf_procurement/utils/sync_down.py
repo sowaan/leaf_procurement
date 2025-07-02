@@ -20,7 +20,7 @@ from leaf_procurement.api_functions import (
 	create_reclassification_grade,
 	create_transport_type
 )
-def sync_down_worker(values: dict):
+def sync_down_worker(values: dict, user=None):
 	try:
 		settings = frappe.get_cached_doc("Leaf Procurement Settings")
 		base_url = settings.instance_url.rstrip('/')
@@ -101,47 +101,38 @@ def sync_down_records(doctype: str, base_url: str, headers: dict):
 
 		data = response.json().get("data", [])
 
-		if len(data) > 20:
-			process_sync(doctype, data)
-			# frappe.enqueue(
-			# 	"leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool.process_sync",
-			# 	queue='default',
-			# 	doctype=doctype,
-			# 	data=data
-			# )
-			frappe.msgprint(_(f"Queued sync for {doctype} in background."))
-		else:
-			from leaf_procurement.leaf_procurement.doctype.leaf_procurement_sync_tool.leaf_procurement_sync_tool import process_sync
-			process_sync(doctype, data)
-			frappe.msgprint(_(f"✅ Synced {len(data)} records for {doctype}."))
+
+		process_sync(doctype, data)
+
 
 	except Exception:
 		frappe.log_error(traceback.format_exc(), f"❌ Sync Down Failed - {doctype}")
 		
-
 def process_sync(doctype, data):
 	settings = frappe.get_doc("Leaf Procurement Settings")
 	headers = {
 		"Authorization": f"token {settings.get('api_key')}:{settings.get('api_secret')}",
 		"Content-Type": "application/json"
 	}
-
-	doctype_handlers = {
-		"Company": create_company,
-		"Fiscal Year": create_fiscal_year,
-		"Warehouse": create_warehouse,
-		"Quota Setup": create_quota_setup,
-		"Item": create_item,
-		"Item Grade": create_item_grade,
-		"Item Sub Grade": create_item_sub_grade,
-		"Item Grade Price": create_item_grade_price,
-		"Bale Status": create_bale_status,
-		"Reclassification Grade": create_reclassification_grade,
-		"Transport Type": create_transport_type,
-	}
-
-	handler = doctype_handlers.get(doctype)
-	if handler:
-		handler(settings, headers, data)
-	else:
-		frappe.log_error(f"No handler for Doctype: {doctype}", "❌ Unhandled Doctype")
+	if doctype == "Company":
+		create_company(settings, headers, data)
+	if doctype == "Fiscal Year":
+		create_fiscal_year(settings, headers, data)
+	if doctype == "Warehouse":
+		create_warehouse(settings, headers, data)
+	if doctype == "Quota Setup":
+		create_quota_setup(settings, headers, data)
+	if doctype == "Item":
+		create_item(settings, headers, data)
+	if doctype == "Item Grade":
+		create_item_grade(settings, headers, data)
+	if doctype == "Item Sub Grade":
+		create_item_sub_grade(settings, headers, data)
+	if doctype == "Item Grade Price":
+		create_item_grade_price(settings, headers, data)
+	if doctype == "Bale Status":
+		create_bale_status(settings, headers, data)
+	if doctype == "Reclassification Grade":
+		create_reclassification_grade(settings, headers, data)
+	if doctype == "Transport Type":
+		create_transport_type(settings, headers, data)

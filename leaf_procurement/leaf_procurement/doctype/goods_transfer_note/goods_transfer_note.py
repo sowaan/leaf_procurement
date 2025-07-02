@@ -101,9 +101,14 @@ def create_stock_entry_from_gtn(gtn_doc):
     stock_entry.from_warehouse = gtn_doc.location_warehouse
     stock_entry.to_warehouse = gtn_doc.transit_location
     stock_entry.custom_receiving_warehouse = gtn_doc.receiving_location
-
+    
+    stock_entry.posting_date = gtn_doc.date 
+    stock_entry.posting_time = "23:55:00"
     stock_entry.purpose = "Material Transfer"
     stock_entry.custom_gtn_number = gtn_doc.name  # custom field if needed
+    stock_entry.set_posting_time = 1
+    stock_entry.skip_future_date_validation = True
+
 
     for row in gtn_doc.bale_registration_detail:
 
@@ -124,6 +129,6 @@ def create_stock_entry_from_gtn(gtn_doc):
 		})
 
     stock_entry.insert()
-    #stock_entry.submit()
+    stock_entry.submit()
 
 

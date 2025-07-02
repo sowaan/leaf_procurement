@@ -1,6 +1,7 @@
-import frappe
+from git import safe_decode
 import requests
-from frappe import _
+import frappe # type: ignore
+from frappe import _ # type: ignore
 import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 
@@ -29,6 +30,12 @@ def create_company(settings, headers, data):
 				created.append(doc.name)
 				frappe.db.commit()
 				frappe.logger().info(f"Created Company: {doc.name}")
+
+				log_sync_result(parent_name="Leaf Sync Down", 
+				doctype="Company",
+				docname=doc.name, 
+				status= "Success", 
+				message="Synced successfully")           
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Company {item['name']}: {e}")
@@ -68,6 +75,12 @@ def create_fiscal_year(settings, headers, data):
 				doc.insert(ignore_permissions=True)
 				created.append(doc.name)
 				frappe.db.commit()
+
+				log_sync_result(parent_name="Leaf Sync Down", 
+				doctype="Fiscal Year",
+				docname=doc.name, 
+				status= "Success", 
+				message="Synced successfully")  
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Fiscal Year {item['name']}: {e}")
@@ -97,6 +110,7 @@ def create_company_accounts(settings, headers, company_name):
 					doc.update(data)
 					doc.insert(ignore_permissions=True)
 					frappe.db.commit()
+				
 			else:
 				frappe.throw(_("Failed to fetch data for Account: {0}").format(response.text))
 		except Exception as e:
@@ -149,6 +163,12 @@ def create_warehouse(settings, headers, data):
 						doc.db_insert()
 						created.append(doc.name)
 						frappe.db.commit()
+
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Warehouse",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Warehouse: {0}").format(response.text))
 			except Exception as e:
@@ -186,6 +206,11 @@ def create_quota_setup(settings, headers, data):
 						doc.insert(ignore_permissions=True)
 						created.append(doc.name)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Quota Setup",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Quota Setup: {0}").format(response.text))
 			except Exception as e:
@@ -221,6 +246,11 @@ def create_item(settings, headers, data):
 						doc.insert(ignore_permissions=True)
 						created.append(doc.name)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Item",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 						
 				else:
 					frappe.throw(_("Failed to fetch data for Item: {0}").format(response.text))
 			except Exception as e:
@@ -255,6 +285,11 @@ def create_item_grade(settings, headers, data):
 						doc.rejected_grade = item.get('rejected_grade', False)
 						doc.insert(ignore_permissions=True)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Item Grade",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade: {0}").format(response.text))
 			except Exception as e:
@@ -283,6 +318,11 @@ def create_item_sub_grade(settings, headers, data):
 						doc.item_sub_grade = item.get('item_sub_grade', item['name'])
 						doc.insert(ignore_permissions=True)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Item Sub Grade",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Item Sub Grade: {0}").format(response.text))
 			except Exception as e:
@@ -319,6 +359,11 @@ def create_item_grade_price(settings, headers, data):
 						doc.rate = item.get('rate', 0.0)
 						doc.insert(ignore_permissions=True)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Item Grade Price",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade Price: {0}").format(response.text))
 			except Exception as e:
@@ -360,6 +405,11 @@ def create_bale_status(settings, headers, data):
 						doc.default_status = item.get('default_status', False)
 						doc.insert(ignore_permissions=True)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Bale Status",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Bale Status: {0}").format(response.text))
 			except Exception as e:
@@ -387,6 +437,11 @@ def create_reclassification_grade(settings, headers, data):
 						doc.reclassification_grade_name = item.get('reclassification_grade_name', item['name'])
 						doc.insert(ignore_permissions=True)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Reclassification Grade",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 							
 				else:
 					frappe.throw(_("Failed to fetch data for Reclassification Grade: {0}").format(response.text))
 			except Exception as e:
@@ -413,6 +468,11 @@ def create_transport_type(settings, headers, data):
 						doc.transport_type = item.get('transport_type', item['name'])
 						doc.insert(ignore_permissions=True)
 						frappe.db.commit()
+						log_sync_result(parent_name="Leaf Sync Down", 
+						doctype="Transport Type",
+						docname=doc.name, 
+						status= "Success", 
+						message="Synced successfully") 	
 				else:
 					frappe.throw(_("Failed to fetch data for Transport Type: {0}").format(response.text))
 			except Exception as e:
