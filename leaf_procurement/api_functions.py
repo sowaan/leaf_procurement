@@ -429,14 +429,14 @@ def create_transport_type(settings, headers, data):
 @frappe.whitelist()
 def local_server_instance(api_key=None, location=None, users=[], sync_up_date=None, sync_down_date=None):
 	"""Set the local server instance details."""
-	if not api_key:
-		frappe.throw(_("API Key is required."))
+	if not location:
+		return
 
 	print(f"Setting up local server instance with API Key: {api_key}")
 	print(f"Location: {location}")
 	# print(f"Sync Up Date: {sync_up_date}")
 	# print(f"Sync Down Date: {sync_down_date}")
-	local_server_instance = frappe.db.exists("Local Server Instance", {"api_key": api_key})
+	local_server_instance = frappe.db.exists("Local Server Instance", {"location": location})
 
 	if local_server_instance:
 		doc = frappe.get_doc("Local Server Instance", local_server_instance)
@@ -481,6 +481,7 @@ def local_server_instance(api_key=None, location=None, users=[], sync_up_date=No
 	except Exception as e:
 		frappe.log_error(frappe.get_traceback(), _("Failed to insert {0}").format(doc.doctype))
 		#frappe.throw(_("Error inserting {0}: {1}").format(doc.doctype, str(e)))
+
 
 
 
