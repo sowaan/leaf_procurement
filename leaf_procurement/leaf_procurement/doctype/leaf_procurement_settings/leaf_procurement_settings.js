@@ -14,5 +14,13 @@ frappe.ui.form.on("Leaf Procurement Settings", {
                 }
             };
         });
-    }    
+    },
+    take_backup(frm) {
+        frappe.call({
+            method: 'leaf_procurement.backup_utils.take_backup_now',
+            callback: function (r) {
+                frappe.msgprint(r.message);
+            }
+        });
+    }
 });

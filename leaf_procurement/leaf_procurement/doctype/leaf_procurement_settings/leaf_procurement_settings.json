@@ -17,6 +17,9 @@
   "rejected_location_warehouse",
   "transport_charges_item",
   "barcode_length",
+  "backup_tab",
+  "take_backup",
+  "column_break_eknz",
   "sync_settings_tab",
   "instance_url",
   "column_break_yfay",
@@ -123,13 +126,27 @@
    "fieldname": "enable_hybrid_mode",
    "fieldtype": "Check",
    "label": "Enable Hybrid Mode"
+  },
+  {
+   "fieldname": "backup_tab",
+   "fieldtype": "Tab Break",
+   "label": "Backup"
+  },
+  {
+   "fieldname": "take_backup",
+   "fieldtype": "Button",
+   "label": "Take Backup"
+  },
+  {
+   "fieldname": "column_break_eknz",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-30 00:48:05.401890",
+ "modified": "2025-07-02 21:15:49.416836",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",
