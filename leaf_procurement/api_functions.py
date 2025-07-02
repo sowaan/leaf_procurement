@@ -422,7 +422,29 @@ def create_transport_type(settings, headers, data):
 	if errors:
 		frappe.log_error("\n".join(errors), "Transport Type Sync Errors")
 
+def log_sync_error(doctype: str, name: str, response):
+    try:
+        message = response.json().get("message", safe_decode(response.content))
+    except Exception:
+        message = response.text
+    frappe.log_error(message, f"❌ Failed to sync {doctype}: {name}")
 
+def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
+    log = {
+        "doctype": "Leaf Sync Log",
+        "doctype_name": doctype,
+        "document_name": docname,
+        "status": status,
+        "message": message,
+        "retry_count": retry_count,
+        "synced_at": frappe.utils.now_datetime()
+    }
+
+    parent = frappe.get_doc("Leaf Sync Down", parent_name)
+    parent.append("sync_history", log)
+    parent.save(ignore_permissions=True)  # ✅ Needed to persist child rows
+    frappe.db.commit()  # ✅ Ensures changes are flushed to DB
+	
 
 # sync up 
 
@@ -521,6 +543,7 @@ def supplier(supplier):
 
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
+	doc.custom_is_sync = 1
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -540,6 +563,7 @@ def driver(driver):
 
 	doc = frappe.new_doc("Driver")
 	doc.update(driver)
+	doc.custom_is_sync = 1
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -552,6 +576,7 @@ def bale_audit(bale_audit):
 
 	doc = frappe.new_doc("Bale Audit")
 	doc.update(bale_audit)
+	doc.custom_is_sync = 1
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -571,6 +596,7 @@ def bale_registration(bale_registration):
 
 	doc = frappe.new_doc("Bale Registration")
 	doc.update(bale_registration)
+	doc.custom_is_sync = 1
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -613,6 +639,7 @@ def purchase_invoice(purchase_invoice):
 	invoice.docstatus = purchase_invoice.get("docstatus", 0)
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
+	invoice.custom_is_sync = 1
 	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
@@ -671,6 +698,7 @@ def goods_transfer_note(goods_transfer_note):
 
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
+	doc.custom_is_sync = 1
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -690,6 +718,7 @@ def goods_receiving_note(goods_receiving_note):
 
 	doc = frappe.new_doc("Goods Receiving Note")
 	doc.update(goods_receiving_note)
+	doc.custom_is_sync = 1
 	doc.insert()
 	frappe.db.commit()
 	return doc.name

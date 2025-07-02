@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-02 14:04:59.529256",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sync_down_select_all",
+  "section_break_vqjy",
+  "company_check",
+  "warehouse",
+  "fiscal_year",
+  "quota_setup",
+  "bale_status",
+  "transport_type",
+  "column_break_hgve",
+  "item",
+  "item_grade",
+  "item_sub_grade",
+  "item_grade_price",
+  "reclassification_grade",
+  "section_break_ehcz",
+  "sync_history"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "company_check",
+   "fieldtype": "Check",
+   "label": "Company"
+  },
+  {
+   "default": "1",
+   "fieldname": "warehouse",
+   "fieldtype": "Check",
+   "label": "Warehouse"
+  },
+  {
+   "default": "1",
+   "fieldname": "fiscal_year",
+   "fieldtype": "Check",
+   "label": "Fiscal Year"
+  },
+  {
+   "default": "1",
+   "fieldname": "quota_setup",
+   "fieldtype": "Check",
+   "label": "Quota Setup"
+  },
+  {
+   "default": "1",
+   "fieldname": "item",
+   "fieldtype": "Check",
+   "label": "Item"
+  },
+  {
+   "default": "1",
+   "fieldname": "item_grade",
+   "fieldtype": "Check",
+   "label": "Item Grade"
+  },
+  {
+   "default": "1",
+   "fieldname": "item_sub_grade",
+   "fieldtype": "Check",
+   "label": "Item Sub-Grade"
+  },
+  {
+   "default": "1",
+   "fieldname": "item_grade_price",
+   "fieldtype": "Check",
+   "label": "Item Grade Price"
+  },
+  {
+   "default": "1",
+   "fieldname": "bale_status",
+   "fieldtype": "Check",
+   "label": "Bale Status"
+  },
+  {
+   "default": "1",
+   "fieldname": "reclassification_grade",
+   "fieldtype": "Check",
+   "label": "Reclassification Grade"
+  },
+  {
+   "default": "1",
+   "fieldname": "transport_type",
+   "fieldtype": "Check",
+   "label": "Transport Type"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_down_select_all",
+   "fieldtype": "Check",
+   "label": "Unselect All"
+  },
+  {
+   "fieldname": "section_break_vqjy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_hgve",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ehcz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sync_history",
+   "fieldtype": "Table",
+   "options": "Leaf Sync Log"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-07-02 15:22:18.281238",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Leaf Sync Down",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
