@@ -436,7 +436,7 @@ def local_server_instance(api_key=None, location=None, users=[], sync_up_date=No
 	print(f"Location: {location}")
 	# print(f"Sync Up Date: {sync_up_date}")
 	# print(f"Sync Down Date: {sync_down_date}")
-	local_server_instance = frappe.db.exists("Local Server Instance", {"location": location})
+	local_server_instance = frappe.db.exists("Local Server Instance", {"api_key": api_key})
 
 	if local_server_instance:
 		doc = frappe.get_doc("Local Server Instance", local_server_instance)
@@ -474,9 +474,14 @@ def local_server_instance(api_key=None, location=None, users=[], sync_up_date=No
 			"active": user.get("enabled", 0)
 		})
 
-	doc.insert()
-	frappe.db.commit()
-	return doc.name
+	try:
+		doc.insert()
+		frappe.db.commit()
+		return doc.name
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), _("Failed to insert {0}").format(doc.doctype))
+		#frappe.throw(_("Error inserting {0}: {1}").format(doc.doctype, str(e)))
+
 
 
 @frappe.whitelist()
