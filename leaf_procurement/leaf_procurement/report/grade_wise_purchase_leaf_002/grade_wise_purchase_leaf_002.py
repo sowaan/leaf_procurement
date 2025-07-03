@@ -27,8 +27,8 @@ def execute(filters=None):
 		supplier_list = ", ".join([f"'{s}'" for s in filters.get("supplier")])
 		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
 	
-	if filters.get("warehouse"):
-		warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
+	# if filters.get("warehouse"):
+	# 	warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
 	
 	if not inc_rej_bales and grade_type:
 		grade_filter = f" AND LOWER(pii.{grade_type}) != 'reject'"
@@ -123,9 +123,11 @@ def execute(filters=None):
 		"bales_today": 0,
 		"kgs_today": 0,
 		"amount_today": 0,
+		"percentage_today": 0,
 		"bales_todate": 0,
 		"kgs_todate": 0,
-		"amount_todate": 0
+		"amount_todate": 0,
+		"percentage_todate": 0
 	}
 
 	for row in data:
@@ -133,9 +135,11 @@ def execute(filters=None):
 			totals["bales_today"] += row.get("bales_today", 0) or 0
 			totals["kgs_today"] += row.get("kgs_today", 0) or 0
 			totals["amount_today"] += row.get("amount_today", 0) or 0
+			totals["percentage_today"] += row.get("percentage_today", 0) or 0
 			totals["bales_todate"] += row.get("bales_todate", 0) or 0
 			totals["kgs_todate"] += row.get("kgs_todate", 0) or 0
 			totals["amount_todate"] += row.get("amount_todate", 0) or 0
+			totals["percentage_todate"] += row.get("percentage_todate", 0) or 0
 
 	data.append({
 		"grade": "Total",
@@ -143,13 +147,13 @@ def execute(filters=None):
 		"bales_today": totals["bales_today"],
 		"kgs_today": totals["kgs_today"],
 		"amount_today": totals["amount_today"],
-		"avg_today": (totals["amount_today"] / totals["kgs_today"]),
-		"percentage_today": 100.0,
+		"avg_today": (totals["amount_today"] / (totals["kgs_today"] or 1)),
+		"percentage_today": round(totals["percentage_today"]),
 		"bales_todate": totals["bales_todate"],
 		"kgs_todate": totals["kgs_todate"],
 		"amount_todate": totals["amount_todate"],
-		"avg_todate": (totals["amount_todate"] / totals["kgs_todate"]),
-		"percentage_todate": 100.0,
+		"avg_todate": (totals["amount_todate"] / (totals["kgs_todate"] or 1)),
+		"percentage_todate": round(totals["percentage_todate"]),
 		"is_total_row": 1
 	})
 
