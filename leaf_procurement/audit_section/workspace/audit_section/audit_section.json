@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"fanIBrJD0U\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"A00Ywpfofs\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"KdHSMSthoq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit Operations\",\"col\":4}}]",
+ "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"fanIBrJD0U\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"A00Ywpfofs\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"KdHSMSthoq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"Pid8Ug1yxv\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"yuGAQweGKV\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
  "creation": "2025-06-28 12:23:16.365005",
  "custom_blocks": [
   {
@@ -21,8 +21,37 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Audit Operations",
-   "link_count": 3,
+   "label": "Tools",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Leaf Procurement Settings",
+   "link_count": 0,
+   "link_to": "Leaf Procurement Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sync Tool",
+   "link_count": 0,
+   "link_to": "Leaf Procurement Sync Tool",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setups",
+   "link_count": 1,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -40,25 +69,24 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Bale Audit",
    "link_count": 0,
    "link_to": "Bale Audit",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Leaf Procurement Settings",
-   "link_count": 0,
-   "link_to": "Leaf Procurement Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2025-07-03 16:18:36.590683",
+ "modified": "2025-07-03 16:21:51.869465",
  "modified_by": "Administrator",
  "module": "Audit Section",
  "name": "Audit Section",
