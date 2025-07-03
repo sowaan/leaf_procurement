@@ -3,7 +3,6 @@
 
 import frappe
 
-
 def execute(filters=None):
 	columns = get_columns()
 	data = get_data(filters)
@@ -14,48 +13,53 @@ def get_filters(filters):
 	conditions = ""
 	if not filters:
 		filters = frappe._dict()
-
 	if filters.get("from_date") and filters.get("to_date"):
-		conditions += " AND gtn.date BETWEEN %(from_date)s AND %(to_date)s"
+		conditions += " AND ba.date BETWEEN %(from_date)s AND %(to_date)s"
 	elif filters.get("from_date"):
-		conditions += " AND gtn.date >= %(from_date)s"
+		conditions += " AND ba.date >= %(from_date)s"
 	elif filters.get("to_date"):
-		conditions += " AND gtn.date <= %(to_date)s"
+		conditions += " AND ba.date <= %(to_date)s"
 	if filters.get("depot"):
-		conditions += " AND gtn.location_warehouse = %(depot)s"
-
+		conditions += " AND ba.location_warehouse = %(depot)s"
 	return conditions
-    
+
 def get_columns():
 	return [
-		{"label": "GTN Code", "fieldname": "gtn_code", "fieldtype": "Link", "options": "Goods Transfer Note", "width": 130},
-		{"label": "Depot Name", "fieldname": "depot_name", "fieldtype": "Link", "options": "Warehouse", "width": 130},
-		{"label": "GTN No. of Bales", "fieldname": "no_of_bale", "fieldtype": "Int", "width": 130},
-		{"label": "GTN Advance Weight", "fieldname": "gtn_adv_wt", "fieldtype": "Float", "width": 130},
-		{"label": "Re-weighment Advance weight", "fieldname": "re_weighment_advance_wt", "fieldtype": "Float", "width": 130},
-		{"label": "Re-weighment", "fieldname": "re_weighment", "fieldtype": "Float", "width": 130},
-		{"label": "Difference", "fieldname": "diff", "fieldtype": "Float", "width": 130},
+		{"label": "BALE ID", "fieldname": "bale_barcode", "fieldtype": "Data", "width": 120},
+		{"label": "Warehouse", "fieldname": "location_warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 140},
+		{"label": "Date", "fieldname": "date", "fieldtype": "Date", "width": 110},
+		{"label": "TSA#", "fieldname": "tsa", "fieldtype": "Data", "width": 140},
+		{"label": "GTN", "fieldname": "gtn", "fieldtype": "Link", "options": "Goods Transfer Note", "width": 180},
+		{"label": "Truck Number", "fieldname": "truck_number", "fieldtype": "Data", "width": 130},
+		{"label": "Advance Weight", "fieldname": "advance_weight", "fieldtype": "Float", "width": 130},
+		{"label": "Re-Weight", "fieldname": "re_weight", "fieldtype": "Float", "width": 130},
+		{"label": "Weight Difference", "fieldname": "weight_difference", "fieldtype": "Float", "width": 150},
+		{"label": "Bales", "fieldname": "bales", "fieldtype": "Int", "width": 80},
 	]
 
+
 def get_data(filters):
-	conditions = get_filters(filters)
-	data = frappe.db.sql("""
+	conditions = get_filters(filters) 
+	data = frappe.db.sql(f"""
 		SELECT
-			gtn.name AS gtn_code,
-			gtn.location_warehouse AS depot_name,
-			COUNT(DISTINCT gtni.name) AS no_of_bale
-			SUM(gtni.weight) AS gtn_adv_wt,
-			supp.custom_nic_number AS cnic,
-			supp.custom_location_warehouse AS depot,
-			supp.custom_location_warehouse AS depot,
-		FROM `tabGoods Transfer Note` gtn
-		LEFT JOIN `tabGoods Transfer Note Items` gtni ON gtn.name = gtni.parent 
-		LEFT JOIN `tabBale Audit GTN` ba_gtn ON gtn.name = ba_gtn.gtn_number
-		LEFT JOIN `tabBale Audit Detail` bad ON bad.parent = ba_gtn.parent
-		LEFT JOIN `tabBale Audit` ba ON gtn.name = ba.gtn
-		WHERE gtn.docstatus = 1
-		{filters}
-		GROUP BY gtn_code
-		ORDER BY gtn_code
-	""".format(conditions=conditions), filters, as_dict=True)
-	
+			bad.bale_barcode AS bale_barcode,
+			ba.location_warehouse AS location_warehouse,
+			ba.date AS date,
+			gtn.tsa_number AS tsa,
+			gtn.name AS gtn,
+			bag.truck_number AS truck_number,
+			gtni.weight AS advance_weight,
+			bad.weight AS re_weight,
+			(bad.weight - gtni.weight) AS weight_difference,
+			1 AS bales
+		FROM `tabBale Audit` ba
+		LEFT JOIN `tabBale Audit Detail` bad ON ba.name = bad.parent
+		LEFT JOIN `tabGoods Transfer Note Items` gtni ON bad.bale_barcode = gtni.bale_barcode
+		LEFT JOIN `tabGoods Transfer Note` gtn ON gtni.parent = gtn.name
+		LEFT JOIN `tabBale Audit GTN` bag ON bag.parent = ba.name
+		WHERE ba.docstatus = 1
+		{conditions}
+		GROUP BY bad.bale_barcode
+		ORDER BY bad.bale_barcode
+	""", filters, as_dict=True)
+	return data
