@@ -54,7 +54,7 @@ def get_data(filters):
 		LEFT JOIN `tabBale Audit Detail` bad ON bad.parent = ba_gtn.parent
 		LEFT JOIN `tabBale Audit` ba ON gtn.name = ba.gtn
 		WHERE gtn.docstatus = 1
-		{filters}
+		{conditions}
 		GROUP BY gtn_code
 		ORDER BY gtn_code
 	""".format(conditions=conditions), filters, as_dict=True)

@@ -7,9 +7,7 @@ frappe.query_reports["Reweighment Report Summary"] = {
 			fieldname: "depot",
 			fieldtype: "Link",
 			label: __("Warehouse"),
-			options: "Warehouse"
-			// mandatory: 1
-			
+			options: "Warehouse"			
 		},
 		{
             fieldname: "from_date",
