@@ -28,7 +28,7 @@ def execute(filters=None):
 		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
 	
 	if filters.get("warehouse"):
-		warehouse_filter = f" AND pi.set_warehouse = %(warehouse)s"
+		warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
 	
 	if not inc_rej_bales and grade_type:
 		grade_filter = f" AND LOWER(pii.{grade_type}) != 'reject'"
@@ -57,7 +57,7 @@ def execute(filters=None):
 
 		SELECT
 			pii.{grade_type} AS grade,
-			pi.set_warehouse AS warehouse,
+			pii.warehouse AS warehouse,
 
 			-- Today
 			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name END) AS bales_today,
