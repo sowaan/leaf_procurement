@@ -4,11 +4,14 @@
 frappe.ui.form.on("Leaf Sync Up", {
     refresh(frm) {
         update_sync_status_labels(frm);
+        frm.add_custom_button('🔄 Reload', () => {
+            frm.reload_doc();
+        });
         // Add Sync Now button if any checkbox is checked
         if (sync_up_checkboxes.some(field => frm.doc[field])) {
             frm.add_custom_button("🚀 Sync Now", () => {
                 trigger_sync(frm);
-            }, "Actions");
+            });
         }        
         frm.fields_dict.sync_up_select_all.df.label = frm.doc.sync_up_select_all ? 'Unselect All' : 'Select All';
     },
