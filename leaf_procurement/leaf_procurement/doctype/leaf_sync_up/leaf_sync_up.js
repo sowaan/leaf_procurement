@@ -4,11 +4,14 @@
 frappe.ui.form.on("Leaf Sync Up", {
     refresh(frm) {
         update_sync_status_labels(frm);
+        frm.add_custom_button('🔄 Reload', () => {
+            frm.reload_doc();
+        });
         // Add Sync Now button if any checkbox is checked
         if (sync_up_checkboxes.some(field => frm.doc[field])) {
             frm.add_custom_button("🚀 Sync Now", () => {
                 trigger_sync(frm);
-            }, "Actions");
+            });
         }        
         frm.fields_dict.sync_up_select_all.df.label = frm.doc.sync_up_select_all ? 'Unselect All' : 'Select All';
     },
@@ -104,10 +107,10 @@ function update_sync_status_labels(frm) {
         const label_field = `${fieldname}_label`;
         const is_checked = frm.doc[fieldname];
 
-        if (!is_checked) {
-            update_label_html(frm, label_field, "press save", "blue");
-            return;
-        }
+        // if (!is_checked) {
+        //     update_label_html(frm, label_field, "press save", "blue");
+        //     return;
+        // }
 
         const doctype = doctype_map[fieldname];
 
