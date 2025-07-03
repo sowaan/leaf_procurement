@@ -5,9 +5,9 @@ frappe.ui.form.on("Audit Day Setup", {
     refresh(frm) {
         frm.clear_custom_buttons();
         console.log("Day Open check:", frm.doc.day_open_time);
-
+        console.log("Day Close check:", frm.doc.day_close_time);
         if (!frm.doc.day_open_time) {
-            console.log("2nd phase.....");
+            console.log("Enabling Day Open Button.....");
             // Show Day Open button only if day_open_time is not set
             frm.add_custom_button(__('Day Open'), function () {
                 const now = frappe.datetime.now_datetime();
@@ -22,6 +22,7 @@ frappe.ui.form.on("Audit Day Setup", {
         }
 
         if (frm.doc.day_open_time && !frm.doc.day_close_time) {
+            console.log("Enabling Day Close Button...:");
             frm.add_custom_button(__('Day Close'), async function () {
                 try {
 
