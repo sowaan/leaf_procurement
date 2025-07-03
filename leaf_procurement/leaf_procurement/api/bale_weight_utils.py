@@ -87,8 +87,8 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     # rejected_grade = doc.rejected_item_grade
     # rejected_sub_grade = doc.rejected_item_sub_grade
 
-    if not transport_charges_item:
-        frappe.throw(f"Transport Charges Item Code in not defined at Settings Screen")
+    # if not transport_charges_item:
+    #     frappe.throw(f"Transport Charges Item Code in not defined at Settings Screen")
     invoice_weight = 0
 
     # Create Purchase Invoice
@@ -176,14 +176,15 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             _("Unable to create invoice. The total weight of items is {0}. Probabily, all items are rejected or with 0 weight.")
             .format(invoice_weight)
         )        
-    invoice.append("items", {
-        "item_code": transport_charges_item,
-        "qty": invoice_weight,
-        "rate": transport_charges_rate,
-        "uom": "Kg",
-        "description": f"Transport Charges for Invoice Weight {invoice_weight} Kg",
+    if transport_charges_item:
+        invoice.append("items", {
+            "item_code": transport_charges_item,
+            "qty": invoice_weight,
+            "rate": transport_charges_rate,
+            "uom": "Kg",
+            "description": f"Transport Charges for Invoice Weight {invoice_weight} Kg",
 
-    })
+        })
 
 
     invoice.save()
@@ -227,6 +228,7 @@ def ensure_batch_exists(batch_no: str, item_code: str, batch_qty: float) -> None
         batch.item = item_code
         batch.batch_qty = batch_qty
         batch.save()
+        print("Batch:", batch_no, item_code, batch_qty)
     else:
         # Update existing batch quantity
         batch = frappe.get_doc("Batch", {"batch_id": batch_no, "item": item_code})

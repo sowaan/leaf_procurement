@@ -171,8 +171,7 @@
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
-   "options": "Purchase Invoice",
-   "read_only": 1
+   "options": "Purchase Invoice"
   },
   {
    "fieldname": "rejected_item_grade",
@@ -367,7 +366,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-24 14:46:20.563828",
+ "modified": "2025-07-04 00:04:25.627895",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
@@ -387,6 +386,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
