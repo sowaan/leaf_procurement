@@ -141,89 +141,88 @@ async function cleanupSerial(frm) {
     }
 }
 
-    function update_audit_display(frm) {
-        let total_bales = frm.doc.detail_table.length;
-        let total_weight = 0;
+function update_audit_display(frm) {
+    let total_bales = frm.doc.detail_table.length;
+    let total_weight = 0;
 
-        frm.doc.detail_table.forEach(row => {
-            if (row.weight) {
-                total_weight += flt(row.weight);
-            }
-        });
+    frm.doc.detail_table.forEach(row => {
+        if (row.weight) {
+            total_weight += flt(row.weight);
+        }
+    });
 
-        let html = `
+    let html = `
             <div style="padding: 10px; font-size: 14px;">
                 <b>Total Scanned Bales:</b> ${total_bales} <br>
                 <b>Total Weight:</b> ${total_weight} kg
             </div>
         `;
 
-        frm.set_df_property("audit_display", "options", html);
-        frm.refresh_field("audit_display");
-    }
-    async function validate_bale_data(frm) {
+    frm.set_df_property("audit_display", "options", html);
+    frm.refresh_field("audit_display");
+}
+async function validate_bale_data(frm) {
 
-        const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
-        if (!open_day) {
-            frappe.show_alert({ 
-                message: __('There is no open audit day you cannot add audit records.'), 
-                indicator: "red" 
-            });            
-            return { valid: false };         
-        }
-        if (!frm.doc.bale_barcode && frm.doc.detail_table.length === 0) 
-        {
-            frappe.show_alert({ 
-                message: __('You must add at least one row in the Detail Table before saving.'), 
-                indicator: "red" 
-            });            
-            return { valid: false };            
-      
-        }
-            
-        if (!frm.doc.bale_barcode)return{valid:true};
-
-        const values = frm.doc;
-        const weight = values.captured_weight;
-
-        const expectedLength = frm.doc.barcode_length || 0;
-        if (values.bale_barcode.length != expectedLength) {
-            frappe.show_alert({ 
-                message: __('Please enter a valid barcode of {0} digits.', [expectedLength]), 
-                indicator: "red" 
-            });
-            return { valid: false };
-        }
-        const response = await frappe.call({
-            method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_bale_barcode_exists",
-            args: {
-                bale_barcode: values.bale_barcode
-            }
+    const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
+    if (!open_day) {
+        frappe.show_alert({
+            message: __('There is no open audit day you cannot add audit records.'),
+            indicator: "red"
         });
-
-        if (response.message === true) {
-            frappe.show_alert({
-                message: __('Bale barcode already exists in another Bale Audit entry'),
-                indicator: 'red'
-            });
-            return { valid: false };
-        }
-
-        if(weight<=0){
-            frappe.show_alert({ message: __("Please enter weight information to continue."), indicator: "red" });
-            return { valid: false };
-        }
-
-
-        return {valid:true};
+        return { valid: false };
+    }
+    if (!frm.doc.bale_barcode && frm.doc.detail_table.length === 0) {
+        frappe.show_alert({
+            message: __('You must add at least one row in the Detail Table before saving.'),
+            indicator: "red"
+        });
+        return { valid: false };
 
     }
+
+    if (!frm.doc.bale_barcode) return { valid: true };
+
+    const values = frm.doc;
+    const weight = values.captured_weight;
+
+    const expectedLength = frm.doc.barcode_length || 0;
+    if (values.bale_barcode.length != expectedLength) {
+        frappe.show_alert({
+            message: __('Please enter a valid barcode of {0} digits.', [expectedLength]),
+            indicator: "red"
+        });
+        return { valid: false };
+    }
+    const response = await frappe.call({
+        method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_bale_barcode_exists",
+        args: {
+            bale_barcode: values.bale_barcode
+        }
+    });
+
+    if (response.message === true) {
+        frappe.show_alert({
+            message: __('Bale barcode already exists in another Bale Audit entry'),
+            indicator: 'red'
+        });
+        return { valid: false };
+    }
+
+    if (weight <= 0) {
+        frappe.show_alert({ message: __("Please enter weight information to continue."), indicator: "red" });
+        return { valid: false };
+    }
+
+
+    return { valid: true };
+
+}
 frappe.ui.form.on("Bale Audit", {
     onUnload: function (frm) {
         // Optional: if you want to close on leaving the module
         cleanupSerial(frm);
     },
-    location_warehouse: async function(frm){
+    location_warehouse: async function (frm) {
         const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
         if (open_day) {
             frm.set_value('date', open_day.date);
@@ -309,13 +308,7 @@ frappe.ui.form.on("Bale Audit", {
         }, 300);
     },
     onload: async function (frm) {
-        frm.set_query('location_warehouse', function() {
-            return {
-                filters: {
-                    custom_is_depot: 0
-                }
-            };
-        });
+
         update_audit_display(frm);
         frm.page.sidebar.toggle(false);
         updateScaleStatus(frm, scaleConnected);
@@ -343,31 +336,38 @@ frappe.ui.form.on("Bale Audit", {
 
 
         if (!frm.is_new()) return;
-        updateWeightOnForm = true;
-    const settings = await new Promise((resolve, reject) => {
-        frappe.call({
-            method: 'frappe.client.get',
-            args: {
-                doctype: 'Leaf Procurement Settings',
-                name: 'Leaf Procurement Settings'
-            },
-            callback: function (r) {
-                if (r.message) {
-                    frm.set_value('company', r.message.company_name);
-                    frm.set_value('location_warehouse', r.message.location_warehouse);
-                    frm.set_value('item', r.message.default_item);
-                    frm.set_value('barcode_length', r.message.barcode_length);
-                    resolve(r.message);  // ✅ pass settings forward
-                } else {
-                    reject("Could not fetch settings");
+        frm.set_query('location_warehouse', function () {
+            return {
+                filters: {
+                    custom_is_depot: 0
                 }
-            }
+            };
         });
-    });
+        updateWeightOnForm = true;
+        const settings = await new Promise((resolve, reject) => {
+            frappe.call({
+                method: 'frappe.client.get',
+                args: {
+                    doctype: 'Leaf Procurement Settings',
+                    name: 'Leaf Procurement Settings'
+                },
+                callback: function (r) {
+                    if (r.message) {
+                        frm.set_value('company', r.message.company_name);
+                        frm.set_value('location_warehouse', r.message.location_warehouse);
+                        frm.set_value('item', r.message.default_item);
+                        frm.set_value('barcode_length', r.message.barcode_length);
+                        resolve(r.message);  // ✅ pass settings forward
+                    } else {
+                        reject("Could not fetch settings");
+                    }
+                }
+            });
+        });
 
     },
-    after_save: async function (frm){
-            update_audit_display(frm);
+    after_save: async function (frm) {
+        update_audit_display(frm);
 
 
     },
@@ -389,16 +389,16 @@ frappe.ui.form.on("Bale Audit", {
         }
 
         const weight = values.captured_weight;
-        if(!values.bale_barcode)return; 
+        if (!values.bale_barcode) return;
 
-       // console.log('is rejected:', is_rejected_grade);
+        // console.log('is rejected:', is_rejected_grade);
         frm.doc.detail_table.push({
             bale_barcode: values.bale_barcode,
             weight: weight,
             bale_remarks: values.bale_comments,
-        });        
+        });
 
-                // Reset fields
+        // Reset fields
         frm.set_value('bale_barcode', '');
         frm.set_value('captured_weight', '');
         frm.set_value('bale_comments', '');
@@ -416,10 +416,10 @@ frappe.ui.form.on("Bale Audit", {
     add_audit_weight: async function (frm) {
 
         if (!frm.doc.bale_barcode) {
-            frappe.show_alert({ 
-                message: __('Please enter a valid barcode to add audit information.'), 
-                indicator: "red" 
-            });        
+            frappe.show_alert({
+                message: __('Please enter a valid barcode to add audit information.'),
+                indicator: "red"
+            });
             return;
         };
 
@@ -428,36 +428,36 @@ frappe.ui.form.on("Bale Audit", {
         if (!result.valid) {
             return;
         }
+    
 
-        
-const values = frm.doc;
+        const values = frm.doc;
 
-const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
+        // const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
 
-if (existing) {
-    // Update existing row
-    existing.weight = values.captured_weight;
-    existing.bale_remarks = values.bale_comments;
+        // if (existing) {
+        //     // Update existing row
+        //     existing.weight = values.captured_weight;
+        //     existing.bale_remarks = values.bale_comments;
 
-    frappe.show_alert({
-        message: `✅ Bale ${values.bale_barcode} updated in the table.`,
-        indicator: 'green'
-    });
-} else {
-    // Add new row
-    frm.add_child('detail_table', {
-        bale_barcode: values.bale_barcode,
-        weight: values.captured_weight,
-        bale_remarks: values.bale_comments
-    });
+        //     frappe.show_alert({
+        //         message: `✅ Bale ${values.bale_barcode} updated in the table.`,
+        //         indicator: 'green'
+        //     });
+        // } else {
+        //     // Add new row
+            frm.add_child('detail_table', {
+                bale_barcode: values.bale_barcode,
+                weight: values.captured_weight,
+                bale_remarks: values.bale_comments
+            });
 
-    frappe.show_alert({
-        message: `➕ Bale ${values.bale_barcode} added to the table.`,
-        indicator: 'blue'
-    });
-}
+        //     frappe.show_alert({
+        //         message: `➕ Bale ${values.bale_barcode} added to the table.`,
+        //         indicator: 'blue'
+        //     });
+        // }
 
-frm.refresh_field('detail_table');
+        // frm.refresh_field('detail_table');
 
         frm.refresh_field('detail_table');
 
@@ -542,43 +542,43 @@ frappe.ui.form.on("Bale Audit Detail", {
         update_audit_display(frm);
         frm.events.onload_post_render(frm);
     },
-delete_row: function(frm, cdt, cdn) {
-    const row = locals[cdt][cdn];
+    delete_row: function (frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
 
-    frappe.confirm(
-        `Are you sure you want to delete this row: ${row.bale_barcode}?`,
-        function () {
-            // Call server method to delete the child record
-            frappe.call({
-                method: "frappe.client.delete",
-                args: {
-                    doctype: row.doctype,
-                    name: row.name
-                },
-                callback: function (response) {
-                    if (!response.exc) {
-                        frappe.msgprint(__("Row deleted successfully"));
+        frappe.confirm(
+            `Are you sure you want to delete this row: ${row.bale_barcode}?`,
+            function () {
+                // Call server method to delete the child record
+                frappe.call({
+                    method: "frappe.client.delete",
+                    args: {
+                        doctype: row.doctype,
+                        name: row.name
+                    },
+                    callback: function (response) {
+                        if (!response.exc) {
+                            frappe.msgprint(__("Row deleted successfully"));
 
-                        // Fully remove the row from locals and doc
-                        frappe.model.clear_doc(cdt, cdn);
+                            // Fully remove the row from locals and doc
+                            frappe.model.clear_doc(cdt, cdn);
 
-                        // Remove from doc.detail_table (redundant but safe)
-                        frm.doc.detail_table = frm.doc.detail_table.filter(r => r.name !== row.name);
+                            // Remove from doc.detail_table (redundant but safe)
+                            frm.doc.detail_table = frm.doc.detail_table.filter(r => r.name !== row.name);
 
-                        // Refresh field & mark dirty
-                        frm.refresh_field('detail_table');
-                        frm.dirty(); // OR frm.set_dirty();
+                            // Refresh field & mark dirty
+                            frm.refresh_field('detail_table');
+                            frm.dirty(); // OR frm.set_dirty();
 
-                        frm.trigger("update_audit_display");
+                            frm.trigger("update_audit_display");
 
-                        if (cur_dialog) cur_dialog.hide();
-                        $('.modal-backdrop').remove();
+                            if (cur_dialog) cur_dialog.hide();
+                            $('.modal-backdrop').remove();
+                        }
                     }
-                }
-            });
-        }
-    );
-}
+                });
+            }
+        );
+    }
 
 
 

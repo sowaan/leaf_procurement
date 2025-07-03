@@ -47,6 +47,6 @@ class BaleAudit(Document):
         
 
     
-    def validate(self):
-        if not self.detail_table or len(self.detail_table) == 0:
-            frappe.throw(_("Please add at least one row in the Bale Audit Detail table."))
+   #def validate(self):
+        # if not self.detail_table or len(self.detail_table) == 0:
+        #     frappe.throw(_("Please add at least one row in the Bale Audit Detail table."))
