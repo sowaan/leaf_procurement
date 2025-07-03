@@ -187,10 +187,24 @@ async function cleanupSerial(frm) {
         const weight = values.captured_weight;
 
         const expectedLength = frm.doc.barcode_length || 0;
-        if (frm.doc.bale_barcode.length != expectedLength) {
+        if (values.bale_barcode.length != expectedLength) {
             frappe.show_alert({ 
                 message: __('Please enter a valid barcode of {0} digits.', [expectedLength]), 
                 indicator: "red" 
+            });
+            return { valid: false };
+        }
+        const response = await frappe.call({
+            method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_bale_barcode_exists",
+            args: {
+                bale_barcode: values.bale_barcode
+            }
+        });
+
+        if (response.message === true) {
+            frappe.show_alert({
+                message: __('Bale barcode already exists in another Bale Audit entry'),
+                indicator: 'red'
             });
             return { valid: false };
         }
@@ -295,6 +309,13 @@ frappe.ui.form.on("Bale Audit", {
         }, 300);
     },
     onload: async function (frm) {
+        frm.set_query('location_warehouse', function() {
+            return {
+                filters: {
+                    custom_is_depot: 0
+                }
+            };
+        });
         update_audit_display(frm);
         frm.page.sidebar.toggle(false);
         updateScaleStatus(frm, scaleConnected);

@@ -390,12 +390,12 @@ def create_item_grade_price(settings, headers, data):
 def create_bale_status(settings, headers, data):
 	"""Update bale status records with the received data."""
 	errors = []
-
 	for item in data:	
 		if not frappe.db.exists("Bale Status", item['name']):
 			try:
 				url = f'{settings.get("instance_url")}/api/resource/Bale Status?fields=["*"]'
 				response = requests.get(url, headers=headers)
+
 				if response.status_code == 200:
 					data = response.json().get("data", [])
 					if data:

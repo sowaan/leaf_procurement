@@ -9,18 +9,41 @@ def execute(filters=None):
 
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
+	inc_rej_bales = filters.get("include_rejected_bales", False)
 	grade_type = ""
+
+
 	supplier_filter = ""
-	
+	warehouse_filter = ""
+	grade_filter = ""
+
+	grade_type_raw = filters.get("grade_type") or ""
+	if grade_type_raw == "Reclassification Grade":
+		grade_type = "reclassification_grade"
+	elif grade_type_raw == "Buying Grade":
+		grade_type = "grade"
+
 	if filters.get("supplier"):
 		supplier_list = ", ".join([f"'{s}'" for s in filters.get("supplier")])
 		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
+	
+	if filters.get("warehouse"):
+		warehouse_filter = f" AND pi.set_warehouse = %(warehouse)s"
+	
+	if not inc_rej_bales and grade_type:
+		grade_filter = f" AND LOWER(pii.{grade_type}) != 'reject'"
+	
+	
 
+	
+	# if filters.get("warehouse") and inc_rej_bales:
+	# 	warehouse__and_grade_filter = f" AND pi.set_warehouse = %(warehouse)s"
+	# elif filters.get("warehouse") and grade_type and not inc_rej_bales:
+	# 	warehouse__and_grade_filter = f" AND pi.set_warehouse = %(warehouse)s AND pii.{grade_type} != 'reject'"
+	# elif not filters.get("warehouse") and grade_type and not inc_rej_bales:
+	# 	warehouse__and_grade_filter = f" AND pii.{grade_type} != 'reject'"
 
-	if filters.get("grade_type") == "Reclassification Grade":
-		grade_type = "reclassification_grade"
-	elif filters.get("grade_type") == "Buying Grade":
-		grade_type = "grade"
+	
 
 	data = frappe.db.sql(f"""
 		WITH totals AS (
@@ -34,6 +57,7 @@ def execute(filters=None):
 
 		SELECT
 			pii.{grade_type} AS grade,
+			pi.set_warehouse AS warehouse,
 
 			-- Today
 			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name END) AS bales_today,
@@ -69,16 +93,20 @@ def execute(filters=None):
 		JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 		WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
 		{supplier_filter}
+		{warehouse_filter}
+		{grade_filter}
 		GROUP BY pii.{grade_type}
 		ORDER BY pii.{grade_type}
 	""", {
 		"from_date": from_date,
-		"to_date": to_date
+		"to_date": to_date,
+		"warehouse": filters.get("warehouse", "")
 	}, as_dict=True)
 
 
 	columns = [
 		{"label": filters.get("grade_type"), "fieldname": "grade", "fieldtype": "Data", "width": 200, "align": "left"},
+		{"label": "Warehouse", "fieldname": "warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 120},
 		{"label": "Bales Today", "fieldname": "bales_today", "fieldtype": "Int", "width": 120},
 		{"label": "Kgs Today", "fieldname": "kgs_today", "fieldtype": "Float", "width": 120},
 		{"label": "Amount Today", "fieldname": "amount_today", "fieldtype": "Currency", "width": 120},
@@ -90,5 +118,39 @@ def execute(filters=None):
 		{"label": "Avg ToDate", "fieldname": "avg_todate", "fieldtype": "Currency", "width": 120},
 		{"label": "Percentage ToDate", "fieldname": "percentage_todate", "fieldtype": "Percent", "width": 140},
 	]
+
+	totals = {
+		"bales_today": 0,
+		"kgs_today": 0,
+		"amount_today": 0,
+		"bales_todate": 0,
+		"kgs_todate": 0,
+		"amount_todate": 0
+	}
+
+	for row in data:
+		if isinstance(row, dict):
+			totals["bales_today"] += row.get("bales_today", 0) or 0
+			totals["kgs_today"] += row.get("kgs_today", 0) or 0
+			totals["amount_today"] += row.get("amount_today", 0) or 0
+			totals["bales_todate"] += row.get("bales_todate", 0) or 0
+			totals["kgs_todate"] += row.get("kgs_todate", 0) or 0
+			totals["amount_todate"] += row.get("amount_todate", 0) or 0
+
+	data.append({
+		"grade": "Total",
+		"warehouse": "",
+		"bales_today": totals["bales_today"],
+		"kgs_today": totals["kgs_today"],
+		"amount_today": totals["amount_today"],
+		"avg_today": (totals["amount_today"] / totals["kgs_today"]),
+		"percentage_today": 100.0,
+		"bales_todate": totals["bales_todate"],
+		"kgs_todate": totals["kgs_todate"],
+		"amount_todate": totals["amount_todate"],
+		"avg_todate": (totals["amount_todate"] / totals["kgs_todate"]),
+		"percentage_todate": 100.0,
+		"is_total_row": 1
+	})
 
 	return columns, data

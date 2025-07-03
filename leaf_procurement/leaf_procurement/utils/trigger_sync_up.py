@@ -28,7 +28,7 @@ def trigger_sync_down(values=None):
         values = json.loads(values)
     print(f"\n\n⚠️ calling.... worker 1...\n\n")
     frappe.enqueue(
-        method=sync_up_worker,
+        method=sync_down_worker,
         queue="long",
         values=values,
         user=frappe.session.user

@@ -54,6 +54,24 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             doc.day_setup = ""
 
         if doctype == "Bale Audit":
+            # Check if Audit Day is closed
+            audit_day = frappe.db.get_value(
+                "Audit Day Setup",
+                {"date": doc.date, "location_warehouse": doc.location_warehouse},
+                ["name", "status"],
+                as_dict=True
+            )
+
+            if audit_day and audit_day.status != "Closed":
+                log_sync_result(
+                    parent_name="Leaf Sync Up",
+                    doctype=doctype,
+                    docname=name,
+                    status="Skipped",
+                    message=f"Sync skipped: Audit Day {doc.date} for location {doc.location_warehouse} is not closed."
+                )
+                return  # Skip sync if not closed
+
             doc.check_validations = 0
             doc.day_setup = ""
             

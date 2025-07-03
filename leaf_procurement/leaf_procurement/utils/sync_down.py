@@ -95,6 +95,16 @@ def sync_down_records(doctype: str, base_url: str, headers: dict):
 		url = f"{base_url}/api/resource/{doctype}?fields=['*']&limit_page_length=1000000"
 		response = requests.get(url, headers=headers)
 
+		print(f"🔍 Raw response from {doctype} endpoint:", response.text)
+
+		if not response.ok:
+			frappe.throw(_("❌ Failed to fetch {0}: HTTP {1}").format(doctype, response.status_code))
+
+		try:
+			data = response.json()
+		except Exception:
+			frappe.throw(_("❌ Failed to fetch {0}: {1}").format(doctype, response.text))
+
 		if response.status_code != 200:
 			msg = response.json().get("message", response.text)
 			frappe.throw(_("❌ Failed to fetch {0}: {1}").format(doctype, msg))
