@@ -7,9 +7,6 @@ from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from frappe.model.naming import make_autoname # type: ignore
 
-from frappe.model.naming import make_autoname
-from datetime import datetime
-
 class BaleAudit(Document):
     def autoname(self):
         if getattr(self, "skip_autoname", False):

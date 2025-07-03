@@ -251,8 +251,20 @@ def sync_up(values=None):
 						doc_data.day_setup = ""
 
 					if doctype == "Bale Audit":
+						# Check if Audit Day is closed
+						audit_day = frappe.db.get_value(
+							"Audit Day Setup",
+							{"date": doc_data.date, "location_warehouse": doc_data.location_warehouse},
+							["name", "status"],
+							as_dict=True
+						)
+
+						if audit_day and audit_day.status != "Closed":
+							frappe.log_error(f"❌ Failed to sync {doctype} ", f"Sync skipped: Audit Day {doc_data.date} for location {doc_data.location_warehouse} is not closed.")
+							continue  # Skip sync if not closed
 						doc_data.check_validations = 0
 						doc_data.day_setup = ""
+
 					# Prepare data for sync
 					doc_data = json.loads(doc_data.as_json())
 					doc_data["skip_autoname"] = True

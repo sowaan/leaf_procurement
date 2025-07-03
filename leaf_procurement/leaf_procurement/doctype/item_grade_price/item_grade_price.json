@@ -40,7 +40,6 @@
    "default": "Standard Buying",
    "fieldname": "price_list",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Price List",
    "options": "Price List",
    "read_only": 1,
@@ -82,6 +81,7 @@
   {
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Location (Warehouse)",
    "options": "Warehouse",
    "reqd": 1
@@ -102,7 +102,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-18 01:11:02.786860",
+ "modified": "2025-07-03 15:12:30.712435",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Item Grade Price",
