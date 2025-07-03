@@ -107,10 +107,10 @@ function update_sync_status_labels(frm) {
         const label_field = `${fieldname}_label`;
         const is_checked = frm.doc[fieldname];
 
-        if (!is_checked) {
-            update_label_html(frm, label_field, "press save", "blue");
-            return;
-        }
+        // if (!is_checked) {
+        //     update_label_html(frm, label_field, "press save", "blue");
+        //     return;
+        // }
 
         const doctype = doctype_map[fieldname];
 
