@@ -16,11 +16,14 @@ const sync_down_checkboxes = [
 
 frappe.ui.form.on("Leaf Sync Down", {
     refresh(frm) {
+        frm.add_custom_button('🔄 Reload', () => {
+            frm.reload_doc();
+        });
         // Add Sync Now button if any checkbox is checked
         if (sync_down_checkboxes.some(field => frm.doc[field])) {
             frm.add_custom_button("🚀 Sync Now", () => {
                 trigger_sync(frm);
-            }, "Actions");
+            });
         }
         frm.fields_dict.sync_down_select_all.df.label = frm.doc.sync_down_select_all ? 'Unselect All' : 'Select All';
     },
