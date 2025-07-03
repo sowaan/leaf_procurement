@@ -92,6 +92,15 @@ frappe.ui.form.on("Bale Registration", {
             frm.set_value('date', open_day);
             console.log('date', open_day);
         }
+        else{
+            frappe.set_route('List', 'Day Setup');
+            frappe.msgprint({
+                title: __('Day is not Opened'),
+                message: __('Please open a day before registering bales.'),
+                indicator: 'red'
+            });
+            return;
+        }
 
         if (frm.doc.date) {
             update_lot_counter(frm);
