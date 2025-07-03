@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:AUD-{location_short_code}-{###}",
+ "creation": "2025-06-25 21:35:55.728549",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "date",
+  "day_open_time",
+  "company",
+  "allow_sunday_open",
+  "column_break_iqnk",
+  "location_warehouse",
+  "location_short_code",
+  "status",
+  "day_close_time"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "AUD-DS-.#####",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "day_open_time",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Day Open Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_sunday_open",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Allow Day Open On Sunday",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_iqnk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "label": "Location (Warehouse)",
+   "options": "Warehouse"
+  },
+  {
+   "fetch_from": "location_warehouse.custom_short_code",
+   "fieldname": "location_short_code",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Location Short Code"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nOpened\nClosed",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "day_close_time",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Day Close Time",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-03 16:15:38.866639",
+ "modified_by": "Administrator",
+ "module": "Audit Section",
+ "name": "Audit Day Setup",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

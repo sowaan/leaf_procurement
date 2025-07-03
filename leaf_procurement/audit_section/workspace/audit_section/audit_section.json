@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"fanIBrJD0U\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"A00Ywpfofs\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"KdHSMSthoq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"View Audit Lists\",\"col\":4}}]",
+ "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"fanIBrJD0U\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"A00Ywpfofs\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"KdHSMSthoq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit Operations\",\"col\":4}}]",
  "creation": "2025-06-28 12:23:16.365005",
  "custom_blocks": [
   {
@@ -21,7 +21,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "View Audit Lists",
+   "label": "Audit Operations",
    "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
@@ -30,7 +30,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Day Setup",
+   "label": "Audit Day Setup",
    "link_count": 0,
    "link_to": "Audit Day Setup",
    "link_type": "DocType",
@@ -58,9 +58,9 @@
    "type": "Link"
   }
  ],
- "modified": "2025-07-01 17:49:45.845441",
+ "modified": "2025-07-03 16:18:36.590683",
  "modified_by": "Administrator",
- "module": "Leaf Procurement",
+ "module": "Audit Section",
  "name": "Audit Section",
  "number_cards": [],
  "owner": "Administrator",
@@ -71,18 +71,18 @@
  "sequence_id": 7.0,
  "shortcuts": [
   {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Create Bale Audit",
-   "link_to": "Bale Audit",
+   "color": "Green",
+   "doc_view": "New",
+   "label": "Create Audit Day",
+   "link_to": "Audit Day Setup",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
-   "color": "Grey",
+   "color": "Green",
    "doc_view": "New",
-   "label": "Create Audit Day",
-   "link_to": "Audit Day Setup",
+   "label": "Create Bale Audit",
+   "link_to": "Bale Audit",
    "stats_filter": "[]",
    "type": "DocType"
   }

@@ -1,0 +1,232 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{location_shortcode}-AUD-{YYYY}-{######}",
+ "creation": "2025-05-31 21:18:54.884127",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_l9ab",
+  "company",
+  "date",
+  "location_shortcode",
+  "custom_is_sync",
+  "column_break_rnfv",
+  "location_warehouse",
+  "barcode_length",
+  "item",
+  "connect_scale",
+  "disconnect_scale",
+  "column_break_irkq",
+  "scale_status",
+  "day_setup",
+  "check_validations",
+  "section_break_pqzk",
+  "gtn_detail",
+  "section_break_xyxs",
+  "bale_barcode",
+  "column_break_arkr",
+  "captured_weight",
+  "section_break_psgv",
+  "bale_comments",
+  "add_audit_weight",
+  "column_break_uvyt",
+  "audit_display",
+  "section_break_ynis",
+  "detail_table",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_l9ab",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fetch_from": "location_warehouse.custom_short_code",
+   "fieldname": "location_shortcode",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Shortcode",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "custom_is_sync",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Sync",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_rnfv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location_warehouse",
+   "fieldtype": "Link",
+   "label": "Location (Warehouse)",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "barcode_length",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Barcode Length"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "connect_scale",
+   "fieldtype": "Button",
+   "label": "Connect Scale"
+  },
+  {
+   "fieldname": "disconnect_scale",
+   "fieldtype": "Button",
+   "label": "Disconnect Scale"
+  },
+  {
+   "fieldname": "column_break_irkq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scale_status",
+   "fieldtype": "HTML",
+   "label": "Scale Status"
+  },
+  {
+   "fieldname": "day_setup",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Day Setup",
+   "options": "Audit Day Setup",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "check_validations",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Check Validations"
+  },
+  {
+   "fieldname": "section_break_pqzk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gtn_detail",
+   "fieldtype": "Table",
+   "label": "Truck/GTN Details",
+   "options": "Bale Audit GTN"
+  },
+  {
+   "fieldname": "section_break_xyxs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bale_barcode",
+   "fieldtype": "Data",
+   "label": "Bale BarCode"
+  },
+  {
+   "fieldname": "column_break_arkr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "captured_weight",
+   "fieldtype": "Float",
+   "label": "Captured Weight"
+  },
+  {
+   "fieldname": "section_break_psgv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bale_comments",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "add_audit_weight",
+   "fieldtype": "Button",
+   "label": "Add Audit Weight"
+  },
+  {
+   "fieldname": "column_break_uvyt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "audit_display",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_ynis",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Bale Audit Detail",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bale Audit",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-03 16:15:09.983913",
+ "modified_by": "Administrator",
+ "module": "Audit Section",
+ "name": "Bale Audit",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
