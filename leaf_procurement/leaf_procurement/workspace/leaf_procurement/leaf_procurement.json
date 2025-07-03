@@ -279,7 +279,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Tools",
-   "link_count": 3,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -297,7 +297,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sync Tool",
+   "label": "Sync Tool (Old)",
    "link_count": 0,
    "link_to": "Leaf Procurement Sync Tool",
    "link_type": "DocType",
@@ -307,15 +307,25 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sync Up (new)",
+   "label": "Sync Up",
    "link_count": 0,
    "link_to": "Leaf Sync Up",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sync Down",
+   "link_count": 0,
+   "link_to": "Leaf Sync Down",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-07-01 17:41:31.740978",
+ "modified": "2025-07-03 12:17:37.896574",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement",
