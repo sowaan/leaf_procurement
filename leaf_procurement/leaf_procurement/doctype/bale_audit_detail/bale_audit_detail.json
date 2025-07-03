@@ -31,7 +31,8 @@
    "fieldname": "bale_barcode",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Bale Barcode"
+   "label": "Bale Barcode",
+   "unique": 1
   },
   {
    "fieldname": "weight",
@@ -57,7 +58,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-03 14:43:15.713581",
+ "modified": "2025-07-03 18:00:15.950157",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit Detail",
