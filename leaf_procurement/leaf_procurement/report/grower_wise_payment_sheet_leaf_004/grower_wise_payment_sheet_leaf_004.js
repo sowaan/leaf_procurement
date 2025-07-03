@@ -34,6 +34,11 @@ frappe.query_reports["Grower Wise Payment Sheet Leaf 004"] = {
 					}
 				};
 			}
+		},
+		{
+			fieldname: "due_date",
+			label: "Due Date",
+			fieldtype: "Date"
 		}
 	]
 	

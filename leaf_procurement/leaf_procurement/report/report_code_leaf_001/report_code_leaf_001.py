@@ -10,8 +10,14 @@ def execute(filters=None):
 
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
+	inc_rej_bales = filters.get("include_rejected_bales", False)
 
-	data = frappe.db.sql("""
+	grade_filter = ""
+
+	if not inc_rej_bales:
+		grade_filter = f" AND LOWER(pii.grade) != 'reject'"
+
+	data = frappe.db.sql(f"""
 		WITH 
 			grand_today AS (
 				SELECT 
@@ -64,6 +70,7 @@ def execute(filters=None):
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 			LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
 			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+			{grade_filter}
 		GROUP BY supp.custom_location_warehouse
 	""", {
 		"from_date": from_date,
@@ -93,10 +100,12 @@ def execute(filters=None):
 	total_kgs_today = 0
 	total_amount_today = 0
 	total_avg_today = 0
+	total_percentage_today = 0
 	total_bales_todate = 0
 	total_kgs_todate = 0
 	total_amount_todate = 0
 	total_avg_todate = 0
+	total_percentage_todate = 0
 
 
 
@@ -108,8 +117,8 @@ def execute(filters=None):
 		total_kgs_todate += row.kgs_todate or 0
 		total_amount_todate += row.amount_todate or 0
 	
-	total_percentage_today = 100
-	total_percentage_todate = 100
+		total_percentage_today += row.percentage_today or 0
+		total_percentage_todate += row.percentage_todate or 0
 
 	total_avg_today = (total_amount_today / total_kgs_today) if total_kgs_today else 0
 	total_avg_todate = (total_amount_todate / total_kgs_todate) if total_kgs_todate else 0
@@ -137,12 +146,12 @@ def execute(filters=None):
 		"kgs_today": total_kgs_today,
 		"amount_today": total_amount_today,
 		"avg_today": total_avg_today,
-		"percentage_today": total_percentage_today,
+		"percentage_today": round(total_percentage_today),
 		"bales_todate": total_bales_todate,
 		"kgs_todate": total_kgs_todate,
 		"amount_todate": total_amount_todate,
 		"avg_todate": total_avg_todate,
-		"percentage_todate": total_percentage_todate,
+		"percentage_todate": round(total_percentage_todate),
 		"is_total_row": 1
 	})
 

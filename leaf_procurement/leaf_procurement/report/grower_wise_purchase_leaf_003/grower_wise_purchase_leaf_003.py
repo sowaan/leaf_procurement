@@ -10,6 +10,7 @@ def execute(filters=None):
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
 
+
 	conditions = get_conditions(filters)
 
 	data = frappe.db.sql(f"""
@@ -28,7 +29,7 @@ SELECT
 		FROM `tabPurchase Invoice` pi
 		JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 		LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-		WHERE pi.docstatus = 1
+		WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
 		AND pi.posting_date BETWEEN %(from_date)s AND %(to_date)s
 		AND {conditions}
 		GROUP BY pi.name
@@ -57,8 +58,11 @@ SELECT
 
 def get_conditions(filters):
 	conditions = []
+	inc_rej_bales = filters.get("include_rejected_bales", False)
 	if filters.get("depot"):
 		conditions.append("supp.custom_location_warehouse = %(depot)s")
 	if filters.get("grower"):
 		conditions.append("pi.supplier = %(grower)s")
+	if not inc_rej_bales:
+		conditions.append("LOWER(pii.grade) != 'reject'")
 	return " AND ".join(conditions) if conditions else "1=1"

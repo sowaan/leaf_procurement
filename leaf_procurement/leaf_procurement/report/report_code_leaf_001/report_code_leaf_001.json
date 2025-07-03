@@ -21,6 +21,13 @@
    "label": "To Date",
    "mandatory": 1,
    "wildcard_filter": 0
+  },
+  {
+   "fieldname": "include_rejected_bales",
+   "fieldtype": "Check",
+   "label": "Include Rejected Bales",
+   "mandatory": 0,
+   "wildcard_filter": 0
   }
  ],
  "idx": 4,
@@ -28,7 +35,7 @@
  "json": "{}",
  "letter_head": "",
  "letterhead": null,
- "modified": "2025-07-03 17:02:46.099303",
+ "modified": "2025-07-03 17:30:38.158757",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Report Code Leaf 001",
