@@ -23,41 +23,81 @@ frappe.ui.form.on("Audit Day Setup", {
             frm.add_custom_button(__('Day Close'), async function () {
                 try {
 
-            const response = await frappe.call({
-                method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_draft_audits_exist",
-                args: {
-                    date: frm.doc.date,
-                    location: frm.doc.location_warehouse
-                }
-            });
-
-            if (response.message && response.message.exists) {
-                frappe.msgprint(__('There are Draft Bale Audit records for this date. Please submit or cancel them before closing the day.'));
-                return;
-            }
-                    // No mismatches, proceed with day close
-                    frappe.confirm(
-                        __("Are you sure you want to close the day?"),
-                        async function () {
-                            return;
-                            const now = frappe.datetime.now_datetime();
-                            frm.set_value('day_close_time', now);
-                            frm.set_value('status', "Closed");
-
-                            await frm.save();
-                            frappe.show_alert({
-                                message: __('Day has been closed.', now),
-                                indicator: 'green'
-                            });
-                            frm.reload_doc();
-                        },
-                        function () {
-                            frappe.show_alert({
-                                message: __('Day close cancelled.'),
-                                indicator: 'orange'
-                            });
+                    const response = await frappe.call({
+                        method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_draft_audits_exist",
+                        args: {
+                            date: frm.doc.date,
+                            location: frm.doc.location_warehouse
                         }
-                    );
+                    });
+
+                    if (response.message && response.message.exists) {
+                        frappe.msgprint(__('There are Draft Bale Audit records for this date. Please submit or cancel them before closing the day.'));
+                        return;
+                    }
+
+                    frappe.call({
+                        method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.check_audit_records_exist",
+                        args: {
+                            date: frm.doc.date,
+                            location: frm.doc.location_warehouse
+                        },
+                        callback: async function(response) {
+                            if (!response.message.exists) {
+                                frappe.prompt([
+                                    {
+                                        label: 'No audits found. Enter reason to close the day anyway:',
+                                        fieldname: 'reason',
+                                        fieldtype: 'Small Text',
+                                        reqd: 1
+                                    }
+                                ],
+                                async (values) => {
+                                    await frm.set_value('day_close_reason', values.reason);
+                                    const now = frappe.datetime.now_datetime();
+                                    await frm.set_value('day_close_time', now);
+                                    await frm.set_value('status', "Closed");
+                                    await frm.save();
+
+                                    frappe.show_alert({
+                                        message: __('Day has been closed with reason.'),
+                                        indicator: 'green'
+                                    });
+
+                                    frm.reload_doc();
+                                },
+                                __('No Bale Audit Records Found'),
+                                __('Close Day Anyway'));
+                            } else {      
+                                frappe.confirm(
+                                    __("Are you sure you want to close the day?"),
+                                    async function () {
+                                        
+                                        const now = frappe.datetime.now_datetime();
+                                        frm.set_value('day_close_time', now);
+                                        frm.set_value('status', "Closed");
+
+                                        await frm.save();
+                                        frappe.show_alert({
+                                            message: __('Day has been closed.', now),
+                                            indicator: 'green'
+                                        });
+                                        frm.reload_doc();
+                                    },
+                                    function () {
+                                        frappe.show_alert({
+                                            message: __('Day close cancelled.'),
+                                            indicator: 'orange'
+                                        });
+                                    }
+                                );
+                            }
+                        }
+                    });
+
+
+                    // No mismatches, proceed with day close
+
 
                 } catch (err) {
                     frappe.msgprint(__('Error checking draft audit records.'));
@@ -84,8 +124,15 @@ frappe.ui.form.on("Audit Day Setup", {
                 indicator: 'orange'
             });
         }
-    },    
+    },
     onload: function (frm) {
+            frm.set_query('location_warehouse', function() {
+            return {
+                filters: {
+                    custom_is_depot: 0
+                }
+            };
+        });
         if (frm.is_new()) {
             frappe.call({
                 method: 'frappe.client.get',
@@ -102,5 +149,5 @@ frappe.ui.form.on("Audit Day Setup", {
                 }
             });
         }
-    }    
+    }
 });
