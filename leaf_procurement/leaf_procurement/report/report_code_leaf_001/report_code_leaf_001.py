@@ -16,22 +16,21 @@ def execute(filters=None):
 			grand_today AS (
 				SELECT 
 					SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_today
-			FROM `tabPurchase Invoice` pi
-			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-					  LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
-					   AND DATE(pi.posting_date) = %(to_date)s
+				FROM `tabPurchase Invoice` pi
+					LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+					LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+				WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+					AND DATE(pi.posting_date) = %(to_date)s
 			),
 			grand_todate AS (
-								SELECT 
+				SELECT 
 					SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_todate
-			FROM `tabPurchase Invoice` pi
-			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-					  LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
-					  AND DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s
+				FROM `tabPurchase Invoice` pi
+					LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+					LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+				WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+					AND DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s
 			)
-
 		SELECT 
 			supp.custom_location_warehouse AS depot_name,
 
@@ -63,7 +62,7 @@ def execute(filters=None):
 
 			FROM `tabPurchase Invoice` pi
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-					  LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+			LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
 			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
 		GROUP BY supp.custom_location_warehouse
 	""", {
@@ -88,6 +87,65 @@ def execute(filters=None):
 		{"label": "Avg (ToDate)", "fieldname": "avg_todate", "fieldtype": "Currency", "width": 110},
 		{"label": "% (ToDate)", "fieldname": "percentage_todate", "fieldtype": "Percent", "width": 100},
 	]
+
+
+	total_bales_today = 0
+	total_kgs_today = 0
+	total_amount_today = 0
+	total_avg_today = 0
+	total_bales_todate = 0
+	total_kgs_todate = 0
+	total_amount_todate = 0
+	total_avg_todate = 0
+
+
+
+	for row in data:
+		total_bales_today += row.bales_today or 0
+		total_kgs_today += row.kgs_today or 0
+		total_amount_today += row.amount_today or 0
+		total_bales_todate += row.bales_todate or 0
+		total_kgs_todate += row.kgs_todate or 0
+		total_amount_todate += row.amount_todate or 0
+	
+	total_percentage_today = 100
+	total_percentage_todate = 100
+
+	total_avg_today = (total_amount_today / total_kgs_today) if total_kgs_today else 0
+	total_avg_todate = (total_amount_todate / total_kgs_todate) if total_kgs_todate else 0
+
+	
+	
+
+	# data.append({
+	# 	"depot_name": None,
+	# 	"bales_today": None,
+	# 	"kgs_today": None,
+	# 	"amount_today": None,
+	# 	"avg_today": None,
+	# 	"percentage_today": None,
+	# 	"bales_todate": None,
+	# 	"kgs_todate": None,
+	# 	"amount_todate": None,
+	# 	"avg_todate": None,
+	# 	"percentage_todate": None
+	# })
+
+	data.append({
+		"depot_name": "<b>Total</b>",
+		"bales_today": total_bales_today,
+		"kgs_today": total_kgs_today,
+		"amount_today": total_amount_today,
+		"avg_today": total_avg_today,
+		"percentage_today": total_percentage_today,
+		"bales_todate": total_bales_todate,
+		"kgs_todate": total_kgs_todate,
+		"amount_todate": total_amount_todate,
+		"avg_todate": total_avg_todate,
+		"percentage_todate": total_percentage_todate,
+		"is_total_row": 1
+	})
+
 
 	return columns, data
 

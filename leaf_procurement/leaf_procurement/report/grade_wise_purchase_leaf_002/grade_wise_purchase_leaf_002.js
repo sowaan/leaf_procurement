@@ -2,37 +2,61 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Grade Wise Purchase Leaf 002"] = {
-	"filters": [
+    filters: [
         {
             fieldname: "from_date",
-            fieldtype: "Date",
             label: "From Date",
-            mandatory: 1
-        },
-        {
-            default: "Today",
-            fieldname: "to_date",
             fieldtype: "Date",
+            reqd: 1
+        },
+        {
+            fieldname: "to_date",
             label: "To Date",
-            mandatory: 1
+            fieldtype: "Date",
+            default: frappe.datetime.get_today(),
+            reqd: 1
         },
         {
-            default: "Buying Grade",
             fieldname: "grade_type",
-            fieldtype: "Select",
             label: "Grade Type",
-            mandatory: 1,
-            options: "Buying Grade\nReclassification Grade"
+            fieldtype: "Select",
+            options: ["Buying Grade", "Reclassification Grade"].join("\n"),
+            default: "Buying Grade",
+            reqd: 1
         },
         {
-			fieldname: "supplier",
-			label: __("Supplier"),
-			fieldtype: "MultiSelectList",
-			options: "Supplier",
-			get_data: function (txt) {
-				return frappe.db.get_link_options("Supplier", txt);
-			},
-		}
+            fieldname: "supplier",
+            label: "Supplier",
+            fieldtype: "MultiSelectList",
+            options: "Supplier",
+            get_data: function (txt) {
+                return frappe.db.get_link_options("Supplier", txt);
+            }
+        },
+        {
+            fieldname: "warehouse",
+            label: "Warehouse",
+            fieldtype: "Link",
+            options: "Warehouse"
+        },
+        {
+            fieldname: "include_rejected_bales",
+            label: "Include Rejected Bales",
+            fieldtype: "Check"
+        }
+    ],
 
-	]
+    after_datatable_render(datatable) {
+        const rows = datatable.bodyScrollable.querySelectorAll(".dt-row");
+
+        if (rows.length > 0) {
+            const lastRow = rows[rows.length - 1];
+            lastRow.style.fontWeight = "bold";
+
+            const cells = lastRow.querySelectorAll(".dt-cell");
+            cells.forEach(cell => {
+                cell.style.backgroundColor = "#e0e0e0";
+            });
+        }
+    }
 };
