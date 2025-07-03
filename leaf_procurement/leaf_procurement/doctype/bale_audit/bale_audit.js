@@ -239,6 +239,11 @@ async function validate_bale_data(frm) {
             message: __('Please enter a valid barcode of {0} digits.', [expectedLength]),
             indicator: "red"
         });
+        const input = frm.fields_dict.bale_barcode.$wrapper.find('input')[0];
+        if (input) {
+            input.focus();
+            input.select();
+        }
         return { valid: false };
     }
     const response = await frappe.call({
@@ -419,7 +424,7 @@ frappe.ui.form.on("Bale Audit", {
 
     },
     after_save: async function (frm) {
-        update_audit_display(frm);
+        // update_audit_display(frm);
 
 
     },
