@@ -4,8 +4,10 @@
 frappe.ui.form.on("Audit Day Setup", {
     refresh(frm) {
         frm.clear_custom_buttons();
+        console.log("Day Open check:", frm.doc.day_open_time);
 
         if (!frm.doc.day_open_time) {
+            console.log("2nd phase.....");
             // Show Day Open button only if day_open_time is not set
             frm.add_custom_button(__('Day Open'), function () {
                 const now = frappe.datetime.now_datetime();
@@ -126,13 +128,7 @@ frappe.ui.form.on("Audit Day Setup", {
         }
     },
     onload: function (frm) {
-            frm.set_query('location_warehouse', function() {
-            return {
-                filters: {
-                    custom_is_depot: 0
-                }
-            };
-        });
+
         if (frm.is_new()) {
             frappe.call({
                 method: 'frappe.client.get',
@@ -148,6 +144,14 @@ frappe.ui.form.on("Audit Day Setup", {
                     }
                 }
             });
+
+                    frm.set_query('location_warehouse', function() {
+            return {
+                filters: {
+                    custom_is_depot: 0
+                }
+            };
+        });
         }
     }
 });
