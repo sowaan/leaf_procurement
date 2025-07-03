@@ -3,22 +3,22 @@
   "docstatus": 0,
   "doctype": "Custom HTML Block",
   "html": "<div id=\"day-status\"></div>\n",
-  "modified": "2025-05-28 15:45:49.452071",
-  "name": "Leaf Buying Day Block",
-  "private": 0,
-  "roles": [],
-  "script": "frappe.call({\n      method: \"frappe.client.get_list\",\n      args: {\n        doctype: \"Day Setup\",\n        filters: {\n          date: frappe.datetime.get_today()\n        },\n        fields: [\"day_open_time\", \"day_close_time\"],\n        limit_page_length: 1\n      },\n      callback: function (r) {\n        let el = root_element.querySelector('#day-status');\n        console.log(el)\n        if (r.message && r.message.length > 0) {\n          const day = r.message[0];\n          if (day.day_open_time && !day.day_close_time) {\n            el.classList.add(\"indicator-pill\", \"green\");\n            el.innerText = \"Day is open for today\";\n          } else {\n            el.classList.add(\"indicator-pill\", \"orange\");\n            el.innerText = \"Day is not open for today\";\n          }\n        } else {\n          el.classList.add(\"indicator-pill\", \"orange\");\n          el.innerText = \"Day is not open for today\";\n        }\n      }\n    });",
-  "style": null
- },
- {
-  "docstatus": 0,
-  "doctype": "Custom HTML Block",
-  "html": "<div id=\"day-status\"></div>\n",
   "modified": "2025-07-01 11:19:21.823606",
   "name": "Bale Audit Day Block",
   "private": 0,
   "roles": [],
   "script": "frappe.call({\n  method: \"leaf_procurement.leaf_procurement.api.day_close_utils.get_user_audit_day_status\",\n  callback: function (r) {\n    const el = root_element.querySelector('#day-status');\n    el.innerHTML = \"\"; // Clear previous content\n\n    if (!r.message || r.message.length === 0) {\n      el.classList.add(\"indicator-pill\", \"orange\");\n      el.innerText = \"No audit day found for your warehouses today\";\n      return;\n    }\n\n    // Split records into open and closed days\n    const openDays = [];\n    const closedDays = [];\n\n    r.message.forEach(day => {\n      const statusText = `${day.location_warehouse}`;\n      if (day.day_open_time && !day.day_close_time) {\n        openDays.push(`<div class=\"indicator-pill green\">${statusText}</div>`);\n      } else {\n        closedDays.push(`<div class=\"indicator-pill orange\">${statusText}</div>`);\n      }\n    });\n\n    // Create side-by-side containers\n    el.innerHTML = `\n      <div style=\"display: flex; gap: 30px; flex-wrap: wrap;\">\n        <div style=\"flex: 1; min-width: 250px;\">\n          <h4>Open Days</h4>\n          ${openDays.join('')}\n        </div>\n        <div style=\"flex: 1; min-width: 250px;\">\n          <h4>Closed/Not Open Days</h4>\n          ${closedDays.join('')}\n        </div>\n      </div>\n    `;\n  }\n});\n",
   "style": ""
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Custom HTML Block",
+  "html": "<div id=\"day-status-container\" style=\"display: flex; justify-content: space-between; align-items: center;\">\n  <div id=\"day-status\"></div>\n  <div id=\"location-info\" style=\"text-align: right; font-weight:bold; font-size:20px; color:#bd3e0c; background:#fff1e7; padding:5px;border-radius:10px\"></div>\n</div>\n",
+  "modified": "2025-07-03 12:30:53.303624",
+  "name": "Leaf Buying Day Block",
+  "private": 0,
+  "roles": [],
+  "script": "frappe.call({\n  method: \"frappe.client.get_list\",\n  args: {\n    doctype: \"Day Setup\",\n    filters: {\n      date: frappe.datetime.get_today()\n    },\n    fields: [\"day_open_time\", \"day_close_time\"],\n    limit_page_length: 1\n  },\n  callback: function (r) {\n    let statusEl = root_element.querySelector('#day-status');\n    let locationEl = root_element.querySelector('#location-info');\n\n    // Clear previous classes/texts\n    statusEl.className = \"\";\n    statusEl.innerText = \"\";\n    locationEl.innerText = \"\";\n\n    // Fetch location_warehouse from Leaf Procurement Settings\n    frappe.call({\n      method: \"frappe.client.get_single_value\",\n      args: {\n        doctype: \"Leaf Procurement Settings\",\n        field: \"location_warehouse\"\n      },\n      callback: function (settings_res) {\n        let location = settings_res.message || \"Unknown Location\";\n        locationEl.innerText = `${location}`;\n\n        if (r.message && r.message.length > 0) {\n          const day = r.message[0];\n          if (day.day_open_time && !day.day_close_time) {\n            statusEl.classList.add(\"indicator-pill\", \"green\");\n            statusEl.innerText = \"Day is open for today\";\n          } else {\n            statusEl.classList.add(\"indicator-pill\", \"orange\");\n            statusEl.innerText = \"Day is not open for today\";\n          }\n        } else {\n          statusEl.classList.add(\"indicator-pill\", \"orange\");\n          statusEl.innerText = \"Day is not open for today\";\n        }\n      }\n    });\n  }\n});\n",
+  "style": null
  }
 ]
