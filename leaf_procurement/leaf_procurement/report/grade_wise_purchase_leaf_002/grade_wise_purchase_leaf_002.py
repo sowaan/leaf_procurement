@@ -27,8 +27,8 @@ def execute(filters=None):
 		supplier_list = ", ".join([f"'{s}'" for s in filters.get("supplier")])
 		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
 	
-	# if filters.get("warehouse"):
-	# 	warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
+	if filters.get("warehouse"):
+		warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
 	
 	if not inc_rej_bales and grade_type:
 		grade_filter = f" AND LOWER(pii.{grade_type}) != 'reject'"
