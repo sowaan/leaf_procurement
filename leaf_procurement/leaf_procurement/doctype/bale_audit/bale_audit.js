@@ -141,15 +141,48 @@ async function cleanupSerial(frm) {
     }
 }
 
+function validate_bale_count(frm){
+    let total_bales = frm.doc.detail_table.length;
+    let total_weight = 0;
+    let total_items = 0;
+
+    frm.doc.gtn_detail.forEach(row => {
+        if (row.bales_scanned) {
+            total_items += flt(row.bales_scanned);
+        }
+    });
+
+    
+}
 function update_audit_display(frm) {
     let total_bales = frm.doc.detail_table.length;
     let total_weight = 0;
+    let total_items = 0;
+
+    frm.doc.gtn_detail.forEach(row => {
+        if (row.bales_scanned) {
+            total_items += flt(row.bales_scanned);
+        }
+    });
 
     frm.doc.detail_table.forEach(row => {
         if (row.weight) {
             total_weight += flt(row.weight);
         }
     });
+
+    if (total_bales>0 && total_items <= total_bales)
+    {
+        frappe.show_alert({
+            message: __('This was the last bale as the given number of bales in Truck/GTN details is complete.'),
+            indicator: "Orange"
+        });
+        updateWeightOnForm = false;
+    }
+    else
+    {
+        updateWeightOnForm = true;        
+    }
 
     let html = `
             <div style="padding: 10px; font-size: 14px;">
@@ -163,6 +196,21 @@ function update_audit_display(frm) {
 }
 async function validate_bale_data(frm) {
 
+    if(frm.doc.gtn_detail.length==0)
+    {
+        frappe.show_alert({
+            message: __('Please add record in Truck/GTN details to start adding bales.'),
+            indicator: "red"
+        });
+        return { valid: false };            
+    }
+    if(frm.doc.bale_barcode && !updateWeightOnForm){
+        frappe.show_alert({
+            message: __('Number of bales given in Truck/GTN details is complete, you cannot add more bales.'),
+            indicator: "red"
+        });
+        return { valid: false };        
+    }
     const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
     if (!open_day) {
         frappe.show_alert({
@@ -243,6 +291,11 @@ frappe.ui.form.on("Bale Audit", {
         await cleanupSerial(frm);
         //frappe.msgprint(__('Scale disconnected.'));
     },
+    before_submit(frm) {
+        if (updateWeightOnForm) {
+            frappe.throw(__('Cannot submit while given bales count is not equal to total of bales scanned in Truck/GTN Details.'));
+        }
+    },
     onload_post_render(frm) {
         setTimeout(() => {
             const $input = frm.get_field('bale_barcode')?.$wrapper.find('input');
@@ -282,7 +335,6 @@ frappe.ui.form.on("Bale Audit", {
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log("🔁 ENTER pressed on 'add_audit_weight' button");
                         $btn.trigger('click');
                     }
                 });
@@ -391,7 +443,6 @@ frappe.ui.form.on("Bale Audit", {
         const weight = values.captured_weight;
         if (!values.bale_barcode) return;
 
-        // console.log('is rejected:', is_rejected_grade);
         frm.doc.detail_table.push({
             bale_barcode: values.bale_barcode,
             weight: weight,
@@ -400,7 +451,7 @@ frappe.ui.form.on("Bale Audit", {
 
         // Reset fields
         frm.set_value('bale_barcode', '');
-        frm.set_value('captured_weight', '');
+       // frm.set_value('captured_weight', '');
         frm.set_value('bale_comments', '');
         // Reset weight display
 
@@ -458,12 +509,12 @@ frappe.ui.form.on("Bale Audit", {
         // }
 
         // frm.refresh_field('detail_table');
-
+        frm.save(); 
         frm.refresh_field('detail_table');
 
         // Reset fields
         frm.set_value('bale_barcode', '');
-        frm.set_value('captured_weight', '');
+        //frm.set_value('captured_weight', '');
         frm.set_value('bale_comments', '');
         // Reset weight display
         updateMainWeightDisplay(frm, "0.00");
@@ -584,7 +635,7 @@ frappe.ui.form.on("Bale Audit Detail", {
 
 });
 async function get_open_day_date(location_name) {
-    console.log('location: ', location_name);
+
     return new Promise((resolve, reject) => {
         frappe.call({
             method: "frappe.client.get_list",
@@ -600,7 +651,7 @@ async function get_open_day_date(location_name) {
             },
             callback: function (r) {
                 if (r.message && r.message.length > 0) {
-                    console.log('message: ', r.message);
+      
                     resolve({
                         date: r.message[0].date,
                         name: r.message[0].name

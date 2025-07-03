@@ -58,6 +58,7 @@
    "reqd": 1
   },
   {
+   "default": "Kg",
    "fieldname": "uom",
    "fieldtype": "Link",
    "label": "UOM",
@@ -102,7 +103,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-03 15:12:30.712435",
+ "modified": "2025-07-03 23:55:22.116412",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Item Grade Price",

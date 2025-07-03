@@ -13,11 +13,11 @@ class ItemGradePrice(Document):
             return  
 
         settings = frappe.get_doc("Leaf Procurement Settings")
-        self.short_code = frappe.db.get_value(
-            "Warehouse",
-            settings.get("location_warehouse"),
-            "custom_short_code"
-        )
+        # self.short_code = frappe.db.get_value(
+        #     "Warehouse",
+        #     settings.get("location_warehouse"),
+        #     "custom_short_code"
+        # )
 
         prefix = f"{self.abbr}-{self.short_code}-{self.item_sub_grade}-"
         self.name = frappe.model.naming.make_autoname(prefix + ".###")

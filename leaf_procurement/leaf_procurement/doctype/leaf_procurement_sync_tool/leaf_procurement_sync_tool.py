@@ -44,7 +44,7 @@ def sync_down(values=None):
 		if not settings.api_secret:
 			frappe.throw(_("API Secret is not set in Leaf Procurement Settings."))
 
-		#doc = frappe.get_doc("Leaf Procurement Sync Tool")
+		doc = frappe.get_doc("Leaf Procurement Sync Tool")
 		parsedurl = settings.instance_url.rstrip('/')
 
 		headers = {
@@ -52,7 +52,7 @@ def sync_down(values=None):
 			"Content-Type": "application/json"
 		}
 
-		# local_server_instance(api_key, location, sync_down_date, sync_up_date, users)
+		local_server_instance(api_key, location, sync_down_date, sync_up_date, users)
 		localsUrl = f"{parsedurl}/api/method/leaf_procurement.api_functions.local_server_instance"
 
 		user_list = frappe.get_all(

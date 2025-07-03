@@ -26,7 +26,7 @@ def trigger_sync_down(values=None):
 
     if isinstance(values, str):
         values = json.loads(values)
-    print(f"\n\n⚠️ calling.... worker 1...\n\n")
+    print(f"\n\n⚠️ calling.... worker 1... {values}\n\n")
     frappe.enqueue(
         method=sync_down_worker,
         queue="long",

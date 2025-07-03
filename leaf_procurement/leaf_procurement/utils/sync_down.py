@@ -32,9 +32,9 @@ def sync_down_worker(values: dict, user=None):
 			"Authorization": f"token {settings.api_key}:{settings.api_secret}",
 			"Content-Type": "application/json"
 		}
-
+		return
 		# ✅ Register the local server instance
-		register_local_instance(base_url, headers, settings.location_warehouse)
+		#register_local_instance(base_url, headers, settings.location_warehouse)
 
 		# ✅ Define the doctypes to sync down
 		doctypes = {
@@ -56,6 +56,7 @@ def sync_down_worker(values: dict, user=None):
 				continue
 			sync_down_records(doctype, base_url, headers)
 
+		frappe.publish_realtime("sync_complete", {"doctype": "All"}, user=frappe.session.user)
 		frappe.msgprint(_("✔️ Sync down complete."))
 
 	except Exception:
@@ -92,15 +93,24 @@ def register_local_instance(base_url: str, headers: dict, location: str):
 
 def sync_down_records(doctype: str, base_url: str, headers: dict):
 	try:
-		url = f"{base_url}/api/resource/{doctype}?fields=['*']&limit_page_length=1000000"
-		response = requests.get(url, headers=headers)
+		params = {
+			"fields": json.dumps(["*"]),  # This becomes '["*"]'
+			"limit_page_length": 1000000
+		}
 
-		if response.status_code != 200:
-			msg = response.json().get("message", response.text)
-			frappe.throw(_("❌ Failed to fetch {0}: {1}").format(doctype, msg))
-
+		url = f"{base_url}/api/resource/{doctype}"
+		response = requests.get(url, headers=headers, params=params)		
+		# url = f"{base_url}/api/resource/{doctype}?fields=['*']&limit_page_length=1000000"
+		# response = requests.get(url, headers=headers)
+		#frappe.log_error(f"❌ Sync Down Failed - {doctype}",f"--------------------======={response}======{response.text}-----------")
+		if response and getattr(response, "status_code", None) != 200:
+			try:
+				msg = response.json().get("message", response.text)
+			except Exception:
+				msg = response.text  # fallback if response is not JSON
+				frappe.throw(_("❌ Failed to fetch {0}: {1}").format(doctype, msg))
+		
 		data = response.json().get("data", [])
-
 
 		process_sync(doctype, data)
 
@@ -109,6 +119,7 @@ def sync_down_records(doctype: str, base_url: str, headers: dict):
 		frappe.log_error(traceback.format_exc(), f"❌ Sync Down Failed - {doctype}")
 		
 def process_sync(doctype, data):
+
 	settings = frappe.get_doc("Leaf Procurement Settings")
 	headers = {
 		"Authorization": f"token {settings.get('api_key')}:{settings.get('api_secret')}",
