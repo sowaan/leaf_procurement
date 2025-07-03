@@ -28,7 +28,7 @@ def execute(filters=None):
 		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
 	
 	if filters.get("warehouse"):
-		warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
+		warehouse_filter = f" AND supp.custom_location_warehouse = %(warehouse)s"
 	
 	if not inc_rej_bales and grade_type:
 		grade_filter = f" AND LOWER(pii.{grade_type}) != 'reject'"
@@ -57,7 +57,7 @@ def execute(filters=None):
 
 		SELECT
 			pii.{grade_type} AS grade,
-			pii.warehouse AS warehouse,
+			supp.custom_location_warehouse  AS warehouse,
 
 			-- Today
 			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name END) AS bales_today,
@@ -91,6 +91,7 @@ def execute(filters=None):
 
 		FROM `tabPurchase Invoice` pi
 		JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+		LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
 		WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
 		{supplier_filter}
 		{warehouse_filter}

@@ -10,6 +10,7 @@ def execute(filters=None):
 
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
+	due_date = filters.get("due_date")
 
 	conditions = get_conditions(filters)
 
@@ -36,7 +37,8 @@ def execute(filters=None):
 		"from_date": from_date,
 		"to_date": to_date,
 		"depot": filters.get("depot"),
-		"grower": filters.get("grower")
+		"grower": filters.get("grower"),
+		"due_date": filters.get("due_date")
 	}, as_dict=True)
 
 	columns = [
@@ -47,7 +49,7 @@ def execute(filters=None):
 		{"label": "CNIC", "fieldname": "cnic", "fieldtype": "Data", "width": 130},
 		{"label": "Depot", "fieldname": "depot", "fieldtype": "Link", "options": "Warehouse", "width": 120},
 		{"label": "Purchase Date", "fieldname": "purchase_date", "fieldtype": "Date", "width": 120},
-		{"label": "Due Date", "fieldname": "purchase_date", "fieldtype": "Date", "width": 120},
+		{"label": "Due Date", "fieldname": "payment_date", "fieldtype": "Date", "width": 120},
 		{"label": "Transport Charges", "fieldname": "tc_amount", "fieldtype": "Float", "width": 100},
 		{"label": "Amount", "fieldname": "tob_amount", "fieldtype": "Currency", "width": 120},
 		{"label": "Paid On/By", "fieldname": None, "fieldtype": "Data", "width": 120},
@@ -63,4 +65,6 @@ def get_conditions(filters):
 		conditions.append("supp.custom_location_warehouse = %(depot)s")
 	if filters.get("grower"):
 		conditions.append("pi.supplier = %(grower)s")
+	if filters.get("due_date"):
+		conditions.append("pi.due_date = %(due_date)s")
 	return " AND ".join(conditions) if conditions else "1=1"
