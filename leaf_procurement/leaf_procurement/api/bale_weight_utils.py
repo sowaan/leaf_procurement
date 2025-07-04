@@ -83,7 +83,8 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     registration_code = doc.bale_registration_code
     transport_charges_rate = warehouse_info.custom_transport_charges
     transport_charges_item = doc.transport_charges_item
-    rejected_invoice_item = doc.rejected_invoice_item
+    settings = frappe.get_single('Leaf Procurement Settings')
+    rejected_invoice_item = settings.rejected_invoice_item
     # rejected_grade = doc.rejected_item_grade
     # rejected_sub_grade = doc.rejected_item_sub_grade
 
