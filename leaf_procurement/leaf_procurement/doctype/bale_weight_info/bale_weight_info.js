@@ -1104,7 +1104,11 @@ function open_grade_selector_popup(barcode, callback) {
             method: 'frappe.client.get_list',
             args: {
                 doctype: 'Item Grade',
-                fields: ['name', 'rejected_grade']
+                fields: ['name', 'rejected_grade'],
+                filters: {
+                    disabled: 0
+                },
+                limit_page_length: 0  // Fetch all matching records
             },
             callback: function (r) {
                 if (r.message) {
@@ -1214,8 +1218,12 @@ function open_grade_selector_popup(barcode, callback) {
             method: 'frappe.client.get_list',
             args: {
                 doctype: 'Reclassification Grade',
-                fields: ['name']
-            },
+                fields: ['name'],
+                filters: {
+                    disabled: 0
+                },
+                limit_page_length: 0  // Fetch all matching records
+            },            
             callback: function (r) {
                 if (r.message) {
 
