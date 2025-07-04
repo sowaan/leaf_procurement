@@ -19,6 +19,7 @@
   "stationery",
   "barcode_length",
   "company",
+  "rejected_invoice_item",
   "disconnect_scale",
   "column_break_ceqy",
   "item",
@@ -171,7 +172,8 @@
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
-   "options": "Purchase Invoice"
+   "options": "Purchase Invoice",
+   "read_only": 1
   },
   {
    "fieldname": "rejected_item_grade",
@@ -283,7 +285,10 @@
    "fieldname": "bale_weight",
    "fieldtype": "Float",
    "label": "Bale Weight",
-   "precision": "2"
+   "non_negative": 1,
+   "precision": "2",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "default": "0",
@@ -361,12 +366,20 @@
    "in_list_view": 1,
    "label": "Status",
    "read_only": 1
+  },
+  {
+   "fieldname": "rejected_invoice_item",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Rejected Invoice Item",
+   "options": "Item",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-04 00:04:25.627895",
+ "modified": "2025-07-04 17:49:41.798382",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

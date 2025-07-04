@@ -776,6 +776,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     // frm.set_value('rejected_item_grade', r.message.rejected_item_grade);
                     // frm.set_value('rejected_item_sub_grade', r.message.rejected_item_sub_grade);
                     frm.set_value('transport_charges_item', r.message.transport_charges_item);
+                    frm.set_value('rejected_invoice_item', r.message.rejected_invoice_item);
                     frm.set_value('barcode_length', r.message.barcode_length);
                 }
             }
@@ -1103,7 +1104,11 @@ function open_grade_selector_popup(barcode, callback) {
             method: 'frappe.client.get_list',
             args: {
                 doctype: 'Item Grade',
-                fields: ['name', 'rejected_grade']
+                fields: ['name', 'rejected_grade'],
+                filters: {
+                    disabled: 0
+                },
+                limit_page_length: 0  // Fetch all matching records
             },
             callback: function (r) {
                 if (r.message) {
@@ -1213,8 +1218,12 @@ function open_grade_selector_popup(barcode, callback) {
             method: 'frappe.client.get_list',
             args: {
                 doctype: 'Reclassification Grade',
-                fields: ['name']
-            },
+                fields: ['name'],
+                filters: {
+                    disabled: 0
+                },
+                limit_page_length: 0  // Fetch all matching records
+            },            
             callback: function (r) {
                 if (r.message) {
 

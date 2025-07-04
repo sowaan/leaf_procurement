@@ -21,6 +21,7 @@ def check_gtn_and_grade_difference(date):
         filters={
             "posting_date": date,
             "custom_stationary": ["in", [None, ""]],
+            "total": [">", 0],
             "docstatus": 1  # Optional: Only consider submitted invoices
         },
         fields=["name"]
@@ -32,7 +33,7 @@ def check_gtn_and_grade_difference(date):
             _("Please print vouchers for the following Purchase Invoices to continue:\n{0}")
             .format(", ".join(invoice_names))
         )   
-        
+
     # ----------- 2. Check GTN and Grade Mismatches ----------
     mismatches = []
 

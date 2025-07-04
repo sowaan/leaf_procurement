@@ -155,45 +155,58 @@ function validate_bale_count(frm){
     
 }
 function update_audit_display(frm) {
-    let total_bales = frm.doc.detail_table.length;
     let total_weight = 0;
-    let total_items = 0;
 
-    frm.doc.gtn_detail.forEach(row => {
-        if (row.bales_scanned) {
-            total_items += flt(row.bales_scanned);
-        }
-    });
-
+    // Calculate total_weight from detail_table
     frm.doc.detail_table.forEach(row => {
         if (row.weight) {
             total_weight += flt(row.weight);
         }
     });
 
-    if (total_bales>0 && total_items <= total_bales)
-    {
-        frappe.show_alert({
-            message: __('This was the last bale as the given number of bales in Truck/GTN details is complete.'),
-            indicator: "Orange"
-        });
-        updateWeightOnForm = false;
-    }
-    else
-    {
-        updateWeightOnForm = true;        
-    }
+    // Delay until child table is ready
+    setTimeout(() => {
+        let total_bales = frm.doc.detail_table.length;
+        let total_items = 0;
 
-    let html = `
+        if (
+            frm.fields_dict.gtn_detail.grid &&
+            frm.fields_dict.gtn_detail.grid.grid_rows
+        ) {
+            frm.fields_dict.gtn_detail.grid.grid_rows.forEach(row => {
+                const data = row.doc;
+                if (data.bales_scanned) {
+                    console.log(data.truck_number, data.bales_scanned);
+                    total_items += flt(data.bales_scanned);
+                }
+            });
+        }
+
+        // ✅ Dependent logic moved inside
+        if (total_bales > 0 && total_items <= total_bales) {
+            // frappe.show_alert({
+            //     message: __('This was the last bale as the given number of bales in Truck/GTN details is complete.'),
+            //     indicator: "Orange"
+            // });
+            updateWeightOnForm = false;
+        } else {
+            updateWeightOnForm = true;
+        }
+
+        // Show the audit summary
+        let html = `
             <div style="padding: 10px; font-size: 14px;">
                 <b>Total Scanned Bales:</b> ${total_bales} <br>
                 <b>Total Weight:</b> ${total_weight} kg
             </div>
         `;
 
-    frm.set_df_property("audit_display", "options", html);
-    frm.refresh_field("audit_display");
+        frm.set_df_property("audit_display", "options", html);
+        frm.refresh_field("audit_display");
+
+    }, 300); // Wait for grid to initialize
 }
+
 async function validate_bale_data(frm) {
 
     if(frm.doc.gtn_detail.length==0)
@@ -393,6 +406,7 @@ frappe.ui.form.on("Bale Audit", {
 
 
         if (!frm.is_new()) return;
+
         frm.set_query('location_warehouse', function () {
             return {
                 filters: {
@@ -401,6 +415,7 @@ frappe.ui.form.on("Bale Audit", {
             };
         });
         updateWeightOnForm = true;
+        
         const settings = await new Promise((resolve, reject) => {
             frappe.call({
                 method: 'frappe.client.get',
@@ -424,7 +439,7 @@ frappe.ui.form.on("Bale Audit", {
 
     },
     after_save: async function (frm) {
-        // update_audit_display(frm);
+         update_audit_display(frm);
 
 
     },
@@ -553,41 +568,41 @@ frappe.ui.form.on("Bale Audit", {
 
 
 
-        const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
-        $footer.prepend(connectBtn);
+        // const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
+        // $footer.prepend(connectBtn);
 
-        connectBtn.on('click', async () => {
-            try {
-                scalePort = await navigator.serial.requestPort();
-                await scalePort.open({ baudRate: 9600 });
+        // connectBtn.on('click', async () => {
+        //     try {
+        //         scalePort = await navigator.serial.requestPort();
+        //         await scalePort.open({ baudRate: 9600 });
 
-                const textDecoder = new TextDecoderStream();
-                const readableStreamClosed = scalePort.readable.pipeTo(textDecoder.writable);
-                const reader = textDecoder.readable.getReader();
+        //         const textDecoder = new TextDecoderStream();
+        //         const readableStreamClosed = scalePort.readable.pipeTo(textDecoder.writable);
+        //         const reader = textDecoder.readable.getReader();
 
-                scaleReader = reader;
-                window._readableStreamClosed = readableStreamClosed;
-                stopReading = false;
+        //         scaleReader = reader;
+        //         window._readableStreamClosed = readableStreamClosed;
+        //         stopReading = false;
 
-                while (!stopReading) {
-                    const { value, done } = await reader.read();
-                    if (done || stopReading) break;
-                    if (value) {
-                        const weight = parseFloat(value.trim());
-                        if (!isNaN(weight)) {
-                            lastWeight = weight.toFixed(2);
-                            updateMainWeightDisplay(lastWeight);
-                        }
-                    }
-                }
+        //         while (!stopReading) {
+        //             const { value, done } = await reader.read();
+        //             if (done || stopReading) break;
+        //             if (value) {
+        //                 const weight = parseFloat(value.trim());
+        //                 if (!isNaN(weight)) {
+        //                     lastWeight = weight.toFixed(2);
+        //                     updateMainWeightDisplay(lastWeight);
+        //                 }
+        //             }
+        //         }
 
 
-            } catch (err) {
-                console.error('Serial error:', err);
-                frappe.msgprint(__('Failed to connect or read from scale.'));
-                await cleanupSerial();
-            }
-        });
+        //     } catch (err) {
+        //         console.error('Serial error:', err);
+        //         frappe.msgprint(__('Failed to connect or read from scale.'));
+        //         await cleanupSerial();
+        //     }
+        // });
     }
 
 });

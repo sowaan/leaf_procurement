@@ -39,6 +39,11 @@ def create_company(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Company {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Company",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Company - {item['name']}\n{e}")
 		else:
 			skipped.append(item['name'])
 
@@ -84,6 +89,11 @@ def create_fiscal_year(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Fiscal Year {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Fiscal Year",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Fiscal Year - {item['name']}\n{e}")
 		else:
 			skipped.append(item['name'])
 
@@ -174,6 +184,11 @@ def create_warehouse(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Warehouse {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Warehouse",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Warehouse - {item['name']}\n{e}")
 		else:
 			skipped.append(item['name'])
 	message = f"Warehouse records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
@@ -216,6 +231,11 @@ def create_quota_setup(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Quota Setup {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Quota Setup",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Quota Setup - {item['name']}\n{e}")
 		else:
 			skipped.append(item['name'])
 	message = f"Quota Setup records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
@@ -256,6 +276,11 @@ def create_item(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Item {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Item",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Item - {item['name']}\n{e}")
 		else:
 			skipped.append(item['name'])
 	message = f"Item records updated.<br>Created: {len(created)}<br>Skipped: {len(skipped)}"
@@ -295,6 +320,11 @@ def create_item_grade(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Item Grade {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Item Grade",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Item Grade - {item['name']}\n{e}")
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Item Grade Sync Errors")
@@ -328,6 +358,11 @@ def create_item_sub_grade(settings, headers, data):
 			except Exception as e:
 				frappe.db.rollback()
 				errors.append(f"Error creating Item Sub Grade {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Item Sub Grade",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Item Sub Grade - {item['name']}\n{e}")
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Item Sub Grade Sync Errors")
@@ -367,7 +402,13 @@ def create_item_grade_price(settings, headers, data):
 				else:
 					frappe.throw(_("Failed to fetch data for Item Grade Price: {0}").format(response.text))
 			except Exception as e:
-				frappe.log_error(frappe.get_traceback(), "Sync Item Grade Price Error")
+				frappe.db.rollback()
+				errors.append(f"Error creating Item Grade Price {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Item Grade Price",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Item Grade Price - {item['name']}\n{e}")
 		else:
 			# Update existing record's rate and uom
 			try:
@@ -377,11 +418,13 @@ def create_item_grade_price(settings, headers, data):
 				doc.save(ignore_permissions=True)
 				frappe.db.commit()
 			except Exception as e:
-				frappe.log_error(frappe.get_traceback(), "Update Item Grade Price Error")
-
-			except Exception as e:
 				frappe.db.rollback()
-				errors.append(f"Error creating Item Grade Price {item['name']}: {e}")
+				errors.append(f"Error updating Item Grade Price {item['name']}: {e}")
+				log_sync_result(parent_name="Leaf Sync Down", 
+					doctype="Item Grade Price",
+					docname=item['name'], 
+					status="Failed", 
+					message=f"[Sync Failed] Item Grade Price - {item['name']}\n{e}")
 
 	if errors:
 		frappe.log_error("\n".join(errors), "Item Grade Price Sync Errors")

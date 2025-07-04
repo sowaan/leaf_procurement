@@ -69,14 +69,14 @@
    "fieldname": "reclassification_grade",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Reclassification Grade",
+   "label": "Reclassified Grade",
    "options": "Reclassification Grade"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-19 09:07:41.678430",
+ "modified": "2025-07-04 12:43:37.288021",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",

@@ -16,6 +16,7 @@
   "rejected_item_grade",
   "rejected_location_warehouse",
   "transport_charges_item",
+  "rejected_invoice_item",
   "barcode_length",
   "backup_tab",
   "take_backup",
@@ -140,13 +141,19 @@
   {
    "fieldname": "column_break_eknz",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rejected_invoice_item",
+   "fieldtype": "Link",
+   "label": "Rejected Invoice Item",
+   "options": "Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-02 21:15:49.416836",
+ "modified": "2025-07-04 11:41:08.569730",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",
