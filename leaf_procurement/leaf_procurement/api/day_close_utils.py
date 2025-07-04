@@ -16,53 +16,24 @@ def get_user_audit_day_status():
 @frappe.whitelist()
 def check_gtn_and_grade_difference(date):
    # ----------- 1. Check for Unprinted Vouchers (bale_status != 'Completed') ----------
-    # incomplete_vouchers = frappe.get_all(
-    #     "Purchase Invoice",
-    #     filters={
-    #         "posting_date": date,
-    #         "custom_stationary": ["in", [None, ""]],
-    #         "docstatus": 1  # Optional: Only consider submitted invoices
-    #     },
-    #     fields=["name"]
-    # )
-
-    # if incomplete_vouchers:
-    #     invoice_names = [d["name"] for d in incomplete_vouchers]
-    #     frappe.throw(
-    #         _("Please print vouchers for the following Purchase Invoices to continue:\n{0}")
-    #         .format(", ".join(invoice_names))
-    #     )   
-    rejected_item_code = frappe.get_single("Leaf Procurement Settings").rejected_invoice_item
-
-    # Get all submitted Purchase Invoices with empty custom_stationary
-    potential_incomplete = frappe.get_all(
+    incomplete_vouchers = frappe.get_all(
         "Purchase Invoice",
         filters={
             "posting_date": date,
             "custom_stationary": ["in", [None, ""]],
-            "docstatus": 1
+            "total": [">", 0],
+            "docstatus": 1  # Optional: Only consider submitted invoices
         },
         fields=["name"]
     )
 
-    # Filter out rejected invoices
-    incomplete_vouchers = []
-
-    for inv in potential_incomplete:
-        has_rejected_item = frappe.db.exists("Purchase Invoice Item", {
-            "parent": inv.name,
-            "item_code": rejected_item_code
-        })
-
-        if not has_rejected_item:
-            incomplete_vouchers.append(inv.name)
-
-    # Throw if any incomplete vouchers remain
     if incomplete_vouchers:
+        invoice_names = [d["name"] for d in incomplete_vouchers]
         frappe.throw(
             _("Please print vouchers for the following Purchase Invoices to continue:\n{0}")
-            .format(", ".join(incomplete_vouchers))
-        )        
+            .format(", ".join(invoice_names))
+        )   
+
     # ----------- 2. Check GTN and Grade Mismatches ----------
     mismatches = []
 

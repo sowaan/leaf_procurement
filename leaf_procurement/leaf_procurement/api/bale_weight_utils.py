@@ -174,7 +174,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
 
     #if all the items are rejected, create a dummy rejected invoice item
     if invoice_weight <=0:
-        frappe.log_error(f"Generate Invoice Error", f"value of rejected item is: {rejected_invoice_item}")
+        
         print (f"rejected invoice item is: , {rejected_invoice_item}")
         if rejected_invoice_item:
             invoice.append("items", {
