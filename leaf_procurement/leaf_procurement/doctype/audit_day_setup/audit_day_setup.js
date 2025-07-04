@@ -146,7 +146,7 @@ frappe.ui.form.on("Audit Day Setup", {
                 }
             });
 
-                    frm.set_query('location_warehouse', function() {
+            frm.set_query('location_warehouse', function() {
             return {
                 filters: {
                     custom_is_depot: 0

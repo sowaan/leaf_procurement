@@ -83,7 +83,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     registration_code = doc.bale_registration_code
     transport_charges_rate = warehouse_info.custom_transport_charges
     transport_charges_item = doc.transport_charges_item
-
+    rejected_invoice_item = doc.rejected_invoice_item
     # rejected_grade = doc.rejected_item_grade
     # rejected_sub_grade = doc.rejected_item_sub_grade
 
@@ -171,18 +171,29 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             })   
             invoice_weight += detail.weight             
 
+    #if all the items are rejected, create a dummy rejected invoice item
     if invoice_weight <=0:
-        frappe.throw(
-            _("Unable to create invoice. The total weight of items is {0}. Probabily, all items are rejected or with 0 weight.")
-            .format(invoice_weight)
-        )        
-    if transport_charges_item:
+        if rejected_invoice_item:
+            invoice.append("items", {
+                "item_code": rejected_invoice_item,
+                "qty": 1,
+                "rate": 0,
+                "uom": "Kg",
+                
+
+            })            
+        else:
+            frappe.throw(
+                _("No Rejected Invoice Item Fonr. Unable to create invoice. The total weight of items is {0}. Probabily, all items are rejected or with 0 weight.")
+                .format(invoice_weight)
+            )        
+    if transport_charges_item and invoice_weight>0:
         invoice.append("items", {
             "item_code": transport_charges_item,
             "qty": invoice_weight,
             "rate": transport_charges_rate,
             "uom": "Kg",
-            "description": f"Transport Charges for Invoice Weight {invoice_weight} Kg",
+            
 
         })
 

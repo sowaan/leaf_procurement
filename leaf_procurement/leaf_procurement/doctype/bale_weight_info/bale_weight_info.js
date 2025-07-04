@@ -776,6 +776,7 @@ frappe.ui.form.on("Bale Weight Info", {
                     // frm.set_value('rejected_item_grade', r.message.rejected_item_grade);
                     // frm.set_value('rejected_item_sub_grade', r.message.rejected_item_sub_grade);
                     frm.set_value('transport_charges_item', r.message.transport_charges_item);
+                    frm.set_value('rejected_invoice_item', r.message.rejected_invoice_item);
                     frm.set_value('barcode_length', r.message.barcode_length);
                 }
             }
