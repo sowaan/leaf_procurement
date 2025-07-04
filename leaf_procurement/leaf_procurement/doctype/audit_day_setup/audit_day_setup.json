@@ -15,7 +15,9 @@
   "location_warehouse",
   "location_short_code",
   "status",
-  "day_close_time"
+  "day_close_time",
+  "section_break_mdxt",
+  "day_close_reason"
  ],
  "fields": [
   {
@@ -89,11 +91,20 @@
    "fieldtype": "Read Only",
    "hidden": 1,
    "label": "Location Short Code"
+  },
+  {
+   "fieldname": "section_break_mdxt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "day_close_reason",
+   "fieldtype": "Small Text",
+   "label": "Reason"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-03 18:00:15.379951",
+ "modified": "2025-07-04 17:33:58.320794",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Audit Day Setup",
