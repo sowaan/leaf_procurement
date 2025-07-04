@@ -19,6 +19,7 @@
   "stationery",
   "barcode_length",
   "company",
+  "rejected_invoice_item",
   "disconnect_scale",
   "column_break_ceqy",
   "item",
@@ -34,7 +35,6 @@
   "payment_mode",
   "purchase_receipt_created",
   "transport_charges_item",
-  "rejected_invoice_item",
   "status",
   "section_break_zoru",
   "scan_barcode",
@@ -370,13 +370,14 @@
    "fieldname": "rejected_invoice_item",
    "fieldtype": "Link",
    "label": "Rejected Invoice Item",
-   "options": "Item"
+   "options": "Item",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-04 12:58:48.233729",
+ "modified": "2025-07-04 14:27:37.114098",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
