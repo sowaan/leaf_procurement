@@ -553,41 +553,41 @@ frappe.ui.form.on("Bale Audit", {
 
 
 
-        const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
-        $footer.prepend(connectBtn);
+        // const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
+        // $footer.prepend(connectBtn);
 
-        connectBtn.on('click', async () => {
-            try {
-                scalePort = await navigator.serial.requestPort();
-                await scalePort.open({ baudRate: 9600 });
+        // connectBtn.on('click', async () => {
+        //     try {
+        //         scalePort = await navigator.serial.requestPort();
+        //         await scalePort.open({ baudRate: 9600 });
 
-                const textDecoder = new TextDecoderStream();
-                const readableStreamClosed = scalePort.readable.pipeTo(textDecoder.writable);
-                const reader = textDecoder.readable.getReader();
+        //         const textDecoder = new TextDecoderStream();
+        //         const readableStreamClosed = scalePort.readable.pipeTo(textDecoder.writable);
+        //         const reader = textDecoder.readable.getReader();
 
-                scaleReader = reader;
-                window._readableStreamClosed = readableStreamClosed;
-                stopReading = false;
+        //         scaleReader = reader;
+        //         window._readableStreamClosed = readableStreamClosed;
+        //         stopReading = false;
 
-                while (!stopReading) {
-                    const { value, done } = await reader.read();
-                    if (done || stopReading) break;
-                    if (value) {
-                        const weight = parseFloat(value.trim());
-                        if (!isNaN(weight)) {
-                            lastWeight = weight.toFixed(2);
-                            updateMainWeightDisplay(lastWeight);
-                        }
-                    }
-                }
+        //         while (!stopReading) {
+        //             const { value, done } = await reader.read();
+        //             if (done || stopReading) break;
+        //             if (value) {
+        //                 const weight = parseFloat(value.trim());
+        //                 if (!isNaN(weight)) {
+        //                     lastWeight = weight.toFixed(2);
+        //                     updateMainWeightDisplay(lastWeight);
+        //                 }
+        //             }
+        //         }
 
 
-            } catch (err) {
-                console.error('Serial error:', err);
-                frappe.msgprint(__('Failed to connect or read from scale.'));
-                await cleanupSerial();
-            }
-        });
+        //     } catch (err) {
+        //         console.error('Serial error:', err);
+        //         frappe.msgprint(__('Failed to connect or read from scale.'));
+        //         await cleanupSerial();
+        //     }
+        // });
     }
 
 });
