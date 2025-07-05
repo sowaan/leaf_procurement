@@ -744,7 +744,7 @@ def supplier(supplier):
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.custom_is_sync = 1
-	doc.custom_sync_id = supplier.custom_sync_id
+	doc.custom_sync_id = sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -758,7 +758,7 @@ def should_create_supplier(supplier) -> bool:
         "Supplier",
         filters={
             "custom_nic_number": supplier.get("custom_nic_number"),
-            "location_warehouse": supplier.get("custom_location_warehouse")
+            "custom_location_warehouse": supplier.get("custom_location_warehouse")
         },
         fields=["name", "custom_sync_id"]
     )
@@ -791,7 +791,7 @@ def driver(driver):
 	doc = frappe.new_doc("Driver")
 	doc.update(driver)
 	doc.custom_is_sync = 1
-	doc.custom_sync_id = driver.custom_sync_id
+	doc.custom_sync_id = sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -818,7 +818,7 @@ def bale_audit(bale_audit):
 	doc = frappe.new_doc("Bale Audit")
 	doc.update(bale_audit)
 	doc.custom_is_sync = 1
-	doc.custom_sync_id = bale_audit.custom_sync_id
+	doc.custom_sync_id = sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -845,7 +845,7 @@ def bale_registration(bale_registration):
 	doc = frappe.new_doc("Bale Registration")
 	doc.update(bale_registration)
 	doc.custom_is_sync = 1
-	doc.custom_sync_id = bale_registration.custom_sync_id
+	doc.custom_sync_id = sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -895,7 +895,7 @@ def purchase_invoice(purchase_invoice):
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
 	invoice.custom_is_sync = 1
-	invoice.custom_sync_id = invoice.custom_sync_id
+	invoice.custom_sync_id = sync_id
 	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
@@ -961,7 +961,7 @@ def goods_transfer_note(goods_transfer_note):
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
 	doc.custom_is_sync = 1
-	doc.custom_sync_id = goods_transfer_note.custom_sync_id
+	doc.custom_sync_id = sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -988,7 +988,7 @@ def goods_receiving_note(goods_receiving_note):
 	doc = frappe.new_doc("Goods Receiving Note")
 	doc.update(goods_receiving_note)
 	doc.custom_is_sync = 1
-	doc.custom_sync_id = goods_receiving_note.custom_sync_id
+	doc.custom_sync_id = sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
