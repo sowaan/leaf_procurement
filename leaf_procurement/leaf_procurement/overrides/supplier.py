@@ -1,3 +1,4 @@
+import uuid
 import frappe # type: ignore
 from frappe import _ # type: ignore
 from erpnext.buying.doctype.supplier.supplier import Supplier # type: ignore
@@ -5,6 +6,10 @@ from frappe.model.naming import make_autoname
 
 
 class CustomSupplier(Supplier):
+    def before_insert(doc):
+        if not doc.custom_sync_id:
+            doc.custom_sync_id = str(uuid.uuid4())    
+           
     def autoname(self):
         if getattr(self, "skip_autoname", False):
             print("Skipping autoname for CustomSupplier", self.servername)

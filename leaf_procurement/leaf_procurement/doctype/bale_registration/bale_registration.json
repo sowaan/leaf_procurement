@@ -7,6 +7,7 @@
   "section_break_aieh",
   "location_warehouse",
   "supplier_grower",
+  "custom_sync_id",
   "custom_is_sync",
   "column_break_gtqf",
   "location_short_code",
@@ -216,12 +217,19 @@
    "options": "In Registration\nIn Buying\nIn Weighment\nIn Print Voucher\nCompleted",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "custom_sync_id",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Sync Unique ID",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-23 12:43:40.772545",
+ "modified": "2025-07-05 12:53:29.131556",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

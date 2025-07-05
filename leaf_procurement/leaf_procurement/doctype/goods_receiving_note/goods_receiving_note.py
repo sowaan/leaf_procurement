@@ -1,12 +1,17 @@
 # Copyright (c) 2025, Sowaan and contributors
 # For license information, please see license.txt
 
+import uuid
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 from frappe.model.naming import make_autoname # type: ignore
 
 
 class GoodsReceivingNote(Document):
+    def before_insert(doc):
+        if not doc.custom_sync_id:
+            doc.custom_sync_id = str(uuid.uuid4())    
+            
     def autoname(self):
         """Override the default method to set a custom name."""
         if getattr(self, "skip_autoname", False):

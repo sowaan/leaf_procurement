@@ -4,7 +4,7 @@ import frappe # type: ignore
 from frappe import _ # type: ignore
 import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
-
+import re
 
 def create_company(settings, headers, data):
 	"""Update company records with the received data."""
@@ -631,6 +631,91 @@ def update_bale_status(purchase_invoice):
     return {'status': 'no_bale_found'}
 
 
+def resolve_conflicting_name(doctype: str, name: str, sync_id: str = None) -> str:
+	"""
+	Resolves name conflicts for synced documents:
+	- If sync_id is missing → assume old version, return original name.
+	- If name + sync_id exists → return name (already synced).
+	- If name exists but with different sync_id → add suffix like `-01`, `-02`, etc.
+	"""
+
+	if not name:
+		raise Exception("'name' is required")
+
+	if not sync_id:
+		# 🕰️ Old version (no sync_id logic), just use original name
+		return name
+
+	# Get all records with matching base name or suffixed variants
+	existing = frappe.get_all(
+		doctype,
+		filters={"name": ["like", f"{name}%"]},
+		fields=["name", "custom_sync_id"]
+	)
+
+	# Check if the same sync_id already exists
+	for doc in existing:
+		if doc.name == name and doc.custom_sync_id == sync_id:
+			return name  # ✅ Already synced
+
+	# Add suffix if name is already used with different sync_id
+	suffixes = [
+		int(re.search(rf"{re.escape(name)}-(\d+)$", doc.name).group(1))
+		for doc in existing
+		if re.match(rf"{re.escape(name)}-\d+$", doc.name)
+	]
+
+	if frappe.db.exists(doctype, name):
+		next_suffix = max(suffixes or [0]) + 1
+		name = f"{name}-{str(next_suffix).zfill(2)}"
+
+	return name
+
+#IF WE WANT TO GENERATE NEXT ID ON THE SERVER
+def resolve_conflicting_name_nextid(doctype: str, name: str, sync_id: str = None) -> str:
+    """
+    Resolves name conflicts by:
+    - Returning original name if sync_id is already present.
+    - If name exists but with a different sync_id, generates the next sequential name based on the numeric suffix.
+    """
+
+    if not name:
+        raise Exception("'name' is required")
+
+    if not sync_id:
+        return name  # Old system, allow as-is
+
+    # Check if same name+sync_id already exists
+    if frappe.db.exists(doctype, {"name": name, "custom_sync_id": sync_id}):
+        return name
+
+    # Extract prefix (everything before the last numeric suffix)
+    match = re.match(r"^(.*?)(\d+)$", name)
+    if not match:
+        raise Exception("Invalid name format. Expected numeric suffix.")
+    
+    prefix = match.group(1)
+    
+    # Fetch all names with same prefix
+    existing = frappe.get_all(
+        doctype,
+        filters={"name": ["like", f"{prefix}%"]},
+        fields=["name", "custom_sync_id"]
+    )
+
+    # Get numeric suffixes
+    suffixes = []
+    for doc in existing:
+        m = re.match(rf"^{re.escape(prefix)}(\d+)$", doc.name)
+        if m:
+            suffixes.append(int(m.group(1)))
+
+    # Generate next number
+    next_number = max(suffixes or [0]) + 1
+    new_name = f"{prefix}{str(next_number).zfill(len(match.group(2)))}"  # Maintain original digit width
+
+    return new_name
+
 @frappe.whitelist()
 def supplier(supplier):
 	if isinstance(supplier, str):
@@ -640,13 +725,19 @@ def supplier(supplier):
 	if not supplier_name:
 		frappe.throw(_("Supplier name is required."))
 
-	# ✅ Check if the supplier already exists
-	if frappe.db.exists("Supplier", supplier_name):
-		return supplier_name
+	sync_id = supplier.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Supplier", supplier_name, sync_id)
+
+	# If it's already synced, return
+	if final_name == supplier_name and frappe.db.exists("Supplier", final_name):
+		frappe.log_error(f"❌ Skipped to sync Supplier: {supplier_name}", f"Name {final_name} already exists.")
+		return final_name	
 
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.custom_is_sync = 1
+	doc.custom_sync_id = supplier.custom_sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -661,12 +752,20 @@ def driver(driver):
 	if not driver_name:
 		frappe.throw(_("Driver name is required."))
 
-	if frappe.db.exists("Driver", driver_name):
-		return driver_name
+	sync_id = driver.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Driver", driver_name, sync_id)
+
+	# If it's already synced, return
+	if final_name == driver_name and frappe.db.exists("Driver", final_name):
+		frappe.log_error(f"❌ Skipped to sync Driver: {driver_name}", f"Name {final_name} already exists.")
+		return final_name	
+
 
 	doc = frappe.new_doc("Driver")
 	doc.update(driver)
 	doc.custom_is_sync = 1
+	doc.custom_sync_id = driver.custom_sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -677,9 +776,23 @@ def bale_audit(bale_audit):
 	if isinstance(bale_audit, str):
 		bale_audit = json.loads(bale_audit)
 
+	audit_name = bale_audit.get("name")
+	if not audit_name:
+		frappe.throw(_("Audit name is required."))
+
+	sync_id = bale_audit.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Bale Audit", audit_name, sync_id)
+
+	# If it's already synced, return
+	if final_name == audit_name and frappe.db.exists("Bale Audit", final_name):
+		frappe.log_error(f"❌ Skipped to sync Bale Audit: {audit_name}", f"Name {final_name} already exists.")
+		return final_name	
+	
 	doc = frappe.new_doc("Bale Audit")
 	doc.update(bale_audit)
 	doc.custom_is_sync = 1
+	doc.custom_sync_id = bale_audit.custom_sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -694,12 +807,19 @@ def bale_registration(bale_registration):
 	if not bale_name:
 		frappe.throw(_("Bale Registration name is required."))
 	
-	if frappe.db.exists("Bale Registration", bale_name):
-		return bale_name
+	sync_id = bale_registration.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Bale Registration", bale_name, sync_id)
 
+	# If it's already synced, return
+	if final_name == bale_name and frappe.db.exists("Bale Registration", final_name):
+		frappe.log_error(f"❌ Skipped to sync Bale Registration: {bale_name}", f"Name {final_name} already exists.")
+		return final_name	
+	
 	doc = frappe.new_doc("Bale Registration")
 	doc.update(bale_registration)
 	doc.custom_is_sync = 1
+	doc.custom_sync_id = bale_registration.custom_sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -714,8 +834,14 @@ def purchase_invoice(purchase_invoice):
 	if not purchase_name:
 		frappe.throw(_("Purchase Invoice name is required."))
 
-	if frappe.db.exists("Purchase Invoice", purchase_name):
-		return purchase_name
+	sync_id = purchase_invoice.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Purchase Invoice", purchase_name, sync_id)
+
+	# If it's already synced, return
+	if final_name == purchase_name and frappe.db.exists("Purchase Invoice", final_name):
+		frappe.log_error(f"❌ Skipped to syncPurchase Invoice: {purchase_name}", f"Name {final_name} already exists.")
+		return final_name
 
 	invoice = frappe.new_doc("Purchase Invoice")
 	invoice.name = purchase_name
@@ -743,6 +869,7 @@ def purchase_invoice(purchase_invoice):
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
 	invoice.custom_is_sync = 1
+	invoice.custom_sync_id = invoice.custom_sync_id
 	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
@@ -788,8 +915,14 @@ def goods_transfer_note(goods_transfer_note):
 	if not goods_transfer_note_name:
 		frappe.throw(_("Goods Transfer Note name is required."))
 
-	if frappe.db.exists("Goods Transfer Note", goods_transfer_note_name):
-		return goods_transfer_note_name
+	sync_id = goods_transfer_note.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Goods Transfer Note", goods_transfer_note_name, sync_id)
+
+	# If it's already synced, return
+	if final_name == goods_transfer_note_name and frappe.db.exists("Goods Transfer Note", final_name):
+		frappe.log_error(f"❌ Skipped to sync Goods Transfer Note: {goods_transfer_note_name}", f"Name {final_name} already exists.")
+		return final_name	
 
 	# Dear Saad, here we need to check if the batch doesn't exist
 	# we need to create the batch as if the invoice is not synced
@@ -802,6 +935,7 @@ def goods_transfer_note(goods_transfer_note):
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
 	doc.custom_is_sync = 1
+	doc.custom_sync_id = goods_transfer_note.custom_sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -816,12 +950,19 @@ def goods_receiving_note(goods_receiving_note):
 	if not goods_receiving_note_name:
 		frappe.throw(_("Goods Receiving Note name is required."))
 	
-	if frappe.db.exists("Goods Receiving Note", goods_receiving_note_name):
-		return goods_receiving_note_name
+	sync_id = goods_receiving_note.get("custom_sync_id") 
+	
+	final_name = resolve_conflicting_name("Goods Receiving Note", goods_receiving_note_name, sync_id)
+
+	# If it's already synced, return
+	if final_name == goods_receiving_note_name and frappe.db.exists("Goods Receiving Note", final_name):
+		frappe.log_error(f"❌ Skipped to sync Goods Receiving Note: {goods_receiving_note_name}", f"Name {final_name} already exists.")
+		return final_name	
 
 	doc = frappe.new_doc("Goods Receiving Note")
 	doc.update(goods_receiving_note)
 	doc.custom_is_sync = 1
+	doc.custom_sync_id = goods_receiving_note.custom_sync_id
 	doc.insert()
 	frappe.db.commit()
 	return doc.name

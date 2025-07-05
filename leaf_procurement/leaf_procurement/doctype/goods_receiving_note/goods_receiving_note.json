@@ -11,6 +11,7 @@
   "gtn_number",
   "date",
   "custom_is_sync",
+  "custom_sync_id",
   "column_break_ydmp",
   "location_warehouse",
   "dispatch_location",
@@ -164,12 +165,19 @@
    "hidden": 1,
    "label": "Naming Series",
    "options": ".{location_shortcode}.-GRN-.YYYY.-.######"
+  },
+  {
+   "fieldname": "custom_sync_id",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Sync Unique ID",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-24 10:53:21.218188",
+ "modified": "2025-07-05 12:54:22.241993",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
@@ -189,6 +197,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
