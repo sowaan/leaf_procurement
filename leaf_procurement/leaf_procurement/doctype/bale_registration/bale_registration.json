@@ -13,6 +13,7 @@
   "location_short_code",
   "grower_name",
   "company",
+  "grower_sync_id",
   "check_validations",
   "column_break_mesd",
   "item",
@@ -224,12 +225,18 @@
    "hidden": 1,
    "label": "Sync Unique ID",
    "read_only": 1
+  },
+  {
+   "fetch_from": "supplier_grower.custom_sync_id",
+   "fieldname": "grower_sync_id",
+   "fieldtype": "Read Only",
+   "label": "Grower Sync ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-05 12:53:29.131556",
+ "modified": "2025-07-05 19:59:02.146610",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

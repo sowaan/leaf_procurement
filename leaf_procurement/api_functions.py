@@ -734,6 +734,10 @@ def supplier(supplier):
 		frappe.log_error(f"❌ Skipped to sync Supplier: {supplier_name}", f"Name {final_name} already exists.")
 		return final_name	
 
+	if not should_create_supplier(supplier):
+		frappe.log_error(f"❌ Skipped to sync Supplier: {supplier_name}", f"CNIC {supplier.get("custom_nic_number")} already exists against {supplier.get("custom_location_warehouse")}.")
+		return
+
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.custom_is_sync = 1
@@ -742,6 +746,25 @@ def supplier(supplier):
 	frappe.db.commit()
 	return doc.name
 
+def should_create_supplier(supplier) -> bool:
+    """
+    Check if a supplier with same NIC and warehouse exists.
+    If exists, return False to skip creation.
+    """
+    existing = frappe.get_all(
+        "Supplier",
+        filters={
+            "custom_nic_number": supplier.get("custom_nic_number"),
+            "location_warehouse": supplier.get("custom_location_warehouse")
+        },
+        fields=["name", "custom_sync_id"]
+    )
+
+    if existing:
+        # Optional: update the existing supplier with latest info
+        return False
+
+    return True
 
 @frappe.whitelist()
 def driver(driver):
