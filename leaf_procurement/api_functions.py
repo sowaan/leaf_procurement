@@ -739,7 +739,7 @@ def supplier(supplier):
 			f"❌ Skipped to sync Supplier: {supplier_name}",
 			f"CNIC {supplier.get('custom_nic_number')} already exists against {supplier.get('custom_location_warehouse')}."
 		)
-		return
+		return supplier_name
 
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)

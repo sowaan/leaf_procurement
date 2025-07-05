@@ -119,9 +119,15 @@ def prepare_sync_payload(doc):
 
 def log_sync_error(doctype: str, name: str, response):
     try:
-        message = response.json().get("message", safe_decode(response.content))
+        error_message = response.json().get("message", safe_decode(response.content))
     except Exception:
-        message = response.text
+        error_message = response.text
+
+    message = (
+        f"Status Code: {response.status_code}\n"
+        f"Response Text: {response.text}\n"
+        f"Parsed Error Message: {error_message}"
+    )
     frappe.log_error(f"❌ Failed to sync {doctype}: {name}", message)
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
@@ -157,7 +163,7 @@ def create_supplier_contact(url: str, headers: dict, supplier_doc: dict):
         frappe.db.set_value("Contact", contact.name, "custom_is_sync", 1)
     else:
         try:
-            error_msg = response.json().get("message", response.text)
+            error_msg = "Status Code: " + response.json().get("status_code", response.status_code)  + "Message: " +response.json().get("message", response.text)
         except Exception:
             error_msg = response.text
         frappe.log_error(f"❌ Failed to sync Supplier Contact {contact.name}", error_msg)
