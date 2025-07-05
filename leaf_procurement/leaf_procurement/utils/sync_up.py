@@ -79,8 +79,6 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
 
         if response.status_code in [200, 201]:
-            log_sync_error(doctype, name, response)
-            return
             frappe.db.set_value(doctype, name, "custom_is_sync", 1)
             frappe.db.commit()
             log_sync_result(parent_name="Leaf Sync Up", 
