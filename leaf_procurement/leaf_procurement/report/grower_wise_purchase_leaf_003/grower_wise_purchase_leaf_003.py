@@ -22,7 +22,7 @@ SELECT
 			supp.custom_location_warehouse AS depot,
 			pi.posting_date AS purchase_date,
 			pi.due_date AS payment_date,
-			pi.total_qty AS quantity,
+			sum(pii.qty) AS quantity,
 			pi.grand_total AS amount,
 			pi.status AS status,
 			COUNT(DISTINCT pii.name) AS no_of_bale
