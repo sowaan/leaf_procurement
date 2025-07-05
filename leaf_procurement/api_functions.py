@@ -735,7 +735,10 @@ def supplier(supplier):
 		return final_name	
 
 	if not should_create_supplier(supplier):
-		frappe.log_error(f"❌ Skipped to sync Supplier: {supplier_name}", f"CNIC {supplier.get("custom_nic_number")} already exists against {supplier.get("custom_location_warehouse")}.")
+		frappe.log_error(
+			f"❌ Skipped to sync Supplier: {supplier_name}",
+			f"CNIC {supplier.get('custom_nic_number')} already exists against {supplier.get('custom_location_warehouse')}."
+		)
 		return
 
 	doc = frappe.new_doc("Supplier")
