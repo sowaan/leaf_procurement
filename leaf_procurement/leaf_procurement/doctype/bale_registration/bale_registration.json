@@ -230,13 +230,14 @@
    "fetch_from": "supplier_grower.custom_sync_id",
    "fieldname": "grower_sync_id",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Grower Sync ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-05 19:59:02.146610",
+ "modified": "2025-07-05 20:36:41.791352",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",

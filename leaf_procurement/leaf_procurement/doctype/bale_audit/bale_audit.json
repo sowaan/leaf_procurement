@@ -11,7 +11,7 @@
   "date",
   "location_shortcode",
   "custom_is_sync",
-  "data_nwov",
+  "custom_sync_id",
   "column_break_rnfv",
   "location_warehouse",
   "barcode_length",
@@ -202,14 +202,15 @@
    "label": "Check Validations"
   },
   {
-   "fieldname": "data_nwov",
-   "fieldtype": "Data"
+   "fieldname": "custom_sync_id",
+   "fieldtype": "Data",
+   "label": "Sync Id"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-05 12:57:23.025287",
+ "modified": "2025-07-05 21:09:25.366004",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
