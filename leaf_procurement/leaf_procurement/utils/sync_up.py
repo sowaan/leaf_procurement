@@ -119,19 +119,8 @@ def log_sync_error(doctype: str, name: str, response):
     try:
         error_message = response.json().get("message", safe_decode(response.content))
     except Exception:
-<<<<<<< HEAD
-        error_message = response.text
-
-    message = (
-        f"Status Code: {response.status_code}\n"
-        f"Response Text: {response.text}\n"
-        f"Parsed Error Message: {error_message}"
-    )
-    frappe.log_error(f"❌ Failed to sync {doctype}: {name}", message)
-=======
         message = response.text
     frappe.log_error(message, f"❌ Failed to sync {doctype}: {name}")
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
     log = {
