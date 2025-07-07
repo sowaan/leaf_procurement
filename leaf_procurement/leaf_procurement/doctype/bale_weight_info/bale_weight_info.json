@@ -283,17 +283,9 @@
    "fieldname": "bale_weight",
    "fieldtype": "Float",
    "label": "Bale Weight",
-<<<<<<< HEAD
-<<<<<<< HEAD
    "non_negative": 1,
    "precision": "2",
    "reqd": 1
-=======
-   "precision": "2"
->>>>>>> parent of a6cf4b9 (Merge branch 'main' of https://github.com/sowaan/leaf_procurement into main)
-=======
-   "precision": "2"
->>>>>>> parent of a6cf4b9 (Merge branch 'main' of https://github.com/sowaan/leaf_procurement into main)
   },
   {
    "default": "0",
@@ -376,19 +368,6 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
- "modified": "2025-07-05 20:49:05.727458",
-=======
- "modified": "2025-07-04 17:49:41.798382",
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
-=======
- "modified": "2025-07-04 00:04:25.627895",
->>>>>>> parent of a6cf4b9 (Merge branch 'main' of https://github.com/sowaan/leaf_procurement into main)
-=======
- "modified": "2025-07-04 00:04:25.627895",
->>>>>>> parent of a6cf4b9 (Merge branch 'main' of https://github.com/sowaan/leaf_procurement into main)
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

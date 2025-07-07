@@ -187,7 +187,7 @@ function update_audit_display(frm) {
     let html = `
             <div style="padding: 10px; font-size: 14px;">
                 <b>Total Scanned Bales:</b> ${total_bales} <br>
-                <b>Total Weight:</b> ${total_weight} kg
+                <b>Total Weight:</b> ${total_weight.toFixed(2)} kg  
             </div>
         `;
 
@@ -261,6 +261,15 @@ async function validate_bale_data(frm) {
         return { valid: false };
     }
 
+    const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
+    if (existing) {
+        frappe.show_alert({
+            message: `Bale with barcode ${values.bale_barcode} already exists in the table.`,
+            indicator: 'red'
+        });
+        frappe.validated = false;
+        return;
+    }
     if (weight <= 0) {
         frappe.show_alert({ message: __("Please enter weight information to continue."), indicator: "red" });
         return { valid: false };
@@ -435,15 +444,7 @@ frappe.ui.form.on("Bale Audit", {
             return;
         }
         const values = frm.doc
-        const existing = values.detail_table.find(row => row.bale_barcode === values.bale_barcode);
-        if (existing) {
-            frappe.show_alert({
-                message: `Bale with barcode ${values.bale_barcode} already exists in the table.`,
-                indicator: 'red'
-            });
-            frappe.validated = false;
-            return;
-        }
+
 
         const weight = values.captured_weight;
         if (!values.bale_barcode) return;
