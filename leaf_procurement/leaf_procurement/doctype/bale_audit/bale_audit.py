@@ -1,7 +1,6 @@
 # Copyright (c) 2025, Sowaan and contributors
 # For license information, please see license.txt
 
-import uuid
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 from datetime import datetime
@@ -9,10 +8,6 @@ from frappe import _, ValidationError 	#type: ignore
 from frappe.model.naming import make_autoname # type: ignore
 
 class BaleAudit(Document):
-    def before_insert(doc):
-        if not doc.custom_sync_id:
-            doc.custom_sync_id = str(uuid.uuid4())    
-            
     def autoname(self):
         if getattr(self, "skip_autoname", False):
             self.name = self.servername

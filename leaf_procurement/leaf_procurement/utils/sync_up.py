@@ -42,7 +42,7 @@ def sync_records(doctype: str, base_url: str, endpoint: str, headers: dict):
         for name in unsynced:
             sync_single_record(doctype, name, f"{base_url}/api/method/leaf_procurement.api_functions.{endpoint}", headers)
     except Exception:
-        frappe.log_error( f"[Sync Error] {doctype}", traceback.format_exc())
+        frappe.log_error(traceback.format_exc(), f"[Sync Error] {doctype}")
 
 
 def sync_single_record(doctype: str, name: str, url: str, headers: dict):
@@ -98,7 +98,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             log_sync_error(doctype, name, response)
 
     except Exception:
-        frappe.log_error(f"Error Sync Single {doctype} - {name}",traceback.format_exc(), f"[Sync Failed] {doctype} - {name}")
+        frappe.log_error(traceback.format_exc(), f"[Sync Failed] {doctype} - {name}")
         log_sync_result(parent_name="Leaf Sync Up", 
                         doctype=doctype,
                         docname=name, 
@@ -119,6 +119,7 @@ def log_sync_error(doctype: str, name: str, response):
     try:
         error_message = response.json().get("message", safe_decode(response.content))
     except Exception:
+<<<<<<< HEAD
         error_message = response.text
 
     message = (
@@ -127,6 +128,10 @@ def log_sync_error(doctype: str, name: str, response):
         f"Parsed Error Message: {error_message}"
     )
     frappe.log_error(f"❌ Failed to sync {doctype}: {name}", message)
+=======
+        message = response.text
+    frappe.log_error(message, f"❌ Failed to sync {doctype}: {name}")
+>>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
     log = {
@@ -192,4 +197,4 @@ def ensure_batch_exists(url: str, headers: dict, batch_no: str, item_code: str, 
             frappe.log_error(f"❌ Failed to sync Batch {batch.name}", error_msg)
 
     except Exception:
-        frappe.log_error(f"❌ Exception syncing Batch {batch_no} for Item {item_code} Qty {qty}", traceback.format_exc())
+        frappe.log_error(traceback.format_exc(), f"❌ Exception syncing Batch {batch_no} for Item {item_code} Qty {qty}")

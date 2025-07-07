@@ -11,7 +11,10 @@
   "date",
   "location_shortcode",
   "custom_is_sync",
+<<<<<<< HEAD
   "custom_sync_id",
+=======
+>>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
   "column_break_rnfv",
   "location_warehouse",
   "barcode_length",
@@ -200,17 +203,24 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Check Validations"
+<<<<<<< HEAD
   },
   {
    "fieldname": "custom_sync_id",
    "fieldtype": "Data",
    "label": "Sync Id"
+=======
+>>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2025-07-05 21:09:25.366004",
+=======
+ "modified": "2025-07-03 23:09:51.281764",
+>>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",

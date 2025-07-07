@@ -378,7 +378,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2025-07-05 20:49:05.727458",
+=======
+ "modified": "2025-07-04 17:49:41.798382",
+>>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

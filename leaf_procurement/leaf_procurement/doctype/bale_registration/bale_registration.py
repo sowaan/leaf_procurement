@@ -1,7 +1,6 @@
 # Copyright (c) 2025, Sowaan and contributors
 # For license information, please see license.txt
 
-import uuid
 import frappe 	#type: ignore
 from frappe.model.document import Document 	#type: ignore
 from frappe import _, ValidationError 	#type: ignore
@@ -13,10 +12,6 @@ from datetime import datetime
 
 
 class BaleRegistration(Document):
-    def before_insert(doc):
-        if not doc.custom_sync_id:
-            doc.custom_sync_id = str(uuid.uuid4())    
-            
     def autoname(self):
         if getattr(self, "skip_autoname", False):
             self.name = self.servername
@@ -103,4 +98,3 @@ def validate(doc, method=None):
         frappe.throw(_(
             "Total weight for supplier '{0}' exceeds allowed quota.\nQuota: {1}, Current Total: {2}"
         ).format(doc.supplier_grower, quota, total_weight))
-

@@ -1,14 +1,9 @@
-import uuid
 import frappe
 from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
 from frappe.model.naming import make_autoname
 
 
 class CustomPurchaseInvoice(PurchaseInvoice):
-    def before_insert(doc):
-        if not doc.custom_sync_id:
-            doc.custom_sync_id = str(uuid.uuid4())    
-           
     def autoname(self):
         """Override the default method to set a custom name."""
         if getattr(self, "skip_autoname", False):

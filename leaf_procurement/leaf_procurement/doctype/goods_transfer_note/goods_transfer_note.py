@@ -1,7 +1,6 @@
 # Copyright (c) 2025, Sowaan and contributors
 # For license information, please see license.txt
 
-import uuid
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 from frappe import _ # type: ignore
@@ -30,10 +29,7 @@ class GoodsTransferNote(Document):
 
         self.name = make_autoname(prefix + ".######")
 
-    def before_insert(doc):
-        if not doc.custom_sync_id:
-            doc.custom_sync_id = str(uuid.uuid4())    
-            
+
     def before_save(self):
         self.gtn_barcode = f"{self.name}"       
 

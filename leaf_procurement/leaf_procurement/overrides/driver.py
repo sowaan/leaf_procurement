@@ -1,14 +1,9 @@
-import uuid
 import frappe
 from erpnext.setup.doctype.driver.driver import Driver  # type: ignore
 from frappe.model.naming import make_autoname
 
 
 class CustomDriver(Driver):
-    def before_insert(doc):
-        if not doc.custom_sync_id:
-            doc.custom_sync_id = str(uuid.uuid4())    
-       
     def autoname(self):
         if getattr(self, "skip_autoname", False):
             print("Skipping autoname for CustomDriver", self.servername)
