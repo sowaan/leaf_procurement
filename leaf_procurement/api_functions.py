@@ -627,6 +627,7 @@ def should_create_supplier(supplier) -> bool:
             "custom_location_warehouse": supplier.get("custom_location_warehouse")
         },
         fields=["name", "custom_sync_id"]
+        fields=["name"]
     )
 
     if existing:

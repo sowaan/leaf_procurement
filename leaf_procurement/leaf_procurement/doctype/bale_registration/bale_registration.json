@@ -217,33 +217,12 @@
    "options": "In Registration\nIn Buying\nIn Weighment\nIn Print Voucher\nCompleted",
    "read_only": 1,
    "reqd": 1
-<<<<<<< HEAD
-  },
-  {
-   "fieldname": "custom_sync_id",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Sync Unique ID",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "supplier_grower.custom_sync_id",
-   "fieldname": "grower_sync_id",
-   "fieldtype": "Read Only",
-   "hidden": 1,
-   "label": "Grower Sync ID"
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2025-07-05 20:36:41.791352",
-=======
  "modified": "2025-06-23 12:43:40.772545",
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Registration",
