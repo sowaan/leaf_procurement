@@ -19,7 +19,6 @@
   "stationery",
   "barcode_length",
   "company",
-  "rejected_invoice_item",
   "disconnect_scale",
   "column_break_ceqy",
   "item",
@@ -172,8 +171,7 @@
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
-   "options": "Purchase Invoice",
-   "read_only": 1
+   "options": "Purchase Invoice"
   },
   {
    "fieldname": "rejected_item_grade",
@@ -285,9 +283,13 @@
    "fieldname": "bale_weight",
    "fieldtype": "Float",
    "label": "Bale Weight",
+<<<<<<< HEAD
    "non_negative": 1,
    "precision": "2",
    "reqd": 1
+=======
+   "precision": "2"
+>>>>>>> parent of a6cf4b9 (Merge branch 'main' of https://github.com/sowaan/leaf_procurement into main)
   },
   {
    "default": "0",
@@ -365,24 +367,20 @@
    "in_list_view": 1,
    "label": "Status",
    "read_only": 1
-  },
-  {
-   "fieldname": "rejected_invoice_item",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Rejected Invoice Item",
-   "options": "Item",
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
 <<<<<<< HEAD
+<<<<<<< HEAD
  "modified": "2025-07-05 20:49:05.727458",
 =======
  "modified": "2025-07-04 17:49:41.798382",
 >>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
+=======
+ "modified": "2025-07-04 00:04:25.627895",
+>>>>>>> parent of a6cf4b9 (Merge branch 'main' of https://github.com/sowaan/leaf_procurement into main)
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

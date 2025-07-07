@@ -63,6 +63,7 @@ frappe.ui.form.on("Leaf Sync Down", {
 function trigger_sync(frm) {
     const payload = {};
     let anyChecked = false;
+    
     sync_down_checkboxes.forEach(field => {
         if (frm.doc[field]) {
             payload[field] = 1;

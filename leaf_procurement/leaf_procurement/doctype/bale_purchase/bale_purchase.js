@@ -48,11 +48,7 @@ function open_grade_selector_popup(callback) {
             method: 'frappe.client.get_list',
             args: {
                 doctype: 'Item Grade',
-                fields: ['name', 'rejected_grade'],
-                filters: {
-                    disabled: 0
-                },
-                limit_page_length: 0  // Fetch all matching records
+                fields: ['name', 'rejected_grade']
             },
             callback: function (r) {
                 if (r.message) {

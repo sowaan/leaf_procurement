@@ -2,24 +2,7 @@ import frappe # type: ignore
 
 _cached_prefix = None  # Global cache
 
-@frappe.whitelist()
-def get_service_items_query(doctype, txt, searchfield, start, page_len, filters):
-    return frappe.db.get_all(
-        "Item",
-        filters={"item_group": "Services"},
-        fields=["name", "item_name"],
-        limit_page_length=page_len,
-        start=start
-    )
-@frappe.whitelist()
-def get_Product_items_query(doctype, txt, searchfield, start, page_len, filters):
-    return frappe.db.get_all(
-        "Item",
-        filters={"item_group": "Products"},
-        fields=["name", "item_name"],
-        limit_page_length=page_len,
-        start=start
-    )
+
 def get_cached_prefix():
     global _cached_prefix
     if _cached_prefix is None:

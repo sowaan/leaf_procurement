@@ -5,30 +5,6 @@ frappe.ui.form.on("Leaf Procurement Settings", {
 	refresh(frm) {
 
 	},
-    setup: function(frm) {
-        // Only runs once on form load
-        frm.set_query('rejected_invoice_item', () => {
-            return {
-                filters: {
-                    item_group: 'Services'
-                }
-            };
-        });
-        frm.set_query('transport_charges_item', () => {
-            return {
-                filters: {
-                    item_group: 'Services'
-                }
-            };
-        });
-        frm.set_query('default_item', () => {
-            return {
-                filters: {
-                    item_group: 'Products'
-                }
-            };
-        });        
-    },
     company_name(frm) {
         frm.set_value('location_warehouse', null);  // Clear field
         frm.set_query('location_warehouse', () => {
