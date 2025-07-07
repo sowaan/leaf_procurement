@@ -611,10 +611,6 @@ def supplier(supplier):
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.custom_is_sync = 1
-<<<<<<< HEAD
-	doc.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -654,10 +650,6 @@ def driver(driver):
 	doc = frappe.new_doc("Driver")
 	doc.update(driver)
 	doc.custom_is_sync = 1
-<<<<<<< HEAD
-	doc.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -671,10 +663,6 @@ def bale_audit(bale_audit):
 	doc = frappe.new_doc("Bale Audit")
 	doc.update(bale_audit)
 	doc.custom_is_sync = 1
-<<<<<<< HEAD
-	doc.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -695,10 +683,6 @@ def bale_registration(bale_registration):
 	doc = frappe.new_doc("Bale Registration")
 	doc.update(bale_registration)
 	doc.custom_is_sync = 1
-<<<<<<< HEAD
-	doc.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -742,10 +726,6 @@ def purchase_invoice(purchase_invoice):
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
 	invoice.custom_is_sync = 1
-<<<<<<< HEAD
-	invoice.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
@@ -805,10 +785,6 @@ def goods_transfer_note(goods_transfer_note):
 	doc = frappe.new_doc("Goods Transfer Note")
 	doc.update(goods_transfer_note)
 	doc.custom_is_sync = 1
-<<<<<<< HEAD
-	doc.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
@@ -829,10 +805,6 @@ def goods_receiving_note(goods_receiving_note):
 	doc = frappe.new_doc("Goods Receiving Note")
 	doc.update(goods_receiving_note)
 	doc.custom_is_sync = 1
-<<<<<<< HEAD
-	doc.custom_sync_id = sync_id
-=======
->>>>>>> parent of 3733066 (Sync Up Existing ID Issue)
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
