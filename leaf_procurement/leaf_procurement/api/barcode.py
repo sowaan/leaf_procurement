@@ -1,4 +1,38 @@
 import frappe 	#type: ignore
+import barcode
+from barcode.writer import ImageWriter # type: ignore
+import io
+import base64
+import barcode
+
+# apps/leaf_procurement/leaf_procurement/api/barcode.py
+
+@frappe.whitelist()
+def ensure_barcode_base64(doctype, name):
+	doc = frappe.get_doc(doctype, name)
+	if not doc.custom_barcode:
+		doc.custom_barcode = doc.name
+
+	if not doc.custom_barcode_base64:
+		doc.custom_barcode_base64 = get_base64_barcode(doc.custom_barcode)
+		doc.save(ignore_permissions=True)
+
+	return {
+		"custom_barcode_base64": doc.custom_barcode_base64
+	}
+
+@frappe.whitelist()
+def get_base64_barcode(value, barcode_type="code128"):
+	try:
+		barcode_cls = barcode.get_barcode_class(barcode_type)
+		buffer = io.BytesIO()
+		instance = barcode_cls(value, writer=ImageWriter())
+		instance.write(buffer, options={"write_text": False})
+		base64_img = base64.b64encode(buffer.getvalue()).decode("utf-8")
+		return f"data:image/png;base64,{base64_img}"
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), "Barcode Generation Error")
+		return ""
 
 @frappe.whitelist()
 def get_bale_record_status(bale_barcode):

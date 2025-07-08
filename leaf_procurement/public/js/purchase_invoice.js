@@ -42,11 +42,11 @@ function check_day_open_status(frm) {
 
 
 frappe.ui.form.on('Purchase Invoice', {
-    refresh(frm) {
+    async refresh(frm) {
         // hide print button
         // frm.page.set_inner_btn_group_as_primary('print');
         // $('[data-original-title="Print"]').hide();
-        
+
         // Mubashir: Hide Print button from the menu
         const printButton = document.querySelector('button[data-original-title="Print"]');
         if (printButton) {
@@ -60,9 +60,23 @@ frappe.ui.form.on('Purchase Invoice', {
 
 
         if (frm.doc.docstatus === 1) {
+            if (!frm.doc.custom_barcode_base64) {
+                await frappe.call({
+                    method: 'leaf_procurement.leaf_procurement.api.barcode.ensure_barcode_base64',
+                    args: {
+                        doctype: frm.doc.doctype,
+                        name: frm.doc.name
+                    },
+                    callback: (r) => {
+                        if (r.message && r.message.custom_barcode_base64) {
+                            frm.set_value('custom_barcode_base64', r.message.custom_barcode_base64);
+                        }
+                    }
+                });
+            }
             if (!frm.doc.custom_stationary) {
                 frm.add_custom_button(__('Print Voucher'), async () => {
-                                        const day_is_open = await check_day_open_status(frm);
+                    const day_is_open = await check_day_open_status(frm);
 
                     if (!day_is_open) {
                         frappe.msgprint(__('Voucher cannot be printed for a closed day.'));

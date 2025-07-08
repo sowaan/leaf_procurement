@@ -240,7 +240,8 @@ doc_events = {
     },
     "Purchase Invoice": {
         "on_cancel":     "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.on_cancel_purchase_invoice",
-        "before_cancel": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.before_cancel_purchase_invoice"
+        "before_cancel": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.before_cancel_purchase_invoice",
+        "before_submit": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.before_submit_purchase_invoice"
     }
 }
 

@@ -1,6 +1,7 @@
 
 import frappe # type: ignore
 import urllib.parse
+from leaf_procurement.leaf_procurement.api.barcode import get_base64_barcode
 
 def on_cancel_purchase_invoice(doc, method):
     weight_docs = frappe.get_all("Bale Weight Info", 
@@ -20,8 +21,6 @@ def before_cancel_purchase_invoice(doc, method):
 
     # Check if any of the bale barcodes were already transferred
     check_bale_dependencies(bale_barcodes)
-
-
 
 def check_bale_dependencies(bale_barcodes):
     if not bale_barcodes:
@@ -45,3 +44,9 @@ def check_bale_dependencies(bale_barcodes):
 
         message = "<br>".join(message_lines)
         frappe.throw(message)
+
+def before_submit_purchase_invoice(self, doctype):
+    if not self.custom_barcode:
+        self.custom_barcode = self.name  # just before submit
+    self.custom_barcode_base64 = get_base64_barcode(self.custom_barcode)
+ 

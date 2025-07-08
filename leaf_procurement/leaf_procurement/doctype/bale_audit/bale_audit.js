@@ -453,6 +453,10 @@ frappe.ui.form.on("Bale Audit", {
         const result = await validate_bale_data(frm);
         if (!result.valid) {
             frappe.validated = false;
+            setTimeout(() => {
+                frm.set_value('bale_barcode', '');
+            }, 3000);
+
             return;
         }
         const values = frm.doc
@@ -495,6 +499,9 @@ frappe.ui.form.on("Bale Audit", {
         const result = await validate_bale_data(frm);
 
         if (!result.valid) {
+            setTimeout(() => {
+                frm.set_value('bale_barcode', '');
+            }, 3000);
             return;
         }
     

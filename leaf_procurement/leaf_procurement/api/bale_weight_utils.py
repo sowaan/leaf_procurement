@@ -103,8 +103,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
     invoice.set_warehouse = warehouse
     invoice.rejected_warehouse = rejected_warehouse
     invoice.due_date = day_setup.due_date
-    #invoice.custom_stationary = "REJECTED"
-
+    
     item_weight = 0
     # item_grade = rejected_grade
     # item_sub_grade = rejected_sub_grade

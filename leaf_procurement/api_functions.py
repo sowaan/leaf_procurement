@@ -726,6 +726,9 @@ def purchase_invoice(purchase_invoice):
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
 	invoice.apply_tds = purchase_invoice.get("apply_tds", 0)
 	invoice.custom_is_sync = 1
+	invoice.custom_stationary = purchase_invoice.get("custom_stationary")
+	invoice.custom_barcode = purchase_invoice.get("custom_barcode")
+	#invoice.custom_barcode_base64 = purchase_invoice.get("custom_barcode_base64")
 	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
