@@ -39,7 +39,6 @@ def execute(filters=None):
 			)
 		SELECT 
 			supp.custom_location_warehouse AS depot_name,
-
 			-- Today
 			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name ELSE NULL END) AS bales_today,
 			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_today,
@@ -96,16 +95,7 @@ def execute(filters=None):
 	]
 
 
-	total_bales_today = 0
-	total_kgs_today = 0
-	total_amount_today = 0
-	total_avg_today = 0
-	total_percentage_today = 0
-	total_bales_todate = 0
-	total_kgs_todate = 0
-	total_amount_todate = 0
-	total_avg_todate = 0
-	total_percentage_todate = 0
+	total_bales_today = total_kgs_today = total_amount_today = total_avg_today = total_percentage_today = total_bales_todate = total_kgs_todate = total_amount_todate = total_avg_todate = total_percentage_todate = 0
 
 
 
@@ -116,7 +106,6 @@ def execute(filters=None):
 		total_bales_todate += row.bales_todate or 0
 		total_kgs_todate += row.kgs_todate or 0
 		total_amount_todate += row.amount_todate or 0
-	
 		total_percentage_today += row.percentage_today or 0
 		total_percentage_todate += row.percentage_todate or 0
 
@@ -141,7 +130,7 @@ def execute(filters=None):
 	# })
 
 	data.append({
-		"depot_name": "<b>Total</b>",
+		"depot_name": "Total",
 		"bales_today": total_bales_today,
 		"kgs_today": total_kgs_today,
 		"amount_today": total_amount_today,

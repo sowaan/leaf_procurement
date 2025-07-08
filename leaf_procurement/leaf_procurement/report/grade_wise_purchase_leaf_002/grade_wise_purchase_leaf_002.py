@@ -10,12 +10,12 @@ def execute(filters=None):
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
 	inc_rej_bales = filters.get("include_rejected_bales", False)
+	
+
 	grade_type = ""
-
-
-	supplier_filter = ""
-	warehouse_filter = ""
-	grade_filter = ""
+	supplier_filter = "AND 1=1"
+	warehouse_filter = " AND 1=1"
+	grade_filter = " AND 1=1"
 
 	grade_type_raw = filters.get("grade_type") or ""
 	if grade_type_raw == "Reclassification Grade":
@@ -26,12 +26,18 @@ def execute(filters=None):
 	if filters.get("supplier"):
 		supplier_list = ", ".join([f"'{s}'" for s in filters.get("supplier")])
 		supplier_filter = f" AND pi.supplier IN ({supplier_list})"
+
 	
+	# if filters.get("warehouse"):
+	# 	warehouse_filter = f" AND supp.custom_location_warehouse = %(warehouse)s"
+
 	if filters.get("warehouse"):
-		warehouse_filter = f" AND supp.custom_location_warehouse = %(warehouse)s"
+		warehouse_filter = f" AND pii.warehouse = %(warehouse)s"
+	
 	
 	if not inc_rej_bales and grade_type:
 		grade_filter = f" AND LOWER(pii.{grade_type}) != 'reject'"
+	
 	
 	
 
@@ -57,8 +63,8 @@ def execute(filters=None):
 
 		SELECT
 			pii.{grade_type} AS grade,
-			supp.custom_location_warehouse  AS warehouse,
-
+			pii.warehouse AS warehouse,
+			
 			-- Today
 			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name END) AS bales_today,
 			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) END) AS kgs_today,
@@ -96,12 +102,12 @@ def execute(filters=None):
 		{supplier_filter}
 		{warehouse_filter}
 		{grade_filter}
-		GROUP BY pii.{grade_type}
-		ORDER BY pii.{grade_type}
+		GROUP BY pii.{grade_type}, pii.warehouse
+		ORDER BY pii.{grade_type}, pii.warehouse
 	""", {
 		"from_date": from_date,
 		"to_date": to_date,
-		"warehouse": filters.get("warehouse", "")
+		"warehouse": filters.get("warehouse"),
 	}, as_dict=True)
 
 

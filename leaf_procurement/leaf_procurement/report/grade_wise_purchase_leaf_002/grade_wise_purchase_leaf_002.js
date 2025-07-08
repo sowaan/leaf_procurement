@@ -45,7 +45,6 @@ frappe.query_reports["Grade Wise Purchase Leaf 002"] = {
             fieldtype: "Check"
         }
     ],
-
     after_datatable_render(datatable) {
         const rows = datatable.bodyScrollable.querySelectorAll(".dt-row");
 
@@ -59,4 +58,5 @@ frappe.query_reports["Grade Wise Purchase Leaf 002"] = {
             });
         }
     }
+    
 };
