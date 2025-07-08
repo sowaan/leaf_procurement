@@ -191,12 +191,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
                 _("No Rejected Invoice Item Found. Unable to create invoice. The total weight of items is {0}. Probabily, all items are rejected or with 0 weight.")
                 .format(invoice_weight)
             )        
-    if transport_charges_item and invoice_weight>0:        
-        frappe.throw(
-            _("Unable to create invoice. The total weight of items is {0}. Probabily, all items are rejected or with 0 weight.")
-            .format(invoice_weight)
-        )        
-    if transport_charges_item:
+    if transport_charges_item and invoice_weight<=0:        
         invoice.append("items", {
             "item_code": transport_charges_item,
             "qty": invoice_weight,
