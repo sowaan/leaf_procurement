@@ -32,7 +32,7 @@ def sync_down_worker(values: dict, user=None):
 			"Authorization": f"token {settings.api_key}:{settings.api_secret}",
 			"Content-Type": "application/json"
 		}
-		return
+
 		# ✅ Register the local server instance
 		#register_local_instance(base_url, headers, settings.location_warehouse)
 
