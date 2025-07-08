@@ -32,7 +32,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Bale Barcode",
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "weight",

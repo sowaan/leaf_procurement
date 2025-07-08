@@ -27,6 +27,7 @@
   "rejected_item_grade",
   "connect_scale",
   "rejected_item_location",
+  "rejected_invoice_item",
   "column_break_uado",
   "remaining_bales",
   "scale_status",
@@ -363,11 +364,20 @@
    "in_list_view": 1,
    "label": "Status",
    "read_only": 1
+  },
+  {
+   "fieldname": "rejected_invoice_item",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Rejected Invoice Item",
+   "options": "Item",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
+ "modified": "2025-07-08 12:10:45.612698",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",

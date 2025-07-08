@@ -7,7 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "item_grade_name",
-  "rejected_grade"
+  "rejected_grade",
+  "disabled"
  ],
  "fields": [
   {
@@ -23,12 +24,18 @@
    "fieldname": "rejected_grade",
    "fieldtype": "Check",
    "label": "Rejected Grade"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-27 13:05:02.809707",
+ "modified": "2025-07-08 12:18:32.642948",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Item Grade",

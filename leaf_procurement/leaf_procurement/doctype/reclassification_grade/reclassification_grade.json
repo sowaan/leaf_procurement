@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "reclassification_grade_name"
+  "reclassification_grade_name",
+  "disabled"
  ],
  "fields": [
   {
@@ -16,12 +17,18 @@
    "label": "Reclassification Grade Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-09 13:12:38.969422",
+ "modified": "2025-07-08 12:19:35.908153",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Reclassification Grade",

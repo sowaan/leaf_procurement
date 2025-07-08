@@ -15,6 +15,30 @@ frappe.ui.form.on("Leaf Procurement Settings", {
             };
         });
     },
+    setup: function(frm) {
+        // Only runs once on form load
+        frm.set_query('rejected_invoice_item', () => {
+            return {
+                filters: {
+                    item_group: 'Services'
+                }
+            };
+        });
+        frm.set_query('transport_charges_item', () => {
+            return {
+                filters: {
+                    item_group: 'Services'
+                }
+            };
+        });
+        frm.set_query('default_item', () => {
+            return {
+                filters: {
+                    item_group: 'Products'
+                }
+            };
+        });        
+    },    
     take_backup(frm) {
         frappe.call({
             method: 'leaf_procurement.backup_utils.take_backup_now',

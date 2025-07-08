@@ -21,6 +21,7 @@ def check_gtn_and_grade_difference(date):
         filters={
             "posting_date": date,
             "custom_stationary": ["in", [None, ""]],
+            "total": [">", 0],
             "docstatus": 1  # Optional: Only consider submitted invoices
         },
         fields=["name"]
