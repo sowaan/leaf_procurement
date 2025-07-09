@@ -241,7 +241,8 @@ doc_events = {
     "Purchase Invoice": {
         "on_cancel":     "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.on_cancel_purchase_invoice",
         "before_cancel": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.before_cancel_purchase_invoice",
-        "before_submit": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.before_submit_purchase_invoice"
+        "before_submit": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.before_submit_purchase_invoice",
+        "autoname": "leaf_procurement.leaf_procurement.events.purchase_invoice_hooks.autoname_purchase_invoice"
     }
 }
 
@@ -295,7 +296,7 @@ override_doctype_class = {
     "Warehouse": "leaf_procurement.leaf_procurement.overrides.warehouse.CustomWarehouse",
     "Supplier": "leaf_procurement.leaf_procurement.overrides.supplier.CustomSupplier",
     "Driver": "leaf_procurement.leaf_procurement.overrides.driver.CustomDriver",
-    "Purchase Invoice": "leaf_procurement.leaf_procurement.overrides.purchase_invoice.CustomPurchaseInvoice"
+    #"Purchase Invoice": "leaf_procurement.leaf_procurement.overrides.purchase_invoice.CustomPurchaseInvoice"
 }
 #
 # each overriding function accepts a `data` argument;

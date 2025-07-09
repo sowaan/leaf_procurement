@@ -2,7 +2,32 @@
 import frappe # type: ignore
 import urllib.parse
 from leaf_procurement.leaf_procurement.api.barcode import get_base64_barcode
+from frappe.model.naming import make_autoname
 
+def autoname_purchase_invoice(self, method):
+    """Override the default method to set a custom name."""
+    if getattr(self, "skip_autoname", False):
+        # print("Skipping autoname for CustomSupplier", self.servername)
+        self.name = self.servername
+        return  
+    
+    from datetime import datetime
+
+    year = datetime.today().strftime('%Y') 
+    
+    settings = frappe.get_doc("Leaf Procurement Settings")
+    self.custom_short_code = frappe.db.get_value(
+        "Warehouse",
+        settings.get("location_warehouse"),
+        "custom_short_code"
+    )
+    prefix = ""
+    if self.is_return:
+        prefix = f"{self.custom_short_code}-{year}-ACC-PINV-RET-"
+    else:
+        prefix = f"{self.custom_short_code}-{year}-ACC-PINV-"
+    self.name = make_autoname(prefix + ".#####")
+    
 def on_cancel_purchase_invoice(doc, method):
     weight_docs = frappe.get_all("Bale Weight Info", 
         filters={"purchase_invoice": doc.name, "docstatus": 1}, 
