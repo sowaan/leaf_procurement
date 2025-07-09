@@ -68,9 +68,9 @@ frappe.ui.form.on('Purchase Invoice', {
                         name: frm.doc.name
                     },
                     callback: (r) => {
-                        if (r.message && r.message.custom_barcode_base64) {
-                            frm.set_value('custom_barcode_base64', r.message.custom_barcode_base64);
-                        }
+                        // if (r.message && r.message.custom_barcode_base64) {
+                        //     frm.set_value('custom_barcode_base64', r.message.custom_barcode_base64);
+                        // }
                     }
                 });
             }
