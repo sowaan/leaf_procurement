@@ -8,29 +8,30 @@
  "field_order": [
   "section_break_l9ab",
   "company",
-  "date",
   "location_shortcode",
   "custom_is_sync",
   "column_break_rnfv",
   "location_warehouse",
   "barcode_length",
-  "item",
-  "connect_scale",
-  "disconnect_scale",
   "column_break_irkq",
-  "scale_status",
+  "date",
   "day_setup",
   "check_validations",
+  "column_break_fcos",
+  "item",
   "section_break_pqzk",
+  "column_break_zgul",
   "gtn_detail",
+  "column_break_euft",
+  "scale_status",
+  "connect_scale",
+  "disconnect_scale",
   "section_break_xyxs",
   "bale_barcode",
-  "column_break_arkr",
   "captured_weight",
-  "section_break_psgv",
-  "bale_comments",
   "add_audit_weight",
-  "column_break_uvyt",
+  "column_break_arkr",
+  "bale_comments",
   "audit_display",
   "section_break_ynis",
   "detail_table",
@@ -159,10 +160,6 @@
    "label": "Disconnect Scale"
   },
   {
-   "fieldname": "section_break_psgv",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "bale_comments",
    "fieldtype": "Data",
    "label": "Remarks"
@@ -174,10 +171,6 @@
    "label": "Day Setup",
    "options": "Audit Day Setup",
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break_uvyt",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "audit_display",
@@ -199,12 +192,27 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Check Validations"
+  },
+  {
+   "fieldname": "column_break_fcos",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 4,
+   "fieldname": "column_break_euft",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 8,
+   "fieldname": "column_break_zgul",
+   "fieldtype": "Column Break"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-03 23:09:51.281764",
+ "modified": "2025-07-09 17:00:26.514291",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit",
