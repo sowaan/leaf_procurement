@@ -11,6 +11,7 @@
   "lot_size",
   "allow_sunday_open",
   "enable_hybrid_mode",
+  "live_server",
   "column_break_omrn",
   "location_warehouse",
   "rejected_item_grade",
@@ -147,13 +148,19 @@
    "fieldtype": "Link",
    "label": "Rejected Invoice Item",
    "options": "Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "live_server",
+   "fieldtype": "Check",
+   "label": "Live Server"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-08 12:08:25.200192",
+ "modified": "2025-07-09 12:18:19.907196",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",
