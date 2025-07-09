@@ -15,11 +15,11 @@ def ensure_barcode_base64(doctype, name):
 
 	if not doc.custom_barcode_base64:
 		doc.custom_barcode_base64 = get_base64_barcode(doc.custom_barcode)
-		doc.save(ignore_permissions=True)
+		doc.save(ignore_permissions=True, ignore_version=True)
 
-	return {
-		"custom_barcode_base64": doc.custom_barcode_base64
-	}
+	# return {
+	# 	"custom_barcode_base64": doc.custom_barcode_base64
+	# }
 
 @frappe.whitelist()
 def get_base64_barcode(value, barcode_type="code128"):
