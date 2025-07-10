@@ -17,7 +17,7 @@ function updateMainWeightDisplay(frm, weight) {
     let color = scaleConnected === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
     if (updateWeightOnForm) {
-        frm.set_value('captured_weight', weight);
+        //frm.set_value('captured_weight', weight);
         frm.fields_dict.scale_status.$wrapper.html(html);
     }
 }
@@ -534,15 +534,13 @@ frappe.ui.form.on("Bale Audit", {
         // }
 
         // frm.refresh_field('detail_table');
-        frm.save(); 
-        frm.refresh_field('detail_table');
 
         // Reset fields
         frm.set_value('bale_barcode', '');
         //frm.set_value('captured_weight', '');
         frm.set_value('bale_comments', '');
         // Reset weight display
-        updateMainWeightDisplay(frm, "0.00");
+        
 
         // Focus barcode field again
         setTimeout(() => {
@@ -552,6 +550,13 @@ frappe.ui.form.on("Bale Audit", {
             $barcode_input.focus();
 
         }, 300);
+
+        setTimeout(()=>{
+            frm.save(); 
+            frm.refresh_field('detail_table');
+        },300
+        );
+
         const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
 
         const $footer = frm.$wrapper.find('.modal-footer');
@@ -570,6 +575,8 @@ frappe.ui.form.on("Bale Audit", {
             </div>
         `);
         $footer.before($weightDisplay);
+        
+
 
 
 
