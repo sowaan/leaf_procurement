@@ -387,7 +387,6 @@ frappe.ui.form.on("Bale Audit", {
         }, 300);
     },
     onload: async function (frm) {
-
         update_audit_display(frm);
         frm.page.sidebar.toggle(false);
         updateScaleStatus(frm, scaleConnected);
@@ -488,7 +487,6 @@ frappe.ui.form.on("Bale Audit", {
         }, 300);
     },
     add_audit_weight: async function (frm) {
-
         if (!frm.doc.bale_barcode) {
             frappe.show_alert({
                 message: __('Please enter a valid barcode to add audit information.'),
@@ -496,103 +494,62 @@ frappe.ui.form.on("Bale Audit", {
             });
             return;
         };
+        frm.save();
+        // const result = await validate_bale_data(frm);
 
-        const result = await validate_bale_data(frm);
-
-        if (!result.valid) {
-            setTimeout(() => {
-                frm.set_value('bale_barcode', '');
-            }, 3000);
-            return;
-        }
-
-
-        const values = frm.doc;
-
-        // Add new row
-        frm.add_child('detail_table', {
-            bale_barcode: values.bale_barcode,
-            weight: values.captured_weight,
-            bale_remarks: values.bale_comments
-        });
-
-        // Reset fields
-        frm.set_value('bale_barcode', '');
-        frm.set_value('bale_comments', '');
-
-        // Focus barcode field again
-        setTimeout(() => {
-            suppress_focus = false;
-            update_audit_display(frm);
-            const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
-            $barcode_input.focus();
-
-        }, 300);
-
-        setTimeout(() => {
-            frm.save();
-            frm.refresh_field('detail_table');
-        }, 300
-        );
-
-        const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
-
-        const $footer = frm.$wrapper.find('.modal-footer');
-        const $weightDisplay = $(`
-            <div style="
-                font-size: 50px;
-                font-weight: bold;
-                color: #007bff;
-                text-align: center;
-                padding: 20px;
-                margin-bottom: 15px;
-                border: 2px solid #007bff;
-                border-radius: 10px;
-            ">
-            0.00 kg
-            </div>
-        `);
-        $footer.before($weightDisplay);
+        // if (!result.valid) {
+        //     setTimeout(() => {
+        //         frm.set_value('bale_barcode', '');
+        //     }, 3000);
+        //     return;
+        // }
 
 
+        // const values = frm.doc;
 
-
-
-        // const connectBtn = $(`<button class="btn btn-secondary btn-sm ml-2">Connect Scale</button>`);
-        // $footer.prepend(connectBtn);
-
-        // connectBtn.on('click', async () => {
-        //     try {
-        //         scalePort = await navigator.serial.requestPort();
-        //         await scalePort.open({ baudRate: 9600 });
-
-        //         const textDecoder = new TextDecoderStream();
-        //         const readableStreamClosed = scalePort.readable.pipeTo(textDecoder.writable);
-        //         const reader = textDecoder.readable.getReader();
-
-        //         scaleReader = reader;
-        //         window._readableStreamClosed = readableStreamClosed;
-        //         stopReading = false;
-
-        //         while (!stopReading) {
-        //             const { value, done } = await reader.read();
-        //             if (done || stopReading) break;
-        //             if (value) {
-        //                 const weight = parseFloat(value.trim());
-        //                 if (!isNaN(weight)) {
-        //                     lastWeight = weight.toFixed(2);
-        //                     updateMainWeightDisplay(lastWeight);
-        //                 }
-        //             }
-        //         }
-
-
-        //     } catch (err) {
-        //         console.error('Serial error:', err);
-        //         frappe.msgprint(__('Failed to connect or read from scale.'));
-        //         await cleanupSerial();
-        //     }
+        // // Add new row
+        // frm.add_child('detail_table', {
+        //     bale_barcode: values.bale_barcode,
+        //     weight: values.captured_weight,
+        //     bale_remarks: values.bale_comments
         // });
+        
+        // frm.save();
+        
+        // // Reset fields
+        // frm.set_value('bale_barcode', '');
+        // frm.set_value('bale_comments', '');
+
+        // // Focus barcode field again
+        // setTimeout(() => {
+        //     frm.refresh_field('detail_table');
+        //     suppress_focus = false;
+        //     update_audit_display(frm);
+        //     const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
+        //     $barcode_input.focus();
+
+        // }, 300);
+
+        // const $barcode_input = frm.fields_dict.bale_barcode.$wrapper.find('input');
+
+        // const $footer = frm.$wrapper.find('.modal-footer');
+        // const $weightDisplay = $(`
+        //     <div style="
+        //         font-size: 50px;
+        //         font-weight: bold;
+        //         color: #007bff;
+        //         text-align: center;
+        //         padding: 20px;
+        //         margin-bottom: 15px;
+        //         border: 2px solid #007bff;
+        //         border-radius: 10px;
+        //     ">
+        //     0.00 kg
+        //     </div>
+        // `);
+        // $footer.before($weightDisplay);
+
+
     }
 
 });
@@ -634,9 +591,11 @@ frappe.ui.form.on("Bale Audit Detail", {
 
                             if (cur_dialog) cur_dialog.hide();
                             $('.modal-backdrop').remove();
+                            frm.reload_doc();
                         }
                     }
                 });
+               
             }
         );
     }
