@@ -17,7 +17,7 @@ function updateMainWeightDisplay(frm, weight) {
     let color = scaleConnected === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
     if (updateWeightOnForm) {
-        //frm.set_value('captured_weight', weight);
+        frm.set_value('captured_weight', weight);
         frm.fields_dict.scale_status.$wrapper.html(html);
     }
 }
