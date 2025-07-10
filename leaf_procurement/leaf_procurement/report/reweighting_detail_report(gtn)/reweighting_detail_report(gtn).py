@@ -27,6 +27,7 @@ def get_columns():
 	return [
 		{"label": "BALE ID", "fieldname": "bale_barcode", "fieldtype": "Data", "width": 120},
 		{"label": "Warehouse", "fieldname": "location_warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 140},
+		{"label": "Location Warehouse", "fieldname": "l_warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 140},
 		{"label": "Date", "fieldname": "date", "fieldtype": "Date", "width": 110},
 		{"label": "TSA#", "fieldname": "tsa", "fieldtype": "Data", "width": 140},
 		{"label": "GTN", "fieldname": "gtn", "fieldtype": "Link", "options": "Goods Transfer Note", "width": 180},
@@ -45,6 +46,7 @@ def get_data(filters):
 		SELECT
 			gtni.bale_barcode AS bale_barcode,
 			gtn.location_warehouse AS location_warehouse,
+			ba.location_warehouse AS l_warehouse,
 			gtn.date AS date,
 			gtn.tsa_number AS tsa,
 			gtn.name AS gtn,
