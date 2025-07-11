@@ -56,4 +56,6 @@ def get_data(filters):
 		GROUP BY gtn.name
 		ORDER BY gtn.name
 	""", filters, as_dict=True)
-	return data
+	filtered_data = [row for row in data if row["re_weighment"] > 0]
+	
+	return filtered_data
