@@ -17,8 +17,7 @@
   {
    "fieldname": "location",
    "fieldtype": "Data",
-   "label": "Location",
-   "unique": 1
+   "label": "Location"
   },
   {
    "fieldname": "last_sync_down",
@@ -33,8 +32,7 @@
    "fieldname": "api_key",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "API Key",
-   "unique": 1
+   "label": "API Key"
   },
   {
    "fieldname": "last_sync_up",
@@ -54,7 +52,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 12:03:15.408163",
+ "modified": "2025-07-11 15:40:48.194041",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Local Server Instance",

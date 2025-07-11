@@ -7,6 +7,8 @@ import requests
 
 import frappe  # type: ignore
 from frappe import safe_decode # type: ignore
+from frappe.utils import now # type: ignore
+from datetime import datetime
 
 def sync_up_worker(values: dict, user=None):
     """Main entry point to sync all selected doctypes."""
@@ -27,6 +29,8 @@ def sync_up_worker(values: dict, user=None):
         "goods_receiving_note": "Goods Receiving Note",
     }
 
+    sync_local_server_instance(parsedurl=base_url, headers=headers, settings=settings)
+
     for field, doctype in doctypes.items():
         if not values.get(field):
             continue
@@ -34,6 +38,38 @@ def sync_up_worker(values: dict, user=None):
     
     frappe.publish_realtime("sync_complete", {"doctype": "All"}, user=frappe.session.user)
 
+def sync_local_server_instance(parsedurl, headers, settings):
+    # local_server_instance(api_key, location, sync_down_date, sync_up_date, users)
+    try:
+        localsUrl = f"{parsedurl}/api/method/leaf_procurement.api_functions.local_server_instance"
+        user_list = frappe.get_all(
+            "User",
+            fields=["name", "email", 'enabled', 'creation'],
+        )
+        # Convert datetime to string
+        for user in user_list:
+            if isinstance(user.get("creation"), datetime):
+                user["creation"] = user["creation"].isoformat()
+        # user_list = json.loads(user_list.as_json())
+        current_datetime = now()
+
+        response = requests.post(localsUrl, headers=headers, json={
+            "api_key": settings.api_key,
+            "location": settings.location_warehouse,
+            "users": user_list,
+            "sync_up_date": str(current_datetime),
+            "sync_down_date":None,
+        })
+        if response.status_code not in [200, 201]:
+            try:
+                error_msg = response.json().get("message", response.text)
+            except:
+                error_msg = response.text
+                frappe.log_error(f"❌ Local Server Instance Error", error_msg)
+        frappe.log_error(f"Saved Local Server Instance ", "No error found...")   
+    except Exception as e:
+        frappe.log_error(f"❌ Local Server Instance Error", traceback.format_exc())
+        return
 
 def sync_records(doctype: str, base_url: str, endpoint: str, headers: dict):
     """Sync all unsynced records for a single doctype."""

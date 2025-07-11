@@ -60,7 +60,7 @@ def sync_down_worker(values: dict, user=None):
 		frappe.msgprint(_("✔️ Sync down complete."))
 
 	except Exception:
-		frappe.log_error(traceback.format_exc(), "❌ Sync Down Worker Error")
+		frappe.log_error("❌ Sync Down Worker Error",traceback.format_exc())
 
 
 def register_local_instance(base_url: str, headers: dict, location: str):
