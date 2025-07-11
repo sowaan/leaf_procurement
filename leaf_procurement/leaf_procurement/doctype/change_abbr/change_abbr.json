@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-11 23:25:59.400411",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "old_abbr",
+  "column_break_etuz",
+  "new_abbr",
+  "column_break_dybh",
+  "change_abbr"
+ ],
+ "fields": [
+  {
+   "fieldname": "old_abbr",
+   "fieldtype": "Data",
+   "label": "Old Abbr"
+  },
+  {
+   "fieldname": "column_break_etuz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_abbr",
+   "fieldtype": "Data",
+   "label": "New Abbr"
+  },
+  {
+   "fieldname": "column_break_dybh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "change_abbr",
+   "fieldtype": "Button",
+   "label": "Change Abbr"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-07-11 23:26:59.031124",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Change Abbr",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
