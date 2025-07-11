@@ -98,7 +98,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
 
             # Clear cost_center in child items
             for item in doc.items:
-                item.cost_center = ""
+                item.cost_center = "Main - SG"
 
 
         if doctype == "Bale Audit":
