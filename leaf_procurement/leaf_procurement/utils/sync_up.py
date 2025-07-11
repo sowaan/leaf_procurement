@@ -159,7 +159,7 @@ def log_sync_error(doctype: str, name: str, response):
     try:
         error_message = response.json().get("message", safe_decode(response.content))
     except Exception:
-        message = response.text
+        error_message = response.text
     frappe.log_error(message, f"❌ Failed to sync {doctype}: {name}")
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
