@@ -10,6 +10,8 @@ from frappe import safe_decode # type: ignore
 from frappe.utils import now # type: ignore
 from datetime import datetime
 
+error_msg = ""
+
 def sync_up_worker(values: dict, user=None):
     """Main entry point to sync all selected doctypes."""
     settings = frappe.get_cached_doc("Leaf Procurement Settings")
@@ -60,13 +62,14 @@ def sync_local_server_instance(parsedurl, headers, settings):
             "sync_up_date": str(current_datetime),
             "sync_down_date":None,
         })
+
         if response.status_code not in [200, 201]:
             try:
                 error_msg = response.json().get("message", response.text)
             except:
                 error_msg = response.text
                 frappe.log_error(f"❌ Local Server Instance Error", error_msg)
-        frappe.log_error(f"Saved Local Server Instance ", "No error found...")   
+       # frappe.log_error(f"Saved Local Server Instance ", "No error found...")   
     except Exception as e:
         frappe.log_error(f"❌ Local Server Instance Error", traceback.format_exc())
         return
