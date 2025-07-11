@@ -91,6 +91,14 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         if doctype == "Bale Registration":
             doc.check_validations = 0
             doc.day_setup = ""
+        
+        if doctype == "Purchase Invoice":
+            # Clear invoice-level cost center (Accounting Dimension)
+            doc.cost_center = ""
+
+            # Clear cost_center in child items
+            for item in doc.items:
+                item.cost_center = ""
 
         if doctype == "Bale Audit":
             # Check if Audit Day is closed
@@ -116,8 +124,8 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             
         payload = prepare_sync_payload(doc)
 
-        if doctype == "Purchase Invoice":
-            frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
+        # if doctype == "Purchase Invoice":
+        #     frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
             
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
 
