@@ -160,10 +160,10 @@ def prepare_sync_payload(doc):
 
 def log_sync_error(doctype: str, name: str, response):
     try:
-        error_message = response.json().get("message", safe_decode(response.content))
+        error_msg = response.json().get("message", safe_decode(response.content))
     except Exception:
-        message = response.text
-    frappe.log_error(message, f"❌ Failed to sync {doctype}: {name}")
+        error_msg = response.text
+    frappe.log_error(f"❌ Failed to sync {doctype}: {name}", error_msg)
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
     log = {
