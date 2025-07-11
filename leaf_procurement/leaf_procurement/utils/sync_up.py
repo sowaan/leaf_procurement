@@ -100,6 +100,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             for item in doc.items:
                 item.cost_center = ""
 
+
         if doctype == "Bale Audit":
             # Check if Audit Day is closed
             audit_day = frappe.db.get_value(
@@ -124,8 +125,8 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             
         payload = prepare_sync_payload(doc)
 
-        # if doctype == "Purchase Invoice":
-        #     frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
+        if doctype == "Purchase Invoice":
+            frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
             
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
 
