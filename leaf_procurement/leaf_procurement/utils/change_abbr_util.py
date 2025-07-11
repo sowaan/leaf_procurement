@@ -3,11 +3,21 @@ import frappe # type: ignore
 # Function to update fields with old_abbr suffix to new_abbr
 def update_abbr_in_field(doctype, fieldname, old_abbr, new_abbr):
     for doc in frappe.get_all(doctype, fields=["name", fieldname]):
-        val = doc.get(fieldname)
-        frappe.log_error(f"DocType {doctype}:", f"field: {val}; old: {old_abbr}; new: {new_abbr}")
+        val = doc[fieldname]
         if val and val.endswith(f" - {old_abbr}"):
             new_val = val.replace(f" - {old_abbr}", f" - {new_abbr}")
-            frappe.db.set_value(doctype, doc.name, fieldname, new_val)
+
+            # Skip if new_val already exists
+            if frappe.db.exists(doctype, new_val):
+                frappe.log_error(f"Skipping rename: {val} → {new_val} already exists.", "Duplicate Entry")
+                continue
+
+            if fieldname == "name":
+                # Rename the doc itself
+                frappe.rename_doc(doctype, val, new_val, force=True)
+            else:
+                # Update field value
+                frappe.db.set_value(doctype, doc.name, fieldname, new_val)
 
 def update_company_defaults(old_abbr, new_abbr):
     companies = frappe.get_all("Company", fields=["name"])
