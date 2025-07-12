@@ -148,7 +148,7 @@ frappe.ui.form.on('Purchase Invoice', {
                 frm.add_custom_button(__('Reprint Voucher'), async () => {
                     const day_is_open = await check_day_open_status(frm);
 
-                    if (!day_is_open) {
+                    if (!day_is_open && is_live_server==false) {
                         frappe.msgprint(__('Voucher cannot be printed for a closed day.'));
                         return;
                     }
