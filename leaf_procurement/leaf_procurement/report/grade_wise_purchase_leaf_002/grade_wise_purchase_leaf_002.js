@@ -16,13 +16,37 @@ frappe.query_reports["Grade Wise Purchase Leaf 002"] = {
             default: frappe.datetime.get_today(),
             reqd: 1
         },
+        // {
+        //     fieldname: "grade_type",
+        //     label: "Grade Type",
+        //     fieldtype: "Select",
+        //     options: ["Buying Grade", "Reclassification Grade"].join("\n"),
+        //     default: "Buying Grade",
+        //     reqd: 1
+        // },
         {
-            fieldname: "grade_type",
-            label: "Grade Type",
-            fieldtype: "Select",
-            options: ["Buying Grade", "Reclassification Grade"].join("\n"),
-            default: "Buying Grade",
-            reqd: 1
+            fieldname: "warehouse",
+            label: "Warehouse",
+            fieldtype: "Link",
+            options: "Warehouse"
+        },
+        {
+            fieldname: "item_grade",
+            label: "Item Grade",
+            fieldtype: "Link",
+            options: "Item Grade"
+        },
+        {
+            fieldname: "item_sub_grade",
+            label: "Item Sub Grade",
+            fieldtype: "Link",
+            options: "Item Sub Grade"
+        },
+        {
+            fieldname: "reclassification_grade",
+            label: "Reclassification Grade",
+            fieldtype: "Link",
+            options: "Reclassification Grade"
         },
         {
             fieldname: "supplier",
@@ -33,12 +57,7 @@ frappe.query_reports["Grade Wise Purchase Leaf 002"] = {
                 return frappe.db.get_link_options("Supplier", txt);
             }
         },
-        {
-            fieldname: "warehouse",
-            label: "Warehouse",
-            fieldtype: "Link",
-            options: "Warehouse"
-        },
+        
         {
             fieldname: "include_rejected_bales",
             label: "Include Rejected Bales",
