@@ -39,6 +39,7 @@ def execute(filters=None):
 			)
 		SELECT 
 			supp.custom_location_warehouse AS depot_name,
+			
 			-- Today
 			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name ELSE NULL END) AS bales_today,
 			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_today,
@@ -77,7 +78,7 @@ def execute(filters=None):
 	}, as_dict=True)
 
 	columns = [
-		{"label": "Depot Name", "fieldname": "depot_name", "fieldtype": "Data", "width": 120},
+		{"label": "Depot Name", "fieldname": "depot_name", "fieldtype": "Link", "options": "Warehouse", "width": 120},
 
 		# Today
 		{"label": "Bales (Today)", "fieldname": "bales_today", "fieldtype": "Int", "width": 120},

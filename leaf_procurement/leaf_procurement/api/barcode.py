@@ -10,45 +10,45 @@ from io import BytesIO
 # apps/leaf_procurement/leaf_procurement/api/barcode.py
 
 
-@frappe.whitelist()
-def ensure_barcode_image_file(doctype, name):
-    doc = frappe.get_doc(doctype, name)
+# @frappe.whitelist()
+# def ensure_barcode_image_file(doctype, name):
+#     doc = frappe.get_doc(doctype, name)
 
-    if not doc.custom_barcode:
-        doc.custom_barcode = doc.name
+#     if not doc.custom_barcode:
+#         doc.custom_barcode = doc.name
     
 
-    if doc.custom_barcode_image: return
+#     if doc.custom_barcode_image: return
 
 
-    # # Generate image
-    code128 = barcode.get_barcode_class('code128')
-    bar = code128(doc.custom_barcode, writer=ImageWriter())
+#     # # Generate image
+#     code128 = barcode.get_barcode_class('code128')
+#     bar = code128(doc.custom_barcode, writer=ImageWriter())
 
-    image_stream = BytesIO()
-    bar.write(image_stream, options={"module_height": 8.0, "font_size": 8})
-    image_stream.seek(0)
+#     image_stream = BytesIO()
+#     bar.write(image_stream, options={"module_height": 8.0, "font_size": 8})
+#     image_stream.seek(0)
 
-    # Save the file to File doctype and get file URL
-    file_doc = save_file(
-        file_name=f"{doc.name}_barcode.png",
-        content=image_stream,
-        dt=doctype,
-        dn=name,
-        is_private=0  # or 1 for private files
-    )
+#     # Save the file to File doctype and get file URL
+#     file_doc = save_file(
+#         file_name=f"{doc.name}_barcode.png",
+#         content=image_stream,
+#         dt=doctype,
+#         dn=name,
+#         is_private=0  # or 1 for private files
+#     )
 
-    # Set the image link to the custom field
-    doc.custom_barcode_image = file_doc.file_url
-    doc.save()
+#     # Set the image link to the custom field
+#     doc.custom_barcode_image = file_doc.file_url
+#     doc.save()
 
-    frappe.db.commit()
+#     frappe.db.commit()
 
 
     
 
 
-    return {"file_url": doc.custom_barcode_image}
+#     return {"file_url": doc.custom_barcode_image}
 
 @frappe.whitelist()
 def ensure_barcode_base64(doctype, name):

@@ -58,6 +58,20 @@ frappe.ui.form.on('Purchase Invoice', {
         }
         //END Mubashir
 
+        let is_live_server = false;
+        await frappe.call({
+            method: 'frappe.client.get_value',
+            args: {
+                doctype: 'Leaf Procurement Settings',
+                filters: { name: 'Leaf Procurement Settings' },
+                fieldname: ['live_server']
+            },
+            callback: function (r) {
+                if (r.message) {
+                    is_live_server = r.message.live_server;
+                }
+            }
+        });
 
         if (frm.doc.docstatus === 1) {
             if (!frm.doc.custom_barcode_base64) {
@@ -122,7 +136,11 @@ frappe.ui.form.on('Purchase Invoice', {
                         __('Enter Stationery'), __('Save'));
                 })
                 frm.set_df_property('custom_re_print', 'hidden', 1);
-            } else if (!frm.doc.custom_reprint_reason) {
+            } else if (!frm.doc.custom_reprint_reason ) {
+                frm.set_df_property('custom_re_print', 'hidden', 0);
+            }
+            else if(is_live_server==true)
+            {
                 frm.set_df_property('custom_re_print', 'hidden', 0);
             }
             if (frm.doc.custom_stationary && frm.doc.custom_re_print) {
@@ -130,7 +148,7 @@ frappe.ui.form.on('Purchase Invoice', {
                 frm.add_custom_button(__('Reprint Voucher'), async () => {
                     const day_is_open = await check_day_open_status(frm);
 
-                    if (!day_is_open) {
+                    if (!day_is_open && is_live_server==false) {
                         frappe.msgprint(__('Voucher cannot be printed for a closed day.'));
                         return;
                     }

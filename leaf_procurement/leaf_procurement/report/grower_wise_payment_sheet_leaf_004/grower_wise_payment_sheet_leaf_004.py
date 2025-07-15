@@ -52,10 +52,14 @@ def execute(filters=None):
 		{"label": "Due Date", "fieldname": "payment_date", "fieldtype": "Date", "width": 120},
 		{"label": "Transport Charges", "fieldname": "tc_amount", "fieldtype": "Float", "width": 100},
 		{"label": "Amount", "fieldname": "tob_amount", "fieldtype": "Currency", "width": 120},
-		{"label": "Paid On/By", "fieldname": None, "fieldtype": "Data", "width": 120},
-		{"label": "Grower Signature/LTI", "fieldname": None, "fieldtype": "Data", "width": 120},
+		{"label": "Paid On/By", "fieldname": "paid_on_by", "fieldtype": "Data", "width": 120},
+		{"label": "Grower Signature/LTI", "fieldname": "grower_signature", "fieldtype": "Data", "width": 120},
 		
 	]
+	
+	for row in data:
+		row["paid_on_by"] = ""
+		row["grower_signature"] = ""
 
 	return columns, data
 
