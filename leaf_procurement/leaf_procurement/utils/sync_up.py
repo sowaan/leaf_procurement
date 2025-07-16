@@ -172,6 +172,7 @@ def prepare_sync_payload(doc):
 
 
 def log_sync_error(doctype: str, name: str, response):
+    error_msg = ""
     try:
         error_msg = response.json().get("message", safe_decode(response.content))
     except Exception:
