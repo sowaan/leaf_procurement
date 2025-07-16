@@ -104,7 +104,8 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         #         for item in doc.custom_rejected_items:
         #             if hasattr(item, "cost_center"):
         #                 item.cost_center = "Main - SG"
-
+        message = ""
+        
         if doctype == "Bale Audit":
             # Check if Audit Day is closed
             audit_day = frappe.db.get_value(
