@@ -260,7 +260,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 5,
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -283,6 +283,17 @@
    "link_to": "Grade Wise Purchase Leaf 002",
    "link_type": "Report",
    "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Grade Wise Purchase Leaf 002 (2nd)",
+   "link_count": 0,
+   "link_to": "Grade Wise Purchase Leaf 002 (2nd)",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
    "type": "Link"
   },
   {
@@ -316,7 +327,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-07-03 18:18:33.283192",
+ "modified": "2025-07-16 12:13:34.833409",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement",
