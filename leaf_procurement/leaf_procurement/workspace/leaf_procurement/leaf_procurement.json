@@ -210,76 +210,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 5,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Report Code Leaf 001",
-   "link_count": 0,
-   "link_to": "Report Code Leaf 001",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Grade Wise Purchase Leaf 002",
-   "link_count": 0,
-   "link_to": "Grade Wise Purchase Leaf 002",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Grade Wise Purchase Leaf 002 (2nd)",
-   "link_count": 0,
-   "link_to": "Grade Wise Purchase Leaf 002 (2nd)",
-   "link_type": "Report",
-   "onboard": 0,
-   "report_ref_doctype": "Purchase Invoice",
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Grower Wise Purchase Leaf 003",
-   "link_count": 0,
-   "link_to": "Grower Wise Purchase Leaf 003",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Grower Wise Payment Sheet Leaf 004",
-   "link_count": 0,
-   "link_to": "Grower Wise Payment Sheet Leaf 004",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Depot Despatch Report",
-   "link_count": 0,
-   "link_to": "Depot Despatch Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Tools",
    "link_count": 3,
    "link_type": "DocType",
@@ -315,9 +245,78 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Report Code Leaf 001",
+   "link_count": 0,
+   "link_to": "Report Code Leaf 001",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grade Wise Purchase Leaf 002",
+   "link_count": 0,
+   "link_to": "Grade Wise Purchase Leaf 002",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grade Wise Purchase Leaf 002 (2nd)",
+   "link_count": 0,
+   "link_to": "Grade Wise Purchase Leaf 002 (2nd)",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grower Wise Purchase Leaf 003",
+   "link_count": 0,
+   "link_to": "Grower Wise Purchase Leaf 003",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grower Wise Payment Sheet Leaf 004",
+   "link_count": 0,
+   "link_to": "Grower Wise Payment Sheet Leaf 004",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Depot Despatch Report",
+   "link_count": 0,
+   "link_to": "Depot Despatch Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-07-16 15:00:56.190804",
+ "modified": "2025-07-16 15:19:14.373381",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement",
