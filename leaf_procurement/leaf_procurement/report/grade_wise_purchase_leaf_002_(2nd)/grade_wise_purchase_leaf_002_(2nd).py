@@ -16,6 +16,11 @@ def execute(filters=None):
 	warehouse_filter = " AND 1=1"
 	grade_filter = " AND 1=1"
 
+	grade_mapping = {
+		"Item Grade": "grade",
+		"Reclassification Grade": "reclassification_grade"
+	}
+	grade_current = grade_mapping.get(filters.get("grade_type"), "grade")
 
 
 	if filters.get("supplier"):
@@ -29,20 +34,17 @@ def execute(filters=None):
 	
 	
 	if not inc_rej_bales:
-		grade_filter += f" AND LOWER(pii.grade) != 'reject'"
+		grade_filter += f" AND LOWER(pii.{grade_current}) != 'reject'"
 	
-	if filters.get("item_grade"):
-		grade_filter += f" AND pii.grade = %(item_grade)s"
-	
-	if filters.get("reclassification_grade"):
-		grade_filter += f" AND pii.reclassification_grade = %(reclassification_grade)s"
-	
-	if filters.get("item_sub_grade"):
-		grade_filter += f" AND pii.sub_grade = %(item_sub_grade)s"
+	if filters.get("grade"):
+		grade_list = ", ".join([f"'{g}'" for g in filters.get("grade")])
+		grade_filter = f" AND pii.{grade_current} IN ({grade_list})"
 	
 	
 	
 
+	
+	
 	data = frappe.db.sql(f"""
 		WITH totals AS (
 			SELECT
@@ -54,9 +56,7 @@ def execute(filters=None):
 		)
 
 		SELECT
-			pii.grade AS grade,
-			pii.sub_grade AS sub_grade,
-			pii.reclassification_grade AS reclassification_grade,
+			pii.{grade_current} AS grade,
 			supp.custom_location_warehouse AS warehouse,
 			
 			-- Today
@@ -96,24 +96,19 @@ def execute(filters=None):
 		{supplier_filter}
 		{warehouse_filter}
 		{grade_filter}
-		GROUP BY supp.custom_location_warehouse, pii.grade, pii.sub_grade, pii.reclassification_grade
+		GROUP BY supp.custom_location_warehouse, pii.{grade_current}
 		HAVING bales_today > 0 OR bales_todate > 0
-		ORDER BY supp.custom_location_warehouse, pii.grade, pii.sub_grade, pii.reclassification_grade
+		ORDER BY supp.custom_location_warehouse, pii.{grade_current}
 	""", {
 		"from_date": from_date,
 		"to_date": to_date,
-		"warehouse": filters.get("warehouse"),
-		"item_grade": filters.get("item_grade"),
-		"reclassification_grade": filters.get("reclassification_grade"),
-		"item_sub_grade": filters.get("item_sub_grade")
+		"warehouse": filters.get("warehouse")
 	}, as_dict=True)
 
 
 	columns = [
-		{"label": "Warehouse", "fieldname": "warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 120},
-		{"label": "Item Grade", "fieldname": "grade", "fieldtype": "Link", "options": "Item Grade", "width": 100, "align": "left"},
-		{"label": "Item Sub-Grade", "fieldname": "sub_grade", "fieldtype": "Link", "options": "Item Sub Grade", "width": 120, "align": "left"},
-		{"label": "Reclassification Grade", "fieldname": "reclassification_grade", "fieldtype": "Link", "options": "Reclassification Grade", "width": 130, "align": "left"},
+		{"label": "Warehouse", "fieldname": "warehouse", "fieldtype": "Link", "options": "Warehouse", "width": 150},
+		{"label": filters.get("grade_type"), "fieldname": "grade", "fieldtype": "Link", "options": filters.get("grade_type"), "width": 120 if filters.get("grade_type") == "Item Grade" else 172, "align": "left"},
 		{"label": "Bales Today", "fieldname": "bales_today", "fieldtype": "Int", "width": 120},
 		{"label": "Kgs Today", "fieldname": "kgs_today", "fieldtype": "Float", "width": 120},
 		{"label": "Amount Today", "fieldname": "amount_today", "fieldtype": "Currency", "width": 120},
