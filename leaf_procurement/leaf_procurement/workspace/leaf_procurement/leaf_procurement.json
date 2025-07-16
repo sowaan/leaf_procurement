@@ -211,7 +211,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Tools",
-   "link_count": 4,
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -229,17 +229,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sync Tool (Old)",
-   "link_count": 0,
-   "link_to": "Leaf Procurement Sync Tool",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Sync Up",
+   "label": "Sync Up \u2b06\ufe0f",
    "link_count": 0,
    "link_to": "Leaf Sync Up",
    "link_type": "DocType",
@@ -249,7 +239,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sync Down",
+   "label": "Sync Down \u2b07\ufe0f",
    "link_count": 0,
    "link_to": "Leaf Sync Down",
    "link_type": "DocType",
@@ -260,7 +250,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 5,
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -281,6 +271,16 @@
    "label": "Grade Wise Purchase Leaf 002",
    "link_count": 0,
    "link_to": "Grade Wise Purchase Leaf 002",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Grade Wise Purchase Leaf 002 (2nd)",
+   "link_count": 0,
+   "link_to": "Grade Wise Purchase Leaf 002 (2nd)",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -316,7 +316,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-07-03 18:18:33.283192",
+ "modified": "2025-07-16 15:19:14.373381",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement",
@@ -326,7 +326,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 6.0,
+ "sequence_id": 8.0,
  "shortcuts": [
   {
    "color": "Grey",

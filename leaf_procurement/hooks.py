@@ -230,6 +230,8 @@ after_migrate = [
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
+on_login = 'leaf_procurement.leaf_procurement.events.auth.successful_login'
+
 # Document Events
 # ---------------
 # Hook on document methods and events
