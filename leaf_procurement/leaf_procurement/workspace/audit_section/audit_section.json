@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"fanIBrJD0U\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"A00Ywpfofs\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"KdHSMSthoq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"Pid8Ug1yxv\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"yuGAQweGKV\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}},{\"id\":\"p2VRpSpF8R\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"MqNVqCA9pD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Audit Section</span>\",\"col\":12}},{\"id\":\"fanIBrJD0U\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Bale Audit Day Block\",\"col\":12}},{\"id\":\"A00Ywpfofs\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Qc1WVdlrhm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Audit Day\",\"col\":3}},{\"id\":\"3eKxqH32WF\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create Bale Audit\",\"col\":3}},{\"id\":\"6opi-E5pSe\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"CKFcq9-mgM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bale Audit\",\"col\":3}},{\"id\":\"0WPJ1INnZP\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eGzLgYrWsB\",\"type\":\"card\",\"data\":{\"card_name\":\"Setups\",\"col\":4}},{\"id\":\"Pid8Ug1yxv\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":4}},{\"id\":\"yuGAQweGKV\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}},{\"id\":\"p2VRpSpF8R\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-06-28 12:23:16.365005",
  "custom_blocks": [
   {
@@ -18,35 +18,6 @@
  "is_hidden": 0,
  "label": "Audit Section",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Tools",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Leaf Procurement Settings",
-   "link_count": 0,
-   "link_to": "Leaf Procurement Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Sync Tool",
-   "link_count": 0,
-   "link_to": "Leaf Procurement Sync Tool",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -113,9 +84,48 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tools",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Leaf Procurement Settings",
+   "link_count": 0,
+   "link_to": "Leaf Procurement Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sync Down \u2b07\ufe0f",
+   "link_count": 0,
+   "link_to": "Leaf Sync Down",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sync Up \u2b06\ufe0f",
+   "link_count": 0,
+   "link_to": "Leaf Sync Up",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-07-03 18:17:37.821103",
+ "modified": "2025-07-16 15:01:55.873742",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Audit Section",
@@ -125,8 +135,17 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 7.0,
+ "sequence_id": 9.0,
  "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} today",
+   "label": "Bale Audit",
+   "link_to": "Bale Audit",
+   "stats_filter": "[[\"Bale Audit\",\"creation\",\"Timespan\",\"today\",false]]",
+   "type": "DocType"
+  },
   {
    "color": "Green",
    "doc_view": "New",
