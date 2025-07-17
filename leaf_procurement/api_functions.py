@@ -660,6 +660,10 @@ def bale_audit(bale_audit):
 	if isinstance(bale_audit, str):
 		bale_audit = json.loads(bale_audit)
 
+	audit_name = bale_audit.get("name")
+	if frappe.db.exists("Bale Audit",audit_name):
+		return audit_name
+
 	doc = frappe.new_doc("Bale Audit")
 	doc.update(bale_audit)
 	doc.custom_is_sync = 1

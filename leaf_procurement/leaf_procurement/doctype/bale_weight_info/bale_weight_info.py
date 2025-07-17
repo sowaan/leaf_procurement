@@ -5,6 +5,7 @@ from erpnext.accounts.utils import get_fiscal_year # type: ignore
 from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
+from frappe.utils import flt # type: ignore
 
 class BaleWeightInfo(Document):
 	def before_save(self):
@@ -24,6 +25,38 @@ class BaleWeightInfo(Document):
 		fy_end_year_short = fy[2].strftime("%y")
 		prefix = f"{self.location_short_code}-{fy_start_year_short}-{fy_end_year_short}-BW-"
 		self.name = make_autoname(prefix + ".######")
+
+	def before_submit(self):
+		self.validate_item_rates()
+
+	def validate_item_rates(self):
+		for row in self.detail_table:
+			item_grade_doc = frappe.get_doc("Item Grade", row.item_grade)
+			is_rejected = item_grade_doc.rejected_grade
+
+			price_record = frappe.db.get_value(
+				"Item Grade Price",
+				{
+					"item_grade": row.item_grade,
+					"item_sub_grade": row.item_sub_grade,
+					"location_warehouse": self.location_warehouse
+				},
+				["rate"],
+				as_dict=True
+			)
+
+			if not price_record:
+				if not is_rejected:
+					frappe.throw(
+						f"No rate found in Item Grade Price for Item Grade: {row.item_grade}, "
+						f"Sub Grade: {row.item_sub_grade}, Warehouse: {self.location_warehouse}"
+					)
+			else:
+				if not is_rejected and flt(row.rate) != flt(price_record.rate):
+					frappe.throw(
+						f"Rate mismatch for Bale Barcode: {row.bale_barcode}. "
+						f"Expected rate: {price_record.rate}, Found: {row.rate}"
+					)
 
 	def on_submit(self):
 		if not self.bale_registration_code:

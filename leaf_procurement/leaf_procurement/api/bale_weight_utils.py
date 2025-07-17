@@ -115,6 +115,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             {
                 "parent": purchase_name,
                 # "item": doc.item,
+                    "docstatus": 1,
                 "bale_barcode": detail.bale_barcode
             },
             ["item_grade", "item_sub_grade", "rate"],
@@ -156,12 +157,16 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             })  
         else:
             ensure_batch_exists(detail.bale_barcode, doc.item, detail.weight)
-            rate = detail.rate if detail.rate else (purchase_detail.rate or 0)            
+            
+            if not detail.rate:
+                frappe.throw(f"Rate is missing or zero for Bale Barcode: {detail.bale_barcode}")
+
+            #rate = detail.rate if detail.rate else (purchase_detail.rate or 0)            
             invoice.append("items", {
                 "item_code": doc.item,
                 "qty": detail.weight,
                 "received_qty": detail.weight,
-                "rate": rate,
+                "rate": detail.rate,
                 "uom": "Kg",
                 "warehouse": warehouse,
                 "use_serial_batch_fields": 1,
