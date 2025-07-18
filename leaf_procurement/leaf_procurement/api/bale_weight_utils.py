@@ -115,7 +115,7 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             {
                 "parent": purchase_name,
                 # "item": doc.item,
-                    "docstatus": 1,
+                    #"docstatus": 1,
                 "bale_barcode": detail.bale_barcode
             },
             ["item_grade", "item_sub_grade", "rate"],
