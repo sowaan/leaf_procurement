@@ -122,10 +122,11 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             as_dict=True
         )
 
+    
         if not purchase_detail:
             frappe.throw(
-                _("No matching purchase detail found in Bale Purchase for item {0} and batch {1}")
-                .format(doc.item, detail.bale_barcode)
+                _("No matching purchase detail found in Bale Purchase for item {0} and batch {1}, {2}, {3}")
+                .format(doc.item, detail.bale_barcode, purchase_name, purchase_detail)
             )
         
         grade_doc = frappe.get_value(
