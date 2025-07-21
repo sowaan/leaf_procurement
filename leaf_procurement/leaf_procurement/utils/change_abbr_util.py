@@ -46,6 +46,9 @@ def update_company_defaults(old_abbr, new_abbr):
 
 @frappe.whitelist()
 def change_abbr(old_abbr, new_abbr):
+    if frappe.session.user != "Administrator":
+        frappe.throw(_("Only Administrator is allowed to perform this operation."))
+
     # Update Company.abbr itself
     company = frappe.db.get_value("Company", {"abbr": old_abbr}, "name")
     if company:

@@ -1,8 +1,10 @@
-import frappe
+import frappe # type: ignore
+from frappe import _ # type: ignore
 
 @frappe.whitelist()
 def change_barcode(old_barcode, new_barcode):
-
+    if frappe.session.user != "Administrator":
+        frappe.throw(_("Only Administrator is allowed to perform this operation."))
 
     # 1. Bale Registration Detail
     for row in frappe.get_all("Bale Registration Detail", filters={"bale_barcode": old_barcode}, fields=["name"]):

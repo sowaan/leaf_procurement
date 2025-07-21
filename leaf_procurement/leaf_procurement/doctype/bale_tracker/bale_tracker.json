@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-06-04 11:44:34.925042",
+ "creation": "2025-07-21 13:07:33.015524",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -34,55 +34,22 @@
    "label": "Bale Barcode"
   },
   {
-   "fieldname": "column_break_laix",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "check_status",
    "fieldtype": "Button",
    "label": "Check Status"
+  },
+  {
+   "fieldname": "column_break_laix",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "section_break_tfzy",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_adsp",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_sqmv",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "in_bale_registration",
    "fieldtype": "Read Only",
    "label": "Bale Register"
-  },
-  {
-   "fieldname": "in_purchase_invoice",
-   "fieldtype": "Read Only",
-   "label": "Bale Invoice"
-  },
-  {
-   "fieldname": "in_bale_purchase",
-   "fieldtype": "Read Only",
-   "label": "Bale Purchase"
-  },
-  {
-   "fieldname": "in_gtn",
-   "fieldtype": "Read Only",
-   "label": "GTN"
-  },
-  {
-   "fieldname": "in_bale_weight",
-   "fieldtype": "Read Only",
-   "label": "Bale Weight"
-  },
-  {
-   "fieldname": "in_grn",
-   "fieldtype": "Read Only",
-   "label": "GRN"
   },
   {
    "fieldname": "bale_registration_name",
@@ -92,11 +59,29 @@
    "read_only": 1
   },
   {
+   "fieldname": "column_break_adsp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "in_bale_weight",
+   "fieldtype": "Read Only",
+   "label": "Bale Weight"
+  },
+  {
    "fieldname": "bale_weight_info_name",
    "fieldtype": "Link",
    "label": "Bale Weight Info",
    "options": "Bale Weight Info",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_sqmv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "in_gtn",
+   "fieldtype": "Read Only",
+   "label": "GTN"
   },
   {
    "fieldname": "goods_transfer_note_name",
@@ -110,12 +95,9 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_equx",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_qpcd",
-   "fieldtype": "Column Break"
+   "fieldname": "in_bale_purchase",
+   "fieldtype": "Read Only",
+   "label": "Bale Purchase"
   },
   {
    "fieldname": "bale_purchase_name",
@@ -125,11 +107,29 @@
    "read_only": 1
   },
   {
+   "fieldname": "column_break_equx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "in_purchase_invoice",
+   "fieldtype": "Read Only",
+   "label": "Bale Invoice"
+  },
+  {
    "fieldname": "purchase_invoice_name",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
    "options": "Purchase Invoice",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_qpcd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "in_grn",
+   "fieldtype": "Read Only",
+   "label": "GRN"
   },
   {
    "fieldname": "goods_receiving_note_name",
@@ -143,10 +143,10 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-04 13:01:06.235194",
+ "modified": "2025-07-21 13:07:33.015524",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
- "name": "Bale Status Checker",
+ "name": "Bale Tracker",
  "owner": "Administrator",
  "permissions": [
   {
