@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-18 17:36:55.979200",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "old_barcode",
+  "column_break_qmmf",
+  "new_barcode",
+  "column_break_xvps",
+  "change_barcode"
+ ],
+ "fields": [
+  {
+   "fieldname": "old_barcode",
+   "fieldtype": "Data",
+   "label": "Old Barcode"
+  },
+  {
+   "fieldname": "column_break_qmmf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_barcode",
+   "fieldtype": "Data",
+   "label": "New Barcode"
+  },
+  {
+   "fieldname": "column_break_xvps",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "change_barcode",
+   "fieldtype": "Button",
+   "label": "Change Barcode"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-07-18 17:37:57.973993",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Change Barcode",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -115,17 +115,18 @@ def create_purchase_invoice(bale_weight_info_name: str) -> str:
             {
                 "parent": purchase_name,
                 # "item": doc.item,
-                    "docstatus": 1,
+                    #"docstatus": 1,
                 "bale_barcode": detail.bale_barcode
             },
             ["item_grade", "item_sub_grade", "rate"],
             as_dict=True
         )
 
+    
         if not purchase_detail:
             frappe.throw(
-                _("No matching purchase detail found in Bale Purchase for item {0} and batch {1}")
-                .format(doc.item, detail.bale_barcode)
+                _("No matching purchase detail found in Bale Purchase for item {0} and batch {1}, {2}, {3}")
+                .format(doc.item, detail.bale_barcode, purchase_name, purchase_detail)
             )
         
         grade_doc = frappe.get_value(

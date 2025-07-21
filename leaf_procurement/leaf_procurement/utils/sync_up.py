@@ -14,6 +14,7 @@ error_msg = ""
 
 def sync_up_worker(values: dict, user=None):
     """Main entry point to sync all selected doctypes."""
+    
     settings = frappe.get_cached_doc("Leaf Procurement Settings")
     base_url = settings.instance_url.rstrip('/')
     headers = {
@@ -63,12 +64,14 @@ def sync_local_server_instance(parsedurl, headers, settings):
             "sync_down_date":None,
         })
 
+        error_msg = ""
         if response.status_code not in [200, 201]:
             try:
                 error_msg = response.json().get("message", response.text)
             except:
                 error_msg = response.text
-                frappe.log_error(f"❌ Local Server Instance Error", error_msg)
+            
+            frappe.log_error(f"❌ Local Server Instance Error", error_msg)
        # frappe.log_error(f"Saved Local Server Instance ", "No error found...")   
     except Exception as e:
         frappe.log_error(f"❌ Local Server Instance Error", traceback.format_exc())
@@ -130,8 +133,8 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             
         payload = prepare_sync_payload(doc)
 
-        if doctype == "Purchase Invoice":
-            frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
+        # if doctype == "Purchase Invoice":
+        #     frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
             
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
 
@@ -178,6 +181,7 @@ def log_sync_error(doctype: str, name: str, response):
         error_msg = response.json().get("message", safe_decode(response.content))
     except Exception:
         error_msg = response.text
+    
     frappe.log_error(f"❌ Failed to sync {doctype}: {name}", error_msg)
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
