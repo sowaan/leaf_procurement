@@ -641,6 +641,9 @@ def driver(driver):
 		driver = json.loads(driver)
 
 	driver_name = driver.get("name")
+
+	driver.pop("address", None)
+
 	if not driver_name:
 		frappe.throw(_("Driver name is required."))
 
