@@ -16,7 +16,7 @@ frappe.ui.form.on("Day Setup", {
     refresh(frm) {
         frm.clear_custom_buttons();
 
-        if (!frm.doc.day_open_time) {
+        if (!frm.doc.__islocal && !frm.doc.day_open_time) {
             // Show Day Open button only if day_open_time is not set
             frm.add_custom_button(__('Day Open'), function () {
                 const now = frappe.datetime.now_datetime();

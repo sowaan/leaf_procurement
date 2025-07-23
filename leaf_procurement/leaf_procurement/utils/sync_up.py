@@ -133,11 +133,18 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             
         payload = prepare_sync_payload(doc)
 
-        # if doctype == "Purchase Invoice":
-        #     frappe.log_error(f"[Test] {doctype} - {name}", f"payload:\n\n {payload}")
-            
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
 
+        if doctype == "Purchase Invoice":
+            payload.pop("custom_barcode_base64", None)
+
+        if doctype == "Goods Transfer Note":
+            payload.pop("gtn_barcode", None)
+        
+        if doctype == "Driver":
+            payload.pop("address", None)
+          
+        response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
         if response.status_code in [200, 201]:
             frappe.db.set_value(doctype, name, "custom_is_sync", 1)
             frappe.db.commit()
