@@ -133,8 +133,6 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             
         payload = prepare_sync_payload(doc)
 
-        response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
-
         if doctype == "Purchase Invoice":
             payload.pop("custom_barcode_base64", None)
 
@@ -143,8 +141,9 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         
         if doctype == "Driver":
             payload.pop("address", None)
-          
+
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
+        
         if response.status_code in [200, 201]:
             frappe.db.set_value(doctype, name, "custom_is_sync", 1)
             frappe.db.commit()
@@ -156,21 +155,18 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             
             if doctype == "Supplier":
                 create_supplier_contact(f"{url}/../resource/Contact", headers, payload)
-        else:
-            log_sync_result(parent_name="Leaf Sync Up", 
-                            doctype=doctype,
-                            docname=name, 
-                            status= "Failed", 
-                            message=f"[Sync Failed] {doctype} - {name}\n{response}")           
+        else:      
             log_sync_error(doctype, name, response)
 
-    except Exception:
-        frappe.log_error(traceback.format_exc(), f"[Sync Failed] {doctype} - {name}")
-        log_sync_result(parent_name="Leaf Sync Up", 
-                        doctype=doctype,
-                        docname=name, 
-                        status= "Failed", 
-                        message=f"[Sync Failed] {doctype} - {name}\n{traceback.format_exc()}")
+    except requests.exceptions.RequestException as re:
+        # Use response if available (like 400, 500 errors); else fallback to exception
+        if hasattr(re, 'response') and re.response is not None:
+            log_sync_error(doctype, name, re.response)
+        else:
+            log_sync_exception("Leaf Sync Up", doctype, name, re)
+    except Exception as e:
+        log_sync_exception("Leaf Sync Up", doctype, name, e)
+
 
 def prepare_sync_payload(doc):
     payload = json.loads(doc.as_json())
@@ -181,15 +177,38 @@ def prepare_sync_payload(doc):
     })
     return payload
 
+def log_sync_exception(parent_name, doctype, docname, exc):
+    error_message = traceback.format_exc()
+    frappe.log_error(f"[Sync Failed] {doctype} - {docname}", error_message)
+    log_sync_result(
+        parent_name=parent_name,
+        doctype=doctype,
+        docname=docname,
+        status="Failed",
+        message=error_message
+    )
 
-def log_sync_error(doctype: str, name: str, response):
-    error_msg = ""
+def log_sync_error(doctype: str, docname: str, response):
     try:
+        # Try to extract readable error
         error_msg = response.json().get("message", safe_decode(response.content))
     except Exception:
-        error_msg = response.text
-    
-    frappe.log_error(f"❌ Failed to sync {doctype}: {name}", error_msg)
+        try:
+            error_msg = response.text
+        except Exception:
+            error_msg = str(response)
+
+    # Save to error log for admin
+    frappe.log_error(f"[Sync Failed] {doctype} - {docname}", error_msg)
+
+    # Save to sync history (summary only)
+    log_sync_result(
+        parent_name="Leaf Sync Up",  # ✅ Pass actual name dynamically if needed
+        doctype=doctype,
+        docname=docname,
+        status="Failed",
+        message=error_msg
+    )
 
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
     log = {
