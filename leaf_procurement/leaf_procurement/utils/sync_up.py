@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import json
+import time
 import traceback
 import requests
 
@@ -83,6 +84,7 @@ def sync_records(doctype: str, base_url: str, endpoint: str, headers: dict):
         unsynced = frappe.get_all(doctype, filters={"custom_is_sync": 0, "docstatus": ["<", 2]}, pluck="name")
         for name in unsynced:
             sync_single_record(doctype, name, f"{base_url}/api/method/leaf_procurement.api_functions.{endpoint}", headers)
+            time.sleep(0.1)  # 100 milliseconds
     except Exception:
         frappe.log_error(traceback.format_exc(), f"[Sync Error] {doctype}")
 
@@ -142,6 +144,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         if doctype == "Driver":
             payload.pop("address", None)
 
+        frappe.log_error(f"[Test] Pay Load:", payload)
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
         
         if response.status_code in [200, 201]:
