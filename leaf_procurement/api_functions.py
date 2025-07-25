@@ -4,8 +4,6 @@ import frappe # type: ignore
 from frappe import _ # type: ignore
 import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
-from leaf_procurement.leaf_procurement.utils.sync_up import create_goods_transfer_note(goods_transfer_note):
-
 
 
 def create_company(settings, headers, data):
@@ -784,16 +782,20 @@ def goods_transfer_note(goods_transfer_note):
 	if frappe.db.exists("Goods Transfer Note", goods_transfer_note_name):
 		return goods_transfer_note_name
 
-	# Enqueue creation in background
-	frappe.enqueue(
-		method=create_goods_transfer_note,
-		queue='long',
-		job_name="Create Goods Transfer Note",
-		goods_transfer_note=goods_transfer_note
-	)
-	return {"status": "queued"}
+	# Dear Saad, here we need to check if the batch doesn't exist
+	# we need to create the batch as if the invoice is not synced
+	# there will be no batch informtaion
+	# ===========================================================
+	# for detail in purchase_invoice.get("items"):
+	# 	if detail["batch_no"]:
+	# 		ensure_batch_exists(detail.get("batch_no"), detail.get("item_code"), detail.get("weight"))
 
-# your_app/api.py
+	doc = frappe.new_doc("Goods Transfer Note")
+	doc.update(goods_transfer_note)
+	doc.custom_is_sync = 1
+	doc.insert()
+	frappe.db.commit()
+	return doc.name
 
 
 @frappe.whitelist()

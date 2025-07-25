@@ -13,18 +13,6 @@ from datetime import datetime
 
 error_msg = ""
 
-def create_goods_transfer_note(goods_transfer_note):
-    try:
-        doc = frappe.new_doc("Goods Transfer Note")
-        doc.update(goods_transfer_note)
-        doc.custom_is_sync = 1
-        doc.insert()
-        frappe.db.commit()
-        frappe.logger().info(f"[GTN Sync] Created: {doc.name}")
-    except Exception:
-        frappe.log_error(frappe.get_traceback(), "Goods Transfer Note Sync Error")
-
-
 def sync_up_worker(values: dict, user=None):
     """Main entry point to sync all selected doctypes."""
     
@@ -157,7 +145,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             payload.pop("address", None)
 
         #frappe.log_error(f"[Test] Pay Load:", payload)
-        response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
+        response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload}, timeout=15)
         
         if response.status_code in [200, 201]:
             frappe.db.set_value(doctype, name, "custom_is_sync", 1)
