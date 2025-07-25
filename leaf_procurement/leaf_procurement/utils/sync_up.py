@@ -160,34 +160,14 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
         
         if response.status_code in [200, 201]:
-            res_json = response.json()
-
-            if doctype=="Goods Transfer Note":
-                if not (isinstance(res_json, dict) and res_json.get("status") == "queued"):
-                    frappe.db.set_value(doctype, name, "custom_is_sync", 1)
-                    frappe.db.commit()            
-
-                    log_sync_result(parent_name="Leaf Sync Up", 
-                        doctype=doctype,
-                        docname=name, 
-                        status= "Success", 
-                        message="Synced successfully")
-                else:
-                    log_sync_result(parent_name="Leaf Sync Up", 
-                        doctype=doctype,
-                        docname=name, 
-                        status= "Queued", 
-                        message="GTN Queued")
-            else:
-                frappe.db.set_value(doctype, name, "custom_is_sync", 1)
-                frappe.db.commit()            
-
-                log_sync_result(parent_name="Leaf Sync Up", 
-                    doctype=doctype,
-                    docname=name, 
-                    status= "Success", 
-                    message="Synced successfully")    
-                            
+            frappe.db.set_value(doctype, name, "custom_is_sync", 1)
+            frappe.db.commit()
+            log_sync_result(parent_name="Leaf Sync Up", 
+                doctype=doctype,
+                docname=name, 
+                status= "Success", 
+                message="Synced successfully")
+            
             if doctype == "Supplier":
                 create_supplier_contact(f"{url}/../resource/Contact", headers, payload)
         else:      
