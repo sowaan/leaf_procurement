@@ -195,7 +195,8 @@ after_migrate = [
     "leaf_procurement.setup.setup_hooks.set_supplier_naming_series"
 ]
 
-boot_session = "leaf_procurement.boot.boot_session"
+
+# boot_session = "leaf_procurement.boot.boot_session"
 
 
 # Integration Setup
@@ -303,9 +304,9 @@ override_doctype_class = {
     #"Purchase Invoice": "leaf_procurement.leaf_procurement.overrides.purchase_invoice.CustomPurchaseInvoice"
 }
 
-setup_wizard_requires = "assets/leaf_procurement/js/setup_wizard.js"
-setup_wizard_stages = "leaf_procurement.setup.setup_wizard.get_setup_stages"
-after_setup = "leaf_procurement.setup.setup_wizard.after_setup"
+# setup_wizard_requires = "assets/leaf_procurement/js/setup_wizard.js"
+# setup_wizard_stages = "leaf_procurement.setup.setup_wizard.get_setup_stages"
+# after_setup = "leaf_procurement.setup.setup_wizard.after_setup"
 
 
 #
