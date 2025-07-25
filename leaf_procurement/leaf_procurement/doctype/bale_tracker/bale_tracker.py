@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class BaleStatusChecker(Document):
+class BaleTracker(Document):
 	pass

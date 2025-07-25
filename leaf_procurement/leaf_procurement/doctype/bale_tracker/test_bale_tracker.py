@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestBaleStatusChecker(FrappeTestCase):
+class TestBaleTracker(FrappeTestCase):
 	pass

@@ -4,15 +4,29 @@
 frappe.ui.form.on("Leaf Sync Up", {
     refresh(frm) {
         update_sync_status_labels(frm);
+
+        // Add Reload button
         frm.add_custom_button('🔄 Reload', () => {
             frm.reload_doc();
         });
-        // Add Sync Now button if any checkbox is checked
+
+        // Only show Sync Now if any checkbox is checked
         if (sync_up_checkboxes.some(field => frm.doc[field])) {
-            frm.add_custom_button("🚀 Sync Now", () => {
-                trigger_sync(frm);
+            const sync_btn = frm.add_custom_button("🚀 Sync Now", () => {
+                // Prevent multiple clicks
+                if (frm.sync_in_progress) return;
+
+                frm.sync_in_progress = true;
+
+                // Disable button + show spinner
+                sync_btn.prop("disabled", true).html('🚀 Syncing... <span class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span>');
+
+                // Start sync
+                trigger_sync(frm, sync_btn);
             });
-        }        
+        }
+
+        // Update select all/unselect label
         frm.fields_dict.sync_up_select_all.df.label = frm.doc.sync_up_select_all ? 'Unselect All' : 'Select All';
     },
     sync_up_select_all(frm) {
@@ -46,7 +60,7 @@ frappe.ui.form.on("Leaf Sync Up", {
     }
 });
 
-function trigger_sync(frm) {
+function trigger_sync(frm, btn) {
     const payload = {};
     let anyChecked = false;
 
@@ -59,6 +73,10 @@ function trigger_sync(frm) {
 
     if (!anyChecked) {
         frappe.msgprint("Please select at least one checkbox to sync.");
+        if (btn) {
+            btn.prop("disabled", false).text("🚀 Sync Now");
+        }
+        frm.sync_in_progress = false;
         return;
     }
 
@@ -75,11 +93,30 @@ function trigger_sync(frm) {
     });
 }
 
-frappe.realtime.on("sync_complete", function(data) {
+// frappe.realtime.on("sync_complete", function(data) {
+//     frappe.show_alert({
+//         message: `✅ Sync for ${data.doctype} completed.`,
+//         indicator: 'green'
+//     });
+// });
+frappe.realtime.on("sync_complete", function (data) {
     frappe.show_alert({
-        message: `✅ Sync for ${data.doctype} completed.`,
-        indicator: 'green'
+        message: "🎉 Sync Complete!",
+        indicator: "green"
     });
+
+    const frm = frappe.active_form || cur_frm;
+
+    if (frm) {
+        frm.sync_in_progress = false;
+
+        // Ensure the document exists and is saved
+        if (!frm.is_new()) {
+            frm.reload_doc();
+        } else {
+            frm.refresh();
+        }
+    }
 });
 
 const sync_up_checkboxes = [
