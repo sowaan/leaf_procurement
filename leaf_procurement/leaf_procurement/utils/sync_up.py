@@ -84,7 +84,7 @@ def sync_records(doctype: str, base_url: str, endpoint: str, headers: dict):
         unsynced = frappe.get_all(doctype, filters={"custom_is_sync": 0, "docstatus": ["<", 2]}, pluck="name")
         for name in unsynced:
             sync_single_record(doctype, name, f"{base_url}/api/method/leaf_procurement.api_functions.{endpoint}", headers)
-            time.sleep(0.4)  # 500 milliseconds
+            time.sleep(0.2)  # 500 milliseconds
     except Exception:
         frappe.log_error(traceback.format_exc(), f"[Sync Error] {doctype}")
 
