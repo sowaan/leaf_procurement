@@ -145,7 +145,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
             payload.pop("address", None)
 
         #frappe.log_error(f"[Test] Pay Load:", payload)
-        response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload}, timeout=15)
+        response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
         
         if response.status_code in [200, 201]:
             frappe.db.set_value(doctype, name, "custom_is_sync", 1)
