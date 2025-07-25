@@ -31,32 +31,26 @@ class BaleWeightInfo(Document):
 
 	def validate_item_rates(self):
 		for row in self.detail_table:
+			# Check if weight is zero and item is not rejected
 			item_grade_doc = frappe.get_doc("Item Grade", row.item_grade)
-			is_rejected = item_grade_doc.rejected_grade
+			if not item_grade_doc.rejected_grade and flt(row.weight) == 0:
+				frappe.throw(
+					f"Weight cannot be zero for Bale Barcode: {row.bale_barcode} "
+					f"since the item is not marked as rejected."
+				)
 
-			price_record = frappe.db.get_value(
-				"Item Grade Price",
-				{
-					"item_grade": row.item_grade,
-					"item_sub_grade": row.item_sub_grade,
-					"location_warehouse": self.location_warehouse
-				},
-				["rate"],
-				as_dict=True
+			# Validate quota
+			quota_validation(self.location_warehouse, row.bale_barcode, row.weight)
+
+			# Validate item grade pricing
+			validate_item_grade_price(
+				row.item_grade,
+				row.item_sub_grade,
+				self.location_warehouse,
+				row.rate,
+				row.bale_barcode
 			)
 
-			if not price_record:
-				if not is_rejected:
-					frappe.throw(
-						f"No rate found in Item Grade Price for Item Grade: {row.item_grade}, "
-						f"Sub Grade: {row.item_sub_grade}, Warehouse: {self.location_warehouse}"
-					)
-			else:
-				if not is_rejected and flt(row.rate) != flt(price_record.rate):
-					frappe.throw(
-						f"Rate mismatch for Bale Barcode: {row.bale_barcode}. "
-						f"Expected rate: {price_record.rate}, Found: {row.rate}"
-					)
 
 	def on_submit(self):
 		if not self.bale_registration_code:
@@ -73,6 +67,8 @@ class BaleWeightInfo(Document):
 
 		if not day_open:
 			frappe.throw(_("⚠️ You cannot register bales because the day is either not opened or already closed."))
+
+
 
 		# Get all registered bale barcodes for this registration
 		registered_bales = frappe.get_all(
@@ -161,6 +157,50 @@ class BaleWeightInfo(Document):
 
 	# 	self.name = f"{prefix}-{next_number:05d}"
 
+@frappe.whitelist()
+def quota_validation(location, barcode, weight):
+    quota = quota_weight(location)
+
+    if not quota:
+        frappe.throw(_("❌ Quota Setup is not defined. Please define a quota for this location."))
+
+    if weight < quota.bale_minimum_weight_kg or weight > quota.bal_maximum_weight_kg:
+        frappe.throw(_(
+            f"❌ The captured weight {weight} kg for bale {barcode} is outside the allowed range of "
+            f"{quota.bale_minimum_weight_kg} kg to {quota.bal_maximum_weight_kg} kg for this location."
+        ))
+		
+@frappe.whitelist()
+def validate_item_grade_price(item_grade, item_sub_grade, location_warehouse, rate, bale_barcode):
+    item_grade_doc = frappe.get_doc("Item Grade", item_grade)
+    is_rejected = item_grade_doc.rejected_grade
+
+    # Don't check price for rejected items
+    if is_rejected:
+        return
+
+    price_record = frappe.db.get_value(
+        "Item Grade Price",
+        {
+            "item_grade": item_grade,
+            "item_sub_grade": item_sub_grade,
+            "location_warehouse": location_warehouse
+        },
+        ["rate"],
+        as_dict=True
+    )
+
+    if not price_record:
+        frappe.throw(
+            f"No rate found in Item Grade Price for Item Grade: {item_grade}, "
+            f"Sub Grade: {item_sub_grade}, Warehouse: {location_warehouse}"
+        )
+
+    if flt(rate) != flt(price_record.rate):
+        frappe.throw(
+            f"Rate mismatch for Bale Barcode: {bale_barcode}. "
+            f"Expected rate: {price_record.rate}, Found: {rate}"
+        )
 
 @frappe.whitelist()
 def match_grade_with_bale_purchase(barcode):
@@ -176,4 +216,4 @@ def quota_weight(location):
 	"""
 	location_quota = frappe.db.get_value('Quota Setup', {'location_warehouse': location}, ['bale_minimum_weight_kg', 'bal_maximum_weight_kg'], as_dict=1)
 
-	return location_quota
+	return location_quota if location_quota else None
