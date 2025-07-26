@@ -36,11 +36,12 @@ class BaleWeightInfo(Document):
 			if not item_grade_doc.rejected_grade and flt(row.weight) == 0:
 				frappe.throw(
 					f"Weight cannot be zero for Bale Barcode: {row.bale_barcode} "
-					f"since the item is not marked as rejected."
+					f"since the item is not marked as rejected. "
 				)
-
+			
 			# Validate quota
-			quota_validation(self.location_warehouse, row.bale_barcode, row.weight)
+			if not item_grade_doc.rejected_grade:
+				quota_validation(self.location_warehouse, row.bale_barcode, row.weight)
 
 			# Validate item grade pricing
 			validate_item_grade_price(
