@@ -59,35 +59,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Reweighment Report",
-   "link_count": 0,
-   "link_to": "Reweighment Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Reweighment Report Summary",
-   "link_count": 0,
-   "link_to": "Reweighment Report Summary",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Tools",
    "link_count": 3,
    "link_type": "DocType",
@@ -123,9 +94,58 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Reweighment Report",
+   "link_count": 0,
+   "link_to": "Reweighment Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Reweighment Report Summary",
+   "link_count": 0,
+   "link_to": "Reweighment Report Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Reweighting Detail Report(GTN)",
+   "link_count": 0,
+   "link_to": "Reweighting Detail Report(GTN)",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Wise Bale Audit",
+   "link_count": 0,
+   "link_to": "WAREHOUSE WISE BALE AUDIT REPORT",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-07-16 15:01:55.873742",
+ "modified": "2025-08-01 10:59:47.851549",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Audit Section",

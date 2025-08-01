@@ -17,61 +17,132 @@ def execute(filters=None):
 	if not inc_rej_bales:
 		grade_filter = f" AND LOWER(pii.grade) != 'reject'"
 
-	data = frappe.db.sql(f"""
-		WITH 
-			grand_today AS (
-				SELECT 
-					SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_today
-				FROM `tabPurchase Invoice` pi
-					LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-					LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-				WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
-					AND DATE(pi.posting_date) = %(to_date)s
-			),
-			grand_todate AS (
-				SELECT 
-					SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_todate
-				FROM `tabPurchase Invoice` pi
-					LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-					LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-				WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
-					AND DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s
-			)
-		SELECT 
-			supp.custom_location_warehouse AS depot_name,
+	# data = frappe.db.sql(f"""
+	# 	WITH 
+	# 		grand_today AS (
+	# 			SELECT 
+	# 				SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_today
+	# 			FROM `tabPurchase Invoice` pi
+	# 				LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+	# 				LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+	# 			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+	# 				AND DATE(pi.posting_date) = %(to_date)s
+	# 		),
+	# 		grand_todate AS (
+	# 			SELECT 
+	# 				SUM(IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) AS total_amount_todate
+	# 			FROM `tabPurchase Invoice` pi
+	# 				LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+	# 				LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+	# 			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+	# 				AND DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s
+	# 		)
+	# 	SELECT 
+	# 		supp.custom_location_warehouse AS depot_name,
 			
-			-- Today
-			COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name ELSE NULL END) AS bales_today,
-			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_today,
-			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END) AS amount_today,
-			(
-				SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
-				/ NULLIF(SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END), 0)
-			) AS avg_today,
-			(
-				SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
-				/ NULLIF((SELECT total_amount_today FROM grand_today), 0)
-			) * 100 AS percentage_today,
+	# 		-- Today
+	# 		COUNT(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN pii.name ELSE NULL END) AS bales_today,
+	# 		SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_today,
+	# 		SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END) AS amount_today,
+	# 		(
+	# 			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
+	# 			/ NULLIF(SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END), 0)
+	# 		) AS avg_today,
+	# 		(
+	# 			SUM(CASE WHEN DATE(pi.posting_date) = %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
+	# 			/ NULLIF((SELECT total_amount_today FROM grand_today), 0)
+	# 		) * 100 AS percentage_today,
 
-			-- ToDate
-			COUNT(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN pii.name ELSE NULL END) AS bales_todate,
-			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_todate,
-			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END) AS amount_todate,
-			(
-				SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
-				/ NULLIF(SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END), 0)
-			) AS avg_todate,
-			(
-				SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
-				/ NULLIF((SELECT total_amount_todate FROM grand_todate), 0)
-			) * 100 AS percentage_todate
+	# 		-- ToDate
+	# 		COUNT(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN pii.name ELSE NULL END) AS bales_todate,
+	# 		SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END) AS kgs_todate,
+	# 		SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END) AS amount_todate,
+	# 		(
+	# 			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
+	# 			/ NULLIF(SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN IFNULL(pii.qty, 0) ELSE 0 END), 0)
+	# 		) AS avg_todate,
+	# 		(
+	# 			SUM(CASE WHEN DATE(pi.posting_date) BETWEEN %(from_date)s AND %(to_date)s THEN (IFNULL(pii.qty, 0) * IFNULL(pii.rate, 0)) ELSE 0 END)
+	# 			/ NULLIF((SELECT total_amount_todate FROM grand_todate), 0)
+	# 		) * 100 AS percentage_todate
 
+	# 		FROM `tabPurchase Invoice` pi
+	# 		JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
+	# 		LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
+	# 		WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+	# 		{grade_filter}
+	# 	GROUP BY supp.custom_location_warehouse
+	# """, {
+	# 	"from_date": from_date,
+	# 	"to_date": to_date
+	# }, as_dict=True)
+
+	data = frappe.db.sql(f"""
+		WITH base_data AS (
+			-- This CTE remains the same. It efficiently gathers the raw data.
+			SELECT
+				pi.posting_date,
+				pii.qty,
+				pii.rate,
+				pii.name AS item_name,
+				supp.custom_location_warehouse AS depot_name
 			FROM `tabPurchase Invoice` pi
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 			LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-			WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
-			{grade_filter}
-		GROUP BY supp.custom_location_warehouse
+			WHERE pi.docstatus = 1
+				AND pii.item_group = 'Products'
+				AND pi.posting_date >= %(from_date)s
+				AND pi.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
+				{grade_filter}
+		),
+		depot_agg AS (
+			-- This new CTE aggregates the data by depot in a single pass.
+			-- This is much more efficient than scanning base_data multiple times.
+			SELECT
+				bd.depot_name,
+
+				-- Today's Aggregates
+				SUM(CASE WHEN bd.posting_date >= %(to_date)s AND bd.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY) THEN bd.qty * bd.rate ELSE 0 END) AS amount_today,
+				SUM(CASE WHEN bd.posting_date >= %(to_date)s AND bd.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY) THEN bd.qty ELSE 0 END) AS kgs_today,
+				COUNT(CASE WHEN bd.posting_date >= %(to_date)s AND bd.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY) THEN bd.item_name ELSE NULL END) AS bales_today,
+
+				-- To-Date Aggregates
+				SUM(bd.qty * bd.rate) AS amount_todate,
+				SUM(bd.qty) AS kgs_todate,
+				COUNT(bd.item_name) AS bales_todate
+			FROM base_data bd
+			GROUP BY bd.depot_name
+		)
+		-- Final SELECT using the pre-aggregated data and window functions
+		SELECT
+			da.depot_name,
+
+			-- Today Columns
+			da.bales_today,
+			da.kgs_today,
+			da.amount_today,
+			CASE WHEN da.kgs_today > 0 THEN da.amount_today / da.kgs_today ELSE NULL END AS avg_today,
+			-- Use a window function to get the grand total for percentage calculation.
+			CASE
+				WHEN SUM(da.amount_today) OVER () > 0 THEN
+					(da.amount_today * 100.0 / SUM(da.amount_today) OVER ())
+				ELSE NULL
+			END AS percentage_today,
+
+			-- ToDate Columns
+			da.bales_todate,
+			da.kgs_todate,
+			da.amount_todate,
+			CASE WHEN da.kgs_todate > 0 THEN da.amount_todate / da.kgs_todate ELSE NULL END AS avg_todate,
+			-- Use a window function here as well.
+			CASE
+				WHEN SUM(da.amount_todate) OVER () > 0 THEN
+					(da.amount_todate * 100.0 / SUM(da.amount_todate) OVER ())
+				ELSE NULL
+			END AS percentage_todate
+
+		FROM depot_agg da
+		ORDER BY da.depot_name
 	""", {
 		"from_date": from_date,
 		"to_date": to_date

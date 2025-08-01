@@ -4,17 +4,18 @@
 frappe.query_reports["WAREHOUSE WISE BALE AUDIT REPORT"] = {
 	"filters": [
 		{
-			"fieldname": "from_date",
-			"label": "From Date",
+			"fieldname": "date",
+			"label": "Date",
 			"fieldtype": "Date",
+			"default": "Today",
 			"reqd": 1
 		},
-		{
-			"fieldname": "to_date",
-			"label": "To Date",
-			"fieldtype": "Date",
-			"reqd": 1
-		},
+		// {
+		// 	"fieldname": "to_date",
+		// 	"label": "To Date",
+		// 	"fieldtype": "Date",
+		// 	"reqd": 1
+		// },
 		{
 			"fieldname": "grade",
 			"label": "Item Grade",

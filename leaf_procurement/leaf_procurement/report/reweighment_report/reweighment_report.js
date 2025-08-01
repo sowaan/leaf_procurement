@@ -3,7 +3,15 @@
 
 frappe.query_reports["Reweighment Report"] = {
 	"filters": [
+		
 		{
+            fieldname: "date",
+            fieldtype: "Date",
+            label: "Date",
+            mandatory: 1,
+            default: "Today",
+        },
+        {
 			fieldname: "depot",
 			fieldtype: "Link",
 			label: __("Warehouse"),
@@ -11,18 +19,12 @@ frappe.query_reports["Reweighment Report"] = {
 			// mandatory: 1
 			
 		},
-		{
-            fieldname: "from_date",
-            fieldtype: "Date",
-            label: "From Date",
-            mandatory: 1
-        },
-        {
-            default: "Today",
-            fieldname: "to_date",
-            fieldtype: "Date",
-            label: "To Date",
-            mandatory: 1
-        }
+        // {
+        //     default: "Today",
+        //     fieldname: "to_date",
+        //     fieldtype: "Date",
+        //     label: "To Date",
+        //     mandatory: 1
+        // }
 	]
 };

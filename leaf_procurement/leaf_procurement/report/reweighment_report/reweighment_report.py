@@ -13,12 +13,8 @@ def get_filters(filters):
 	conditions = ""
 	if not filters:
 		filters = frappe._dict()
-	if filters.get("from_date") and filters.get("to_date"):
-		conditions += " AND ba.date BETWEEN %(from_date)s AND %(to_date)s"
-	elif filters.get("from_date"):
-		conditions += " AND ba.date >= %(from_date)s"
-	elif filters.get("to_date"):
-		conditions += " AND ba.date <= %(to_date)s"
+	if filters.get("date"):
+		conditions += " AND ba.date = %(date)s"
 	if filters.get("depot"):
 		conditions += " AND ba.location_warehouse = %(depot)s"
 	return conditions
@@ -42,24 +38,33 @@ def get_data(filters):
 	conditions = get_filters(filters) 
 	data = frappe.db.sql(f"""
 		SELECT
-			bad.bale_barcode AS bale_barcode,
-			ba.location_warehouse AS location_warehouse,
-			ba.date AS date,
-			gtn.tsa_number AS tsa,
-			gtn.name AS gtn,
-			bag.truck_number AS truck_number,
-			gtni.weight AS advance_weight,
-			bad.weight AS re_weight,
-			(bad.weight - gtni.weight) AS weight_difference,
-			1 AS bales
-		FROM `tabBale Audit` ba
-		LEFT JOIN `tabBale Audit Detail` bad ON ba.name = bad.parent
-		LEFT JOIN `tabGoods Transfer Note Items` gtni ON bad.bale_barcode = gtni.bale_barcode
-		LEFT JOIN `tabGoods Transfer Note` gtn ON gtni.parent = gtn.name
-		LEFT JOIN `tabBale Audit GTN` bag ON bag.parent = ba.name
-		WHERE ba.docstatus = 1
-		{conditions}
-		GROUP BY bad.bale_barcode
-		ORDER BY bad.bale_barcode
+            bad.bale_barcode,
+            ba.location_warehouse,
+            ba.date,
+            gtn.tsa_number AS tsa,
+            gtn.name AS gtn,
+            bag.truck_number,
+            gtni.weight AS advance_weight,
+            bad.weight AS re_weight,
+            (bad.weight - gtni.weight) AS weight_difference,
+            1 AS bales
+        FROM `tabBale Audit Detail` AS bad
+        -- Join to the parent document to get date and warehouse
+        LEFT JOIN `tabBale Audit` AS ba ON bad.parent = ba.name
+        -- Join to GTN items on the indexed bale_barcode
+        LEFT JOIN `tabGoods Transfer Note Items` AS gtni ON bad.bale_barcode = gtni.bale_barcode
+        -- Join to the GTN parent document
+        LEFT JOIN `tabGoods Transfer Note` AS gtn ON gtni.parent = gtn.name
+        -- OPTIMIZED: Join to a subquery for truck_number to prevent row multiplication
+        LEFT JOIN (
+            SELECT parent, MAX(truck_number) AS truck_number
+            FROM `tabBale Audit GTN`
+            GROUP BY parent
+        ) AS bag ON ba.name = bag.parent
+        WHERE
+            ba.docstatus = 1
+            {conditions}
+        ORDER BY
+            bad.bale_barcode
 	""", filters, as_dict=True)
 	return data

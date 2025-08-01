@@ -4,6 +4,13 @@
 frappe.query_reports["Reweighting Detail Report(GTN)"] = {
 	"filters": [
 		{
+			fieldname: "date",
+			fieldtype: "Date",
+			label: "Date",
+			default: "Today",
+			mandatory: 1
+		},
+		{
 			fieldname: "depot",
 			fieldtype: "Link",
 			label: __("Warehouse"),
@@ -11,18 +18,12 @@ frappe.query_reports["Reweighting Detail Report(GTN)"] = {
 			// mandatory: 1
 			
 		},
-		{
-            fieldname: "from_date",
-            fieldtype: "Date",
-            label: "From Date",
-            mandatory: 1
-        },
-        {
-            default: "Today",
-            fieldname: "to_date",
-            fieldtype: "Date",
-            label: "To Date",
-            mandatory: 1
-        }
+        // {
+        //     default: "Today",
+        //     fieldname: "to_date",
+        //     fieldtype: "Date",
+        //     label: "To Date",
+        //     mandatory: 1
+        // }
 	]
 };

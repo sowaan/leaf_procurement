@@ -13,12 +13,8 @@ def get_filters(filters):
 	conditions = ""
 	if not filters:
 		filters = frappe._dict()
-	if filters.get("from_date") and filters.get("to_date"):
-		conditions += " AND gtn.date BETWEEN %(from_date)s AND %(to_date)s"
-	elif filters.get("from_date"):
-		conditions += " AND gtn.date >= %(from_date)s"
-	elif filters.get("to_date"):
-		conditions += " AND gtn.date <= %(to_date)s"
+	if filters.get("date"):
+		conditions += " AND gtn.date = %(date)s"
 	if filters.get("depot"):
 		conditions += " AND gtn.location_warehouse = %(depot)s"
 	return conditions
