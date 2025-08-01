@@ -13,6 +13,18 @@ from datetime import datetime
 
 error_msg = ""
 
+def create_goods_transfer_note(goods_transfer_note):
+    try:
+        doc = frappe.new_doc("Goods Transfer Note")
+        doc.update(goods_transfer_note)
+        doc.custom_is_sync = 1
+        doc.insert()
+        frappe.db.commit()
+        frappe.logger().info(f"[GTN Sync] Created: {doc.name}")
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Goods Transfer Note Sync Error")
+
+
 def sync_up_worker(values: dict, user=None):
     """Main entry point to sync all selected doctypes."""
     
@@ -84,7 +96,7 @@ def sync_records(doctype: str, base_url: str, endpoint: str, headers: dict):
         unsynced = frappe.get_all(doctype, filters={"custom_is_sync": 0, "docstatus": ["<", 2]}, pluck="name")
         for name in unsynced:
             sync_single_record(doctype, name, f"{base_url}/api/method/leaf_procurement.api_functions.{endpoint}", headers)
-            time.sleep(0.2)  # 500 milliseconds
+            
     except Exception:
         frappe.log_error(traceback.format_exc(), f"[Sync Error] {doctype}")
 
@@ -144,18 +156,53 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         if doctype == "Driver":
             payload.pop("address", None)
 
-        frappe.log_error(f"[Test] Pay Load:", payload)
+        #frappe.log_error(f"[Test] Pay Load:", payload)
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
         
         if response.status_code in [200, 201]:
-            frappe.db.set_value(doctype, name, "custom_is_sync", 1)
-            frappe.db.commit()
-            log_sync_result(parent_name="Leaf Sync Up", 
-                doctype=doctype,
-                docname=name, 
-                status= "Success", 
-                message="Synced successfully")
-            
+
+            if doctype=="Goods Transfer Note":
+                status = "exists"
+                try:
+                    res_json = response.json()
+                except Exception:
+                    # Response is not JSON
+                    status = "exists"
+                else:
+                    message = res_json.get("message")
+                    
+                    if isinstance(message, dict):
+                        status = message.get("status", "exists")
+                    else:
+                        # message is a string or None; treat as already existing
+                        status = "exists"             
+                        
+                if status == "queued":
+                    log_sync_result(parent_name="Leaf Sync Up", 
+                        doctype=doctype,
+                        docname=name, 
+                        status= "Skipped", 
+                        message="GTN has been Queued on Server")
+                else:
+                    frappe.db.set_value(doctype, name, "custom_is_sync", 1)
+                    frappe.db.commit()            
+
+                    log_sync_result(parent_name="Leaf Sync Up", 
+                        doctype=doctype,
+                        docname=name, 
+                        status= "Success", 
+                        message="Synced successfully")
+                
+            else:
+                frappe.db.set_value(doctype, name, "custom_is_sync", 1)
+                frappe.db.commit()            
+
+                log_sync_result(parent_name="Leaf Sync Up", 
+                    doctype=doctype,
+                    docname=name, 
+                    status= "Success", 
+                    message="Synced successfully")    
+                            
             if doctype == "Supplier":
                 create_supplier_contact(f"{url}/../resource/Contact", headers, payload)
         else:      

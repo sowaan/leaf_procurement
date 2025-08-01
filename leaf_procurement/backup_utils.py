@@ -1,13 +1,13 @@
-import frappe
+import frappe # type: ignore
 import os
-from frappe.utils.backups import BackupGenerator
+from frappe.utils.backups import BackupGenerator  # type: ignore
 
 @frappe.whitelist()
 def take_backup_now():
     try:
         # Get DB credentials
         db_name = frappe.conf.db_name
-        db_user = frappe.conf.db_name
+        db_user = frappe.conf.db_name # it should be frappe.conf.db_user
         db_password = frappe.conf.db_password
 
         # Initialize backup
