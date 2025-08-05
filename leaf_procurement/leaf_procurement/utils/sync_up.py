@@ -20,9 +20,112 @@ def create_goods_transfer_note(goods_transfer_note):
         doc.custom_is_sync = 1
         doc.insert()
         frappe.db.commit()
+
+        for row in doc.bale_registration_detail:
+            if row.bale_barcode:
+                update_bale_audit_from_gtn(row.bale_barcode)
+                
         frappe.logger().info(f"[GTN Sync] Created: {doc.name}")
     except Exception:
         frappe.log_error(frappe.get_traceback(), "Goods Transfer Note Sync Error")
+
+def update_bale_audit_from_gtn(bale_barcode: str):
+	try:
+		# Find GTN Item with matching bale_barcode
+		gtn_item = frappe.db.get_value("Goods Transfer Note Items", {"bale_barcode": bale_barcode}, ["parent", "weight"], as_dict=True)
+		if not gtn_item:
+			return
+
+		# Get GTN main record fields
+		gtn = frappe.db.get_value("Goods Transfer Note", gtn_item.parent, ["name", "tsa_number", "vehicle_number"], as_dict=True)
+		if not gtn:
+			return
+
+		# Get Bale Audit where this barcode exists
+		audit = frappe.get_all(
+			"Bale Audit Detail",
+			filters={"bale_barcode": bale_barcode, "gtn_number": ["is", "not set"]},
+			fields=["parent", "name"]
+		)
+
+		for detail in audit:
+			try:
+				# Update Bale Audit Detail
+				frappe.db.set_value("Bale Audit Detail", detail.name, {
+					"gtn_number": gtn.name,
+					"tsa_number": gtn.tsa_number,
+					"truck_number": gtn.vehicle_number,
+					"advance_weight": gtn_item.weight
+				})
+			except Exception as e:
+				frappe.log_error(
+					title="Failed to update Bale Audit Detail",
+					message=f"Detail Name: {detail.name}, Error: {frappe.get_traceback()}"
+				)
+
+	except Exception as e:
+		frappe.log_error(
+			title="update_bale_audit_from_gtn Failed",
+			message=f"Bale Barcode: {bale_barcode}\nError: {frappe.get_traceback()}"
+		)
+          
+#call this from bale audit sync up
+def update_audit_details_from_gtn(audit_name: str):
+	try:
+		doc = frappe.get_doc("Bale Audit", audit_name)
+		for row in doc.detail_table:
+			if row.bale_barcode:
+				update_bale_audit_from_gtn(row.bale_barcode)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Update Audit Details from GTN Error")
+
+#we need to create a job to automate they sync between gtn and bale audit
+def update_missing_gtn_in_audits():
+	# Find audit detail rows where gtn info is missing
+	details = frappe.get_all("Bale Audit Detail", 
+		filters={
+			"gtn_number": ["is", "null"]
+		}, 
+		fields=["bale_barcode"]
+	)
+
+	for detail in details:
+		if detail.bale_barcode:
+			update_bale_audit_from_gtn(detail.bale_barcode)
+
+@frappe.whitelist()
+def run_gtn_audit_sync_tool():
+    doc = frappe.get_doc("GTN Audit Sync Tool")  # Assuming single-type Doctype
+    log = []
+
+    try:
+        details = frappe.db.get_all("Bale Audit Detail", 
+            filters={"gtn_number": ["is", "not set"]},
+            fields=["name", "bale_barcode"],
+            order_by="modified desc"
+        )
+
+        for detail in details:
+            if detail.bale_barcode:
+                try:
+                    update_bale_audit_from_gtn(detail.bale_barcode)
+                    log.append(f"{detail.bale_barcode} ✅")
+                except Exception as e:
+                    frappe.log_error(frappe.get_traceback(), "GTN Audit Sync Error")
+                    log.append(f"{detail.bale_barcode} ❌")
+
+        doc.last_run_time = frappe.utils.now()
+        doc.run_status = "Completed"
+        doc.log = "\n".join(log)
+        doc.save()
+        frappe.db.commit()
+
+    except Exception:
+        doc.run_status = "Failed"
+        doc.log = frappe.get_traceback()
+        doc.save()
+        frappe.db.commit()
+        frappe.throw("Error occurred during sync. Check log.")
 
 
 def sync_up_worker(values: dict, user=None):
@@ -53,6 +156,7 @@ def sync_up_worker(values: dict, user=None):
         sync_records(doctype, base_url, field, headers)
     
     frappe.publish_realtime("sync_complete", {"doctype": "All"}, user=frappe.session.user)
+
 
 def sync_local_server_instance(parsedurl, headers, settings):
     # local_server_instance(api_key, location, sync_down_date, sync_up_date, users)
@@ -181,7 +285,7 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
                     log_sync_result(parent_name="Leaf Sync Up", 
                         doctype=doctype,
                         docname=name, 
-                        status= "Skipped", 
+                        status= "Queued", 
                         message="GTN has been Queued on Server")
                 else:
                     frappe.db.set_value(doctype, name, "custom_is_sync", 1)

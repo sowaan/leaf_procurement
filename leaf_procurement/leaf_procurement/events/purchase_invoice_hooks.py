@@ -2,7 +2,7 @@
 import frappe # type: ignore
 import urllib.parse
 from leaf_procurement.leaf_procurement.api.barcode import get_base64_barcode
-from frappe.model.naming import make_autoname
+from frappe.model.naming import make_autoname # type: ignore
 
 def autoname_purchase_invoice(self, method):
     """Override the default method to set a custom name."""

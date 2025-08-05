@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-05 17:13:47.747138",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "last_run_time",
+  "column_break_tsev",
+  "run_status",
+  "section_break_tgvv",
+  "log"
+ ],
+ "fields": [
+  {
+   "fieldname": "last_run_time",
+   "fieldtype": "Datetime",
+   "label": "Last Run Time"
+  },
+  {
+   "fieldname": "column_break_tsev",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "run_status",
+   "fieldtype": "Select",
+   "label": "Run Status",
+   "options": "Completed\nFailed"
+  },
+  {
+   "fieldname": "section_break_tgvv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "log",
+   "fieldtype": "Small Text",
+   "label": "Log"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-08-05 19:44:14.440247",
+ "modified_by": "tlyh1@samsons.com",
+ "module": "Leaf Procurement",
+ "name": "GTN Audit Sync Tool",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -5,7 +5,7 @@ from frappe import _ # type: ignore
 import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 from leaf_procurement.leaf_procurement.utils.sync_up import create_goods_transfer_note
-
+from leaf_procurement.leaf_procurement.utils.sync_up import update_audit_details_from_gtn
 
 
 def create_company(settings, headers, data):
@@ -659,23 +659,6 @@ def driver(driver):
 
 
 @frappe.whitelist()
-def bale_audit(bale_audit):
-	if isinstance(bale_audit, str):
-		bale_audit = json.loads(bale_audit)
-
-	audit_name = bale_audit.get("name")
-	if frappe.db.exists("Bale Audit",audit_name):
-		return audit_name
-
-	doc = frappe.new_doc("Bale Audit")
-	doc.update(bale_audit)
-	doc.custom_is_sync = 1
-	doc.insert()
-	frappe.db.commit()
-	return doc.name
-
-
-@frappe.whitelist()
 def bale_registration(bale_registration):
 	if isinstance(bale_registration, str):
 		bale_registration = json.loads(bale_registration)
@@ -793,8 +776,30 @@ def goods_transfer_note(goods_transfer_note):
 	)
 	return {"status": "queued"}
 
-# your_app/api.py
+@frappe.whitelist()
+def bale_audit(bale_audit):
+	if isinstance(bale_audit, str):
+		bale_audit = json.loads(bale_audit)
 
+	audit_name = bale_audit.get("name")
+	if frappe.db.exists("Bale Audit",audit_name):
+		return audit_name
+
+	doc = frappe.new_doc("Bale Audit")
+	doc.update(bale_audit)
+	doc.custom_is_sync = 1
+	doc.insert()
+	frappe.db.commit()
+
+	# 🔁 Enqueue the update of audit detail from GTN
+	frappe.enqueue(
+		method=update_audit_details_from_gtn,
+		queue="long",  # or 'long' if many audits
+		job_name=f"Update Audit Details {doc.name}",
+		audit_name=doc.name
+	)
+			
+	return doc.name
 
 @frappe.whitelist()
 def goods_receiving_note(goods_receiving_note):

@@ -93,12 +93,25 @@ function trigger_sync(frm, btn) {
     });
 }
 
-// frappe.realtime.on("sync_complete", function(data) {
+// suggested and needs to be tested
+// frappe.realtime.on("sync_complete", function (data) {
 //     frappe.show_alert({
-//         message: `✅ Sync for ${data.doctype} completed.`,
-//         indicator: 'green'
+//         message: "🎉 Sync Complete!",
+//         indicator: "green"
 //     });
+
+//     const frm = frappe.active_form || cur_frm;
+
+//     if (frm && frm.doc && !frm.doc.__islocal) {
+//         frm.sync_in_progress = false;
+
+//         // Force reload from the server to get updated fields like custom_is_sync
+//         frappe.model.with_doc(frm.doctype, frm.doc.name, function () {
+//             frm.refresh();
+//         });
+//     }
 // });
+
 frappe.realtime.on("sync_complete", function (data) {
     frappe.show_alert({
         message: "🎉 Sync Complete!",
