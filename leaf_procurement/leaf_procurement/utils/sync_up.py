@@ -96,40 +96,39 @@ def update_missing_gtn_in_audits():
 
 @frappe.whitelist()
 def run_gtn_audit_sync_tool():
-    doc = frappe.get_doc("GTN Audit Sync Tool")  # Assuming single-type Doctype
-    log = []
-
+    doc = frappe.get_doc("GTN Audit Sync Tool")
     try:
-        details = frappe.db.get_all("Bale Audit Detail", 
-            filters={"gtn_number": ["is", "not set"]},
-            fields=["name", "bale_barcode"],
-            order_by="modified desc"
-        )
-
-        for detail in details:
-            if detail.bale_barcode:
-                try:
-                    update_bale_audit_from_gtn(detail.bale_barcode)
-                    log.append(f"{detail.bale_barcode} ✅")
-                except Exception as e:
-                    frappe.log_error("GTN Audit Sync Error", frappe.get_traceback())
-                    log.append(f"{detail.bale_barcode} ❌")
-            else:
-                frappe.log_error("GTN Audit Sync Error", "Bale Barcode Not Found: " + detail.name)
-                log.append(f"{detail.bale_barcode} ❌")       
+        frappe.db.sql("""
+            UPDATE `tabBale Audit Detail` AS bad
+            LEFT JOIN `tabGoods Transfer Note Items` AS gtni
+                ON bad.bale_barcode = gtni.bale_barcode
+            LEFT JOIN `tabGoods Transfer Note` AS gtn
+                ON gtni.parent = gtn.name
+            SET 
+                bad.gtn_number = gtn.name,
+                bad.truck_number = gtn.vehicle_number,
+                bad.tsa_number = gtn.tsa_number,
+                bad.advance_weight = gtni.weight
+            WHERE 
+                bad.gtn_number IS NULL 
+                AND bad.bale_barcode IS NOT NULL
+        """)
+        frappe.db.commit()
 
         doc.last_run_time = frappe.utils.now()
         doc.run_status = "Completed"
-        doc.log = "\n".join(log)
+        doc.log = "Batch sync completed using SQL."
         doc.save()
         frappe.db.commit()
 
-    except Exception:
+    except Exception as e:
+        frappe.log_error("GTN Audit Batch Sync Error", frappe.get_traceback())
         doc.run_status = "Failed"
         doc.log = frappe.get_traceback()
         doc.save()
         frappe.db.commit()
         frappe.throw("Error occurred during sync. Check log.")
+
 
 
 def sync_up_worker(values: dict, user=None):
