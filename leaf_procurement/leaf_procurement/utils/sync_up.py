@@ -111,9 +111,12 @@ def run_gtn_audit_sync_tool():
                     update_bale_audit_from_gtn(detail.bale_barcode)
                     log.append(f"{detail.bale_barcode} ✅")
                 except Exception as e:
-                    frappe.log_error(frappe.get_traceback(), "GTN Audit Sync Error")
+                    frappe.log_error("GTN Audit Sync Error", frappe.get_traceback())
                     log.append(f"{detail.bale_barcode} ❌")
-
+            else:
+                frappe.log_error("GTN Audit Sync Error", "Bale Barcode Not Found: " + detail.name)
+                log.append(f"{detail.bale_barcode} ❌")       
+                          
         doc.last_run_time = frappe.utils.now()
         doc.run_status = "Completed"
         doc.log = "\n".join(log)

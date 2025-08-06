@@ -37,6 +37,21 @@ def get_columns():
 
 def get_data(filters):
 	conditions = get_filters(filters)
+# SELECT
+#     bad.bale_barcode AS bale_barcode,
+#     ba.location_warehouse AS location_warehouse,
+#     ba.location_warehouse AS l_warehouse,  -- redundant, but kept as per your original query
+#     ba.date AS date,
+#     bad.tsa_number AS tsa,
+#     bad.gtn_number AS gtn,
+#     bad.truck_number AS truck_number,
+#     bad.advance_weight AS advance_weight,
+#     IFNULL(bad.weight, 0) AS re_weight,
+#     IFNULL(bad.weight, 0) - bad.advance_weight AS weight_difference,
+#     1 AS bales
+# FROM `tabBale Audit Detail` AS bad
+# LEFT JOIN `tabBale Audit` AS ba ON bad.parent = ba.name
+# WHERE ba.docstatus = 1
 
 	data = frappe.db.sql(f"""
 		SELECT

@@ -44,6 +44,24 @@ def get_columns():
 def get_data(filters):
     sql_conditions, params = get_filters(filters)
 
+# SELECT
+#     gtn.name AS gtn_code,
+#     gtn.location_warehouse AS depot_name,
+#     COUNT(gtni.bale_barcode) AS t_no_of_bale,
+#     IFNULL(SUM(gtni.weight), 0) AS gtn_adv_wt,
+#     COUNT(DISTINCT bad.bale_barcode) AS no_of_bale,
+#     IFNULL(SUM(bad.advance_weight), 0) AS advance_weight,
+#     IFNULL(SUM(bad.weight), 0) AS re_weighment,
+#     IFNULL(SUM(bad.weight), 0) - IFNULL(SUM(bad.advance_weight), 0) AS diff
+# FROM `tabGoods Transfer Note` AS gtn
+# LEFT JOIN `tabGoods Transfer Note Items` AS gtni ON gtn.name = gtni.parent
+# LEFT JOIN `tabBale Audit Detail` AS bad ON bad.bale_barcode = gtni.bale_barcode
+# WHERE 
+#     gtn.docstatus = 1
+#    # AND gtn.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+# GROUP BY gtn.name, gtn.location_warehouse
+# ORDER BY gtn.name
+
     # This optimized query uses subqueries to pre-aggregate data
     # and a HAVING clause to filter at the database level.
     data = frappe.db.sql(f"""

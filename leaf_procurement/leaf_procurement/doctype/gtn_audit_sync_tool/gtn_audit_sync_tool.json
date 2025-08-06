@@ -15,7 +15,8 @@
   {
    "fieldname": "last_run_time",
    "fieldtype": "Datetime",
-   "label": "Last Run Time"
+   "label": "Last Run Time",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_tsev",
@@ -25,7 +26,8 @@
    "fieldname": "run_status",
    "fieldtype": "Select",
    "label": "Run Status",
-   "options": "Completed\nFailed"
+   "options": "Completed\nFailed",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_tgvv",
@@ -34,14 +36,15 @@
   {
    "fieldname": "log",
    "fieldtype": "Small Text",
-   "label": "Log"
+   "label": "Log",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-05 19:44:14.440247",
+ "modified": "2025-08-06 14:01:58.115306",
  "modified_by": "tlyh1@samsons.com",
  "module": "Leaf Procurement",
  "name": "GTN Audit Sync Tool",
