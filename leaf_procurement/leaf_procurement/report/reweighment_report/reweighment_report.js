@@ -7,7 +7,14 @@ frappe.query_reports["Reweighment Report"] = {
 		{
             fieldname: "date",
             fieldtype: "Date",
-            label: "Date",
+            label: "From Date",
+            mandatory: 1,
+            default: "Today",
+        },
+        {
+            fieldname: "todate",
+            fieldtype: "Date",
+            label: "To Date",
             mandatory: 1,
             default: "Today",
         },
