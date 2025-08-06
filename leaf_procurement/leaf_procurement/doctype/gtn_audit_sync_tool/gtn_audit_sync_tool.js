@@ -4,7 +4,7 @@
 frappe.ui.form.on("GTN Audit Sync Tool", {
     refresh(frm) {
         frm.add_custom_button("🔁 Sync Missing GTN in Audit", () => {
-            frappe.show_progress("Syncing GTNs", 0, 100, "Starting...");
+          //  frappe.show_progress("Syncing GTNs", 0, 100, "Starting...");
 
             frappe.call({
                 method: "leaf_procurement.leaf_procurement.utils.sync_up.run_gtn_audit_sync_tool",

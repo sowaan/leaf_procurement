@@ -100,9 +100,9 @@ def run_gtn_audit_sync_tool():
     try:
         frappe.db.sql("""
             UPDATE `tabBale Audit Detail` AS bad
-            LEFT JOIN `tabGoods Transfer Note Items` AS gtni
+            JOIN `tabGoods Transfer Note Items` AS gtni
                 ON bad.bale_barcode = gtni.bale_barcode
-            LEFT JOIN `tabGoods Transfer Note` AS gtn
+            JOIN `tabGoods Transfer Note` AS gtn
                 ON gtni.parent = gtn.name
             SET 
                 bad.gtn_number = gtn.name,
@@ -110,7 +110,7 @@ def run_gtn_audit_sync_tool():
                 bad.tsa_number = gtn.tsa_number,
                 bad.advance_weight = gtni.weight
             WHERE 
-                bad.gtn_number IS NULL 
+                bad.gtn_number IS NULL
                 AND bad.bale_barcode IS NOT NULL
         """)
         frappe.db.commit()
@@ -120,7 +120,8 @@ def run_gtn_audit_sync_tool():
         doc.log = "Batch sync completed using SQL."
         doc.save()
         frappe.db.commit()
-
+        frappe.msgprint("GTN Audit sync completed.")
+        
     except Exception as e:
         frappe.log_error("GTN Audit Batch Sync Error", frappe.get_traceback())
         doc.run_status = "Failed"
