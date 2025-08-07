@@ -83,6 +83,7 @@
   {
    "fieldname": "weight_difference",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Weight Difference"
   },
   {
@@ -94,7 +95,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-07 16:09:04.040613",
+ "modified": "2025-08-07 17:14:01.064498",
  "modified_by": "tlyh1@samsons.com",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",
