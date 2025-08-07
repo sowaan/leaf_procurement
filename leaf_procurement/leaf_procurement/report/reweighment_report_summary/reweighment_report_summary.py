@@ -17,12 +17,13 @@ def get_filters(filters):
     if not filters:
         filters = frappe._dict()
 
-    if filters.get("date"):
-        conditions.append("gtn_base.date = %(date)s")
-        params["date"] = filters.date
+    if filters.get("from_date") and filters.get("to_date"):
+        conditions.append("ba.date BETWEEN %(from_date)s AND %(to_date)s")
+        params["from_date"] = filters.from_date
+        params["to_date"] = filters.to_date
 
     if filters.get("depot"):
-        conditions.append("gtn_base.location_warehouse = %(depot)s")
+        conditions.append("ba.location_warehouse = %(depot)s")
         params["depot"] = filters.depot
 
     # Return the condition string and the parameters for the query
@@ -67,41 +68,41 @@ def get_data(filters):
     # and a HAVING clause to filter at the database level.
     data = frappe.db.sql(f"""
         SELECT
-            gtn.gtn_code,
-            gtn.depot_name,
-            gtn.t_no_of_bale,
-            gtn.gtn_adv_wt,
+            gtn.gtn_number AS gtn_code,
+            gtn.location_warehouse AS depot_name,
+            gtn.total_bales AS t_no_of_bale,
+            gtn.total_advance_weight AS gtn_adv_wt,
             IFNULL(audited.no_of_bale, 0) AS no_of_bale,
             IFNULL(audited.advance_wt, 0) AS advance_wt,
             IFNULL(audited.re_weighment, 0) AS re_weighment,
             IFNULL(audited.re_weighment - audited.advance_wt, 0) AS diff
         FROM (
-            -- Subquery 1: Get totals for ALL bales in each GTN
+            -- Subquery 1: Get totals for ALL bales grouped by GTN
             SELECT
-                gtn_base.name AS gtn_code,
-                gtn_base.location_warehouse AS depot_name,
-                COUNT(gtni.name) AS t_no_of_bale,
-                SUM(gtni.weight) AS gtn_adv_wt
-            FROM `tabGoods Transfer Note` AS gtn_base
-            LEFT JOIN `tabGoods Transfer Note Items` AS gtni ON gtn_base.name = gtni.parent
-            WHERE gtn_base.docstatus = 1 {sql_conditions}
-            GROUP BY gtn_base.name
-        ) AS gtn
-        -- Use an INNER JOIN because we only want GTNs with audited bales
-        INNER JOIN (
-            -- Subquery 2: Get totals for ONLY the audited bales
-            SELECT
-                gtni.parent AS gtn_code,
-                COUNT(bad.name) AS no_of_bale,
-                SUM(gtni.weight) AS advance_wt,
-                SUM(bad.weight) AS re_weighment
+                bad.gtn_number,
+                ba.location_warehouse,
+                COUNT(bad.name) AS total_bales,
+                SUM(ROUND(bad.advance_weight, 2)) AS total_advance_weight
             FROM `tabBale Audit Detail` AS bad
-            INNER JOIN `tabGoods Transfer Note Items` AS gtni ON bad.bale_barcode = gtni.bale_barcode
-            GROUP BY gtni.parent
-            -- OPTIMIZED: Filter groups here instead of in Python
+            LEFT JOIN `tabBale Audit` AS ba ON bad.parent = ba.name
+            WHERE ba.docstatus = 1 {sql_conditions}
+            GROUP BY bad.gtn_number, ba.location_warehouse
+        ) AS gtn
+        INNER JOIN (
+            -- Subquery 2: Get totals for audited bales having re_weight > 0
+            SELECT
+                bad.gtn_number,
+                COUNT(bad.name) AS no_of_bale,
+                SUM(ROUND(bad.advance_weight, 2)) AS advance_wt,
+                SUM(ROUND(bad.weight, 2)) AS re_weighment
+            FROM `tabBale Audit Detail` AS bad
+            LEFT JOIN `tabBale Audit` AS ba ON bad.parent = ba.name
+            WHERE ba.docstatus = 1 {sql_conditions}
+            GROUP BY bad.gtn_number
             HAVING SUM(bad.weight) > 0
-        ) AS audited ON gtn.gtn_code = audited.gtn_code
-        ORDER BY gtn.gtn_code
+        ) AS audited ON gtn.gtn_number = audited.gtn_number
+        ORDER BY gtn.gtn_number
     """, params, as_dict=True)
+
 
     return data

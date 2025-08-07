@@ -4,9 +4,16 @@
 frappe.query_reports["Reweighment Report Summary"] = {
 	"filters": [
 		{
-            fieldname: "date",
+            fieldname: "from_date",
             fieldtype: "Date",
-            label: "Date",
+            label: "From Date",
+            default: "Today",
+            mandatory: 1
+        },
+        {
+            fieldname: "to_date",
+            fieldtype: "Date",
+            label: "To Date",
             default: "Today",
             mandatory: 1
         },
