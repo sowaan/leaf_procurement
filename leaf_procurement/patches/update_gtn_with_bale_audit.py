@@ -7,8 +7,7 @@ def execute():
             ON gtni.bale_barcode = bad.bale_barcode
         SET 
             gtni.audit_weight = bad.weight,
-            gtni.audit_remarks = bad.bale_remarks,
-            gtni.weight_difference = IFNULL(gtni.weight, 0) - IFNULL(bad.weight, 0)
+            gtni.audit_remarks = bad.bale_remarks
         WHERE 
             gtni.audit_weight IS NULL
             AND gtni.bale_barcode IS NOT NULL

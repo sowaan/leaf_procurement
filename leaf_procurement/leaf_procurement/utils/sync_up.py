@@ -56,7 +56,7 @@ def update_gtn_from_bale_audit(bale_barcode: str):
         frappe.db.set_value("Goods Transfer Note Items", gtn_item.name, {
             "audit_weight": audit_detail.weight,
             "audit_remarks": audit_detail.bale_remarks,
-            "weight_difference": float(gtn_item.weight or 0) - float(audit_detail.weight or 0),
+            # ,"weight_difference": float(gtn_item.weight or 0) - float(audit_detail.weight or 0),
         })
         frappe.db.commit()
 
