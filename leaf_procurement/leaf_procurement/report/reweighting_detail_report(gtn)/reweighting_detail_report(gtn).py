@@ -76,9 +76,9 @@ def get_data(filters):
 			gtn.name AS gtn,
 			gtn.vehicle_number AS truck_number,
 			gtni.weight AS advance_weight,
-			0 AS re_weight,
-			(0 - gtni.weight) AS weight_difference,
-			'' AS Remarks,
+			gtni.audit_weight AS re_weight,
+			(gtni.audit_weight - gtni.weight) AS weight_difference,
+			gtni.audit_remarks AS Remarks,
 			1 AS bales
 		FROM `tabGoods Transfer Note Items` gtni
 		LEFT JOIN `tabGoods Transfer Note` gtn ON gtni.parent = gtn.name

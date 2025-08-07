@@ -7,3 +7,4 @@
 leaf_procurement.patches.remove_add_total_from_reports
 leaf_procurement.patches.put_add_total_in_reports
 leaf_procurement.patches.update_bale_audit_with_gtn
+leaf_procurement.patches.update_gtn_with_bale_audit

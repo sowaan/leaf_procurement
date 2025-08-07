@@ -6,6 +6,7 @@ import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 from leaf_procurement.leaf_procurement.utils.sync_up import create_goods_transfer_note
 from leaf_procurement.leaf_procurement.utils.sync_up import update_audit_details_from_gtn
+from leaf_procurement.leaf_procurement.utils.sync_up import update_gtn_details_from_audit
 
 
 def create_company(settings, headers, data):
@@ -798,7 +799,13 @@ def bale_audit(bale_audit):
 		job_name=f"Update Audit Details {doc.name}",
 		audit_name=doc.name
 	)
-			
+
+	frappe.enqueue(
+		method=update_gtn_details_from_audit,
+		queue="long",  # or 'long' if many audits
+		job_name=f"Update GTN Details {doc.name}",
+		audit_name=doc.name
+	)	
 	return doc.name
 
 @frappe.whitelist()

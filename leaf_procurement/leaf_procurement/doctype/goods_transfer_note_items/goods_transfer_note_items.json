@@ -13,7 +13,10 @@
   "lot_number",
   "item_grade",
   "item_sub_grade",
-  "reclassification_grade"
+  "reclassification_grade",
+  "audit_weight",
+  "weight_difference",
+  "audit_remarks"
  ],
  "fields": [
   {
@@ -71,13 +74,28 @@
    "in_list_view": 1,
    "label": "Reclassified Grade",
    "options": "Reclassification Grade"
+  },
+  {
+   "fieldname": "audit_weight",
+   "fieldtype": "Read Only",
+   "label": "Audit Weight"
+  },
+  {
+   "fieldname": "weight_difference",
+   "fieldtype": "Read Only",
+   "label": "Weight Difference"
+  },
+  {
+   "fieldname": "audit_remarks",
+   "fieldtype": "Read Only",
+   "label": "Audit Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-19 09:07:41.678430",
- "modified_by": "Administrator",
+ "modified": "2025-08-07 16:09:04.040613",
+ "modified_by": "tlyh1@samsons.com",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",
  "owner": "Administrator",
