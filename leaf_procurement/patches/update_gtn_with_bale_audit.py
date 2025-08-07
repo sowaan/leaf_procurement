@@ -11,8 +11,5 @@ def execute():
         WHERE 
             gtni.audit_weight IS NULL
             AND gtni.bale_barcode IS NOT NULL
-            AND gtni.docstatus = 1
-            AND bad.docstatus = 1;
-
     """)
     frappe.logger().info(f"{affected} rows updated in Bale Audit Detail via GTN patch")
