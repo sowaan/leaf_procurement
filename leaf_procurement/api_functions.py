@@ -702,7 +702,7 @@ def purchase_invoice(purchase_invoice):
 	invoice.company = purchase_invoice.get("company")
 	invoice.set_posting_time = purchase_invoice.get("set_posting_time")
 	invoice.update_stock = purchase_invoice.get("update_stock")
-	invoice.set_warehouse = purchase_invoice.get("warehouse")
+	invoice.set_warehouse = purchase_invoice.get("set_warehouse")
 	invoice.rejected_warehouse = purchase_invoice.get("rejected_warehouse")
 	invoice.due_date = purchase_invoice.get("due_date")
 	invoice.custom_barcode = purchase_invoice.get("custom_barcode")
