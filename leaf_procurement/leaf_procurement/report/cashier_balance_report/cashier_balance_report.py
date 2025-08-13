@@ -27,20 +27,25 @@ def get_data(filters):
 
     conditions_str = " AND ".join(conditions)
 
-    return frappe.db.sql(f"""
+    sqlquery = frappe.db.sql(f"""
         SELECT
             pe.posting_date,
             pe.mode_of_payment,
-            COALESCE(SUM(pe.paid_amount), 0) AS amount_received,
+            COALESCE(SUM(ge.debit), 0) AS amount_received,
             COALESCE(COUNT(DISTINCT pe.name), 0) AS voucher_count,
-            COALESCE(SUM(ge.debit), 0) AS encashed_amount,
-            (COALESCE(SUM(pe.paid_amount), 0) - COALESCE(SUM(ge.debit), 0)) AS cash_balance
+            COALESCE(SUM(pe.paid_amount), 0) AS encashed_amount,
+            0 AS cash_balance
         FROM (SELECT * FROM `tabPayment Entry` WHERE {conditions_str}) pe
         JOIN `tabGL Entry` ge 
             ON pe.name = ge.voucher_no 
+            AND ge.account = pe.paid_from
             AND ge.voucher_type = 'Payment Entry'
             AND ge.is_cancelled = 0
-            AND ge.debit > 0
         GROUP BY pe.mode_of_payment
         ORDER BY pe.posting_date, pe.mode_of_payment
     """, filters, as_dict=True)
+
+    for row in sqlquery:
+        row.cash_balance = (row.amount_received or 0) - (row.encashed_amount or 0)
+
+    return sqlquery

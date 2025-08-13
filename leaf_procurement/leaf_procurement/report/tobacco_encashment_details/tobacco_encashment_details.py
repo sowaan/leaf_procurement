@@ -36,13 +36,14 @@ def get_data(filters):
 
     raw_data = frappe.db.sql(f"""
         SELECT
+            DISTINCT pi.name AS voucher,
             pi_item.warehouse AS depot_description,
-            pi.name AS voucher,
-            pi_item.qty AS qty,
+            pi.total_qty AS qty,
             pi.grand_total AS amount,
             pi.status AS status
         FROM (SELECT * FROM `tabPurchase Invoice` WHERE {condition_str}) pi
         JOIN (SELECT * FROM `tabPurchase Invoice Item` WHERE {pii_conditions}) pi_item ON pi.name = pi_item.parent
+        GROUP BY pi.name, pi_item.warehouse
     """, filters, as_dict=True)
 
     results = {}
@@ -61,7 +62,7 @@ def get_data(filters):
                 "encashed_amount": 0,
                 "payable_vouchers": set(),
                 "payable_kgs": 0,
-                "payable_amount": 0,
+                "payable_amount": 0
             }
 
         r = results[depot]
