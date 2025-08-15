@@ -709,8 +709,8 @@ def purchase_invoice(purchase_invoice):
 	invoice.currency = purchase_invoice.get("currency")
 	invoice.conversion_rate = purchase_invoice.get("conversion_rate")
 	invoice.is_return = purchase_invoice.get("is_return")
-	invoice.buying_price_list = purchase_invoice.get("buying_price_list")
-	invoice.price_list_currency = purchase_invoice.get("price_list_currency")
+	# invoice.buying_price_list = purchase_invoice.get("buying_price_list")
+	# invoice.price_list_currency = purchase_invoice.get("price_list_currency")
 	invoice.plc_conversion_rate = purchase_invoice.get("plc_conversion_rate")
 	invoice.custom_short_code = purchase_invoice.get("custom_short_code")
 	invoice.docstatus = purchase_invoice.get("docstatus", 0)
@@ -738,6 +738,7 @@ def purchase_invoice(purchase_invoice):
 			"price_list_rate": detail.get("rate"),
 			"uom": detail.get("uom"),
 			"description": detail.get("description"),
+			"apply_price_list": 0
 		}
 
 		# Only include optional fields if they have a meaningful value
