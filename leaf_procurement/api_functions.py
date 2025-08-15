@@ -735,6 +735,7 @@ def purchase_invoice(purchase_invoice):
 			"item_code": detail.get("item_code"),
 			"qty": detail.get("qty"),
 			"rate": detail.get("rate"),
+			"price_list_rate": detail.get("rate"),
 			"uom": detail.get("uom"),
 			"description": detail.get("description"),
 		}
