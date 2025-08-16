@@ -721,6 +721,7 @@ def purchase_invoice(purchase_invoice):
 	invoice.apply_price_list = 0
 	invoice.ignore_pricing_rule = 1
 
+	
 	# Rejected items
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
 		if rejected.get("batch_no"):
@@ -735,6 +736,9 @@ def purchase_invoice(purchase_invoice):
 		item_data = {
 			"item_code": detail.get("item_code"),
 			"qty": detail.get("qty"),
+			"received_qty":detail.get("qty"),
+			"apply_price_list": 0,  # Disable price list at item level
+			"ignore_pricing_rule": 1,  # Disable pricing rules at item level
 			"rate": detail.get("rate"),
 			"price_list_rate": detail.get("rate"),   # Keep equal
 			"uom": detail.get("uom"),
@@ -753,11 +757,7 @@ def purchase_invoice(purchase_invoice):
 
 		invoice.append("items", item_data)
 
-	# Safeguard: reset rates & discounts before saving
-	for item in invoice.items:
-		item.price_list_rate = item.rate
-		item.discount_percentage = 0
-		item.discount_amount = 0
+
 
 	invoice.insert()
 	frappe.db.commit()
