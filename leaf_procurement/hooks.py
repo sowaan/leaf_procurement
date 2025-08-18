@@ -192,7 +192,8 @@ before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 # after_uninstall = "leaf_procurement.uninstall.after_uninstall"
 
 after_migrate = [
-    "leaf_procurement.setup.setup_hooks.set_supplier_naming_series"
+    "leaf_procurement.setup.setup_hooks.set_supplier_naming_series",
+    "leaf_procurement.patches.fix_purchase_invoice_procedure.execute",
 ]
 
 

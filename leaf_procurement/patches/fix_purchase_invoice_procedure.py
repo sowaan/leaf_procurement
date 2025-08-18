@@ -4,6 +4,8 @@ def execute():
     # Drop procedure if it exists
     frappe.db.sql("DROP PROCEDURE IF EXISTS fix_purchase_invoice_rates")
 
+    # CALL fix_purchase_invoice_rates('TDP-2025-ACC-PINV-00003', 'Jamal Garhi-1 Depot', 'TOBACCO');
+
     # Now create procedure
     frappe.db.sql("""
     CREATE PROCEDURE fix_purchase_invoice_rates(
@@ -16,23 +18,26 @@ def execute():
         SET SQL_SAFE_UPDATES = 0;
 
         -- 1. Update Purchase Invoice Items
-        UPDATE `tabPurchase Invoice Item` pii
-        JOIN `tabItem Grade Price` igp 
-          ON pii.item_code = igp.item
-         AND pii.grade = igp.item_grade
-         AND pii.sub_grade = igp.item_sub_grade
-         AND igp.location_warehouse = in_warehouse
-        SET pii.rate = igp.rate,
-            pii.price_list_rate = igp.rate,
-            pii.base_price_list_rate = igp.rate,
-            pii.base_rate = igp.rate,
-            pii.net_rate = igp.rate,
-            pii.amount = pii.qty * igp.rate,
-            pii.base_amount = pii.qty * igp.rate,
-            pii.net_amount = pii.qty * igp.rate,
-            pii.base_net_amount = pii.qty * igp.rate
-        WHERE pii.parent = in_invoice_no
-          AND pii.item_code = in_item_code;
+      UPDATE `tabPurchase Invoice Item` pii
+      JOIN (
+          SELECT item, item_grade, item_sub_grade, location_warehouse, MAX(rate) AS rate
+          FROM `tabItem Grade Price`
+                  where location_warehouse = in_warehouse
+          GROUP BY item, item_grade, item_sub_grade, location_warehouse
+      ) igp
+        ON pii.item_code = igp.item
+      AND pii.grade = igp.item_grade
+      AND pii.sub_grade = igp.item_sub_grade
+      SET pii.rate = igp.rate,
+          pii.price_list_rate = igp.rate,
+          pii.base_price_list_rate = igp.rate,
+          pii.base_rate = igp.rate,
+          pii.net_rate = igp.rate,
+          pii.amount = pii.qty * igp.rate,
+          pii.base_amount = pii.qty * igp.rate,
+          pii.net_amount = pii.qty * igp.rate,
+          pii.base_net_amount = pii.qty * igp.rate
+      WHERE pii.parent = in_invoice_no;
 
         -- 2. Update Serial & Batch Entry rows
         UPDATE `tabSerial and Batch Entry` sbbe
@@ -123,6 +128,27 @@ def execute():
         WHERE voucher_type = 'Purchase Invoice'
           AND voucher_no = in_invoice_no
           AND credit > 0;
+
+        -- 6. Update Purchase Invoice header totals
+        UPDATE `tabPurchase Invoice` pi
+        JOIN (
+            SELECT 
+                parent,
+                SUM(base_amount) AS base_total,
+                SUM(net_amount) AS net_total
+            FROM `tabPurchase Invoice Item`
+            WHERE parent = in_invoice_no
+            GROUP BY parent
+        ) x ON x.parent = pi.name
+        SET pi.total = x.net_total,
+            pi.base_total = x.base_total,
+            pi.net_total = x.net_total,
+            pi.base_net_total = x.base_total,
+            pi.grand_total = x.net_total,
+            pi.rounded_total = x.net_total,
+            pi.base_grand_total = x.base_total,
+            pi.outstanding_amount = x.base_total - pi.paid_amount
+        WHERE pi.name = in_invoice_no;
 
         -- re-enable safe updates
         SET SQL_SAFE_UPDATES = 1;
