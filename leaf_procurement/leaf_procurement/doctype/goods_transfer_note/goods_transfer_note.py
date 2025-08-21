@@ -103,7 +103,7 @@ def create_stock_entry_from_gtn(gtn_doc):
     stock_entry.custom_receiving_warehouse = gtn_doc.receiving_location
     
     stock_entry.posting_date = gtn_doc.date 
-    stock_entry.posting_time = "23:55:00"
+    stock_entry.posting_time = "22:55:00"
     stock_entry.purpose = "Material Transfer"
     stock_entry.custom_gtn_number = gtn_doc.name  # custom field if needed
     stock_entry.set_posting_time = 1
@@ -116,8 +116,8 @@ def create_stock_entry_from_gtn(gtn_doc):
             "item_code": gtn_doc.default_item,
             "qty": row.weight,
             "basic_rate": row.rate,
-            # "s_warehouse": gtn_doc.location_warehouse,
-            # "t_warehouse": gtn_doc.receiving_location,
+            "s_warehouse": gtn_doc.location_warehouse,
+            "t_warehouse": gtn_doc.transit_location,
             "use_serial_batch_fields": 1,
             "batch_no": row.bale_barcode,
 			"lot_number": row.lot_number,
