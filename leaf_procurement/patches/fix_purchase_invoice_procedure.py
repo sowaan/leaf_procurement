@@ -81,74 +81,71 @@ def execute():
           AND sle.voucher_no = in_invoice_no
           AND sle.item_code = in_item_code;
 
-        -- 5a. Update GL Entries (debit side)
-        UPDATE `tabGL Entry`
-        SET debit = (
-                SELECT SUM(base_amount) 
-                FROM `tabPurchase Invoice Item` 
-                WHERE parent = in_invoice_no
-            ),
-            debit_in_account_currency = (
-                SELECT SUM(base_amount) 
-                FROM `tabPurchase Invoice Item` 
-                WHERE parent = in_invoice_no
-            ),
-            debit_in_transaction_currency = (
-                SELECT SUM(base_amount) 
-                FROM `tabPurchase Invoice Item` 
-                WHERE parent = in_invoice_no
-            ),
-            credit = 0,
-            credit_in_account_currency = 0,
-            credit_in_transaction_currency = 0
+        SET @net_total = 0;
+        SET @base_total = 0;
+
+        -- Get totals from items
+        SELECT 
+            SUM(base_amount), 
+            SUM(net_amount)
+        INTO @base_total, @net_total
+        FROM `tabPurchase Invoice Item`
+        WHERE parent = in_invoice_no;
+
+        -- Round values
+        SET @rounded_total = ROUND(@net_total, 0);
+        SET @rounding_adj = @rounded_total - @net_total;
+
+        -- 5. Delete old Round Off GL entries as they will be recreated
+        DELETE FROM `tabGL Entry`
         WHERE voucher_type = 'Purchase Invoice'
           AND voucher_no = in_invoice_no
-          AND debit > 0;
+          AND account = '5212 - Round Off - SG';
+                                                      
+        -- 5a. Update GL Entries (debit side)
+        UPDATE `tabGL Entry`
+        SET debit = @net_total, credit = 0
+        WHERE voucher_type = 'Purchase Invoice'
+          AND voucher_no = in_invoice_no
+          AND account = '1410 - Stock In Hand - SG';
 
         -- 5b. Update GL Entries (credit side)
         UPDATE `tabGL Entry`
-        SET credit = (
-                SELECT SUM(base_amount) 
-                FROM `tabPurchase Invoice Item` 
-                WHERE parent = in_invoice_no
-            ),
-            credit_in_account_currency = (
-                SELECT SUM(base_amount) 
-                FROM `tabPurchase Invoice Item` 
-                WHERE parent = in_invoice_no
-            ),
-            credit_in_transaction_currency = (
-                SELECT SUM(base_amount) 
-                FROM `tabPurchase Invoice Item` 
-                WHERE parent = in_invoice_no
-            ),
-            debit = 0,
-            debit_in_account_currency = 0,
-            debit_in_transaction_currency = 0
+        SET credit = @rounded_total, debit = 0
         WHERE voucher_type = 'Purchase Invoice'
           AND voucher_no = in_invoice_no
-          AND credit > 0;
+          AND account = '2110 - Creditors - SG';
+
+        -- 5c. Insert new Round Off GL entry
+
+        -- Insert Round Off Entry if needed
+        IF @rounding_adj <> 0 THEN
+            INSERT INTO `tabGL Entry` (
+                name, creation, modified, modified_by, owner,
+                docstatus, parent, parentfield, parenttype,
+                account, debit, credit, voucher_type, voucher_no, company
+            ) VALUES (
+                UUID(), NOW(), NOW(), 'Administrator', 'Administrator',
+                1, NULL, NULL, NULL,
+                '5212 - Round Off - SG',
+                CASE WHEN @rounding_adj > 0 THEN @rounding_adj ELSE 0 END,
+                CASE WHEN @rounding_adj < 0 THEN ABS(@rounding_adj) ELSE 0 END,
+                'Purchase Invoice', in_invoice_no, 'Samsons Group'
+            );
+        END IF;                  
 
         -- 6. Update Purchase Invoice header totals
-        UPDATE `tabPurchase Invoice` pi
-        JOIN (
-            SELECT 
-                parent,
-                SUM(base_amount) AS base_total,
-                SUM(net_amount) AS net_total
-            FROM `tabPurchase Invoice Item`
-            WHERE parent = in_invoice_no
-            GROUP BY parent
-        ) x ON x.parent = pi.name
-        SET pi.total = x.net_total,
-            pi.base_total = x.base_total,
-            pi.net_total = x.net_total,
-            pi.base_net_total = x.base_total,
-            pi.grand_total = x.net_total,
-            pi.rounded_total = x.net_total,
-            pi.base_grand_total = x.base_total,
-            pi.outstanding_amount = x.base_total - pi.paid_amount
-        WHERE pi.name = in_invoice_no;
+        UPDATE `tabPurchase Invoice`
+        SET total = @net_total,
+            base_total = @base_total,
+            net_total = @net_total,
+            base_net_total = @base_total,
+            grand_total = @net_total,
+            rounded_total = @rounded_total,
+            base_grand_total = @base_total,
+            rounding_adjustment = @rounding_adj,
+            outstanding_amount = @rounded_total - paid_amount
+        WHERE name = in_invoice_no;
 
         -- re-enable safe updates
         SET SQL_SAFE_UPDATES = 1;
