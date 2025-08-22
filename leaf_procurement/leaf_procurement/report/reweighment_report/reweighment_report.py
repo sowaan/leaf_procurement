@@ -36,6 +36,7 @@ def get_columns():
 		{"label": "Re-Weight", "fieldname": "re_weight", "fieldtype": "Float", "width": 130},
 		{"label": "Weight Difference", "fieldname": "weight_difference", "fieldtype": "Float", "width": 150},
 		{"label": "Bales", "fieldname": "bales", "fieldtype": "Int", "width": 80},
+		{"label": "Remarks", "fieldname": "bale_remarks", "fieldtype": "Data", "width": 80},
 	]
 
 
@@ -54,7 +55,9 @@ def get_data(filters):
             ROUND(bad.advance_weight,2) as advance_weight,
             ROUND(bad.weight,2) AS re_weight,
             ROUND((bad.weight - bad.advance_weight),2) AS weight_difference,
-            1 AS bales
+            1 AS bales,
+            bad.bale_remarks
+                
         FROM `tabBale Audit Detail` AS bad
         LEFT JOIN `tabBale Audit` AS ba ON bad.parent = ba.name  
         WHERE

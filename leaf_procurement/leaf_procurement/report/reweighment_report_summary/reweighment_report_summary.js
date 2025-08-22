@@ -21,9 +21,21 @@ frappe.query_reports["Reweighment Report Summary"] = {
 			fieldname: "depot",
 			fieldtype: "Link",
 			label: __("Warehouse"),
-			options: "Warehouse"			
+			options: "Warehouse"	,
+                        "get_query": function() {
+                return {
+                    filters: {
+                        "custom_is_depot": 0
+                    }
+                }
+            }		
 		},
-		
+        {
+			fieldname: "gtn",
+			fieldtype: "Link",
+			label: __("GTN umber"),
+			options: "Goods Transfer Note"			
+		},	
         // {
         //     default: "Today",
         //     fieldname: "to_date",
