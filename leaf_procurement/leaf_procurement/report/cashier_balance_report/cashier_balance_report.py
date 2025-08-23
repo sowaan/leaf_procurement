@@ -8,11 +8,11 @@ def execute(filters=None):
 
 def get_columns():
     return [
-        {"label": "Cashier", "fieldname": "mode_of_payment", "fieldtype": "Link", "options": "Mode of Payment", "width": 150},
-        {"label": "Amount Received", "fieldname": "amount_issued", "fieldtype": "Currency", "width": 150},
+        {"label": "Cashier", "fieldname": "mode_of_payment", "fieldtype": "Link", "options": "Mode of Payment", "width": 220},
+        {"label": "Amount Received", "fieldname": "amount_issued", "fieldtype": "Currency", "width": 220},
         {"label": "Encashed (No. of Vouchers)", "fieldname": "voucher_count", "fieldtype": "Int", "width": 220},
-        {"label": "Encashed (Amount)", "fieldname": "encashed_amount", "fieldtype": "Currency", "width": 180},
-        {"label": "Cash Balance with Cashier", "fieldname": "cash_balance", "fieldtype": "Currency", "width": 210}
+        {"label": "Encashed (Amount)", "fieldname": "encashed_amount", "fieldtype": "Currency", "width": 220},
+        {"label": "Cash Balance with Cashier", "fieldname": "cash_balance", "fieldtype": "Currency", "width": 220}
     ]
 
 def get_data(filters):
