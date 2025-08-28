@@ -21,7 +21,8 @@ class GoodsReceivingNote(Document):
         settings = frappe.get_doc("Leaf Procurement Settings")
         self.location_short_code = frappe.db.get_value(
             "Warehouse",
-            settings.get("location_warehouse"),
+            #settings.get("location_warehouse"),
+            self.location_warehouse,
             "custom_short_code"
         )
         prefix = f"{self.location_short_code}-GRN-{year}-"
