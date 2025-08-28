@@ -12,9 +12,10 @@ def execute(filters=None):
         {"label": "Leaf Buying Depot", "fieldname": "leaf_buying_depot", "fieldtype": "Link", "options": "Warehouse", "width": 180},
         {"label": "Net Total", "fieldname": "net_total", "fieldtype": "Currency", "width": 120},
         {"label": "Total Quantity", "fieldname": "total_qty", "fieldtype": "Float", "width": 100},
-        {"label": "Outstanding Amount", "fieldname": "outstanding_amount", "fieldtype": "Currency", "width": 120},
+        {"label": "Amount Due", "fieldname": "outstanding_amount", "fieldtype": "Currency", "width": 120},
         # {"label": "Payment Entry", "fieldname": "payment_entry", "fieldtype": "Link", "options": "Payment Entry", "width": 150},
         {"label": "Payment Date", "fieldname": "payment_date", "fieldtype": "Date", "width": 100},
+        {"label": "Paid Amount", "fieldname": "paid_amount", "fieldtype": "Currency", "width": 100},
         # {"label": "Invoice Status", "fieldname": "status", "fieldtype": "Data", "width": 100},
     ]
 
@@ -53,15 +54,17 @@ SELECT
     pi.total_qty,
     pi.outstanding_amount,
     pi.status,
-    latest.latest_payment_date AS payment_date
+    latest.latest_payment_date AS payment_date,
+    latest.latest_paid_amount AS paid_amount
 FROM `tabPurchase Invoice` pi
-LEFT JOIN `tabSupplier` sup 
+LEFT JOIN `tabSupplier` sup
     ON sup.name = pi.supplier
 LEFT JOIN (
     SELECT 
         per.reference_name,
-        MAX(pe.posting_date) AS latest_payment_date
-    FROM `tabPayment Entry Reference` per
+        MAX(pe.posting_date) AS latest_payment_date,
+        SUM(pe.paid_amount) AS latest_paid_amount 
+    FROM `tabPayment Entry Reference` per 
     INNER JOIN `tabPayment Entry` pe 
         ON pe.name = per.parent
         AND pe.docstatus = 1
