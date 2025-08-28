@@ -67,6 +67,6 @@ def create_stock_entry_from_gtn(grn_doc):
             "parenttype": "Stock Entry"
 		}
         stock_entry.append("items", item)
-    # stock_entry.flags.ignore_mandatory = True
+    stock_entry.flags.ignore_mandatory = True
     stock_entry.insert()
-    #stock_entry.submit()
+    stock_entry.submit()
