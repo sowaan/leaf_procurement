@@ -78,7 +78,7 @@ def get_data(filters):
 			gtni.weight AS advance_weight,
 			gtni.audit_weight AS re_weight,
 			(gtni.audit_weight - gtni.weight) AS weight_difference,
-			gtni.audit_remarks AS Remarks,
+			gtni.audit_remarks AS remarks,
 			1 AS bales
 		FROM `tabGoods Transfer Note Items` gtni
 		LEFT JOIN `tabGoods Transfer Note` gtn ON gtni.parent = gtn.name
