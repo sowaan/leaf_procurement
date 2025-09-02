@@ -176,7 +176,7 @@ function update_audit_display(frm) {
             frm.fields_dict.gtn_detail.grid.grid_rows.forEach(row => {
                 const data = row.doc;
                 if (data.bales_scanned) {
-                    console.log(data.truck_number, data.bales_scanned);
+                    //console.log(data.truck_number, data.bales_scanned);
                     total_items += flt(data.bales_scanned);
                 }
             });
@@ -209,7 +209,14 @@ let html = `
 
 }
 async function validate_bale_data(frm) {
+    if (frm.doc.bale_barcode && !/^\d+$/.test(frm.doc.bale_barcode)) {
+        frappe.show_alert({
+            message: __('Barcode must contain only numbers.'),
+            indicator: "red"
+        });
+        return { valid: false };
 
+    }
     if (frm.doc.gtn_detail.length == 0) {
         frappe.show_alert({
             message: __('Please add record in Truck/GTN details to start adding bales.'),

@@ -45,8 +45,18 @@ class BaleAudit(Document):
         if not day_open:
             frappe.throw(_("⚠️ Audit not permitted because the day is either not opened or already closed for location: " + self.location_warehouse))
         
+        invalid_barcodes = []
+        # ✅ validate barcodes in detail table
+        for row in self.get("detail_table", []):
+            if row.bale_barcode and not row.bale_barcode.isdigit():
+                invalid_barcodes.append(f"Row {row.idx}: {row.bale_barcode}")
+        
+        if invalid_barcodes:
+            error_message = _("The following Bale Barcodes are invalid (only digits allowed):") + "<br><br>"
+            error_message += "<br>".join(invalid_barcodes)
+            frappe.throw(error_message)
+        
 
-    
    #def validate(self):
         # if not self.detail_table or len(self.detail_table) == 0:
         #     frappe.throw(_("Please add at least one row in the Bale Audit Detail table."))
