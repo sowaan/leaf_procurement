@@ -3,8 +3,8 @@ from frappe.utils import now
 
 @frappe.whitelist()
 def change_audit_weight(parent, barcode, new_weight):
-    if frappe.session.user != "Administrator":
-        frappe.throw(_("Only Administrator is allowed to perform this operation."))
+    # if frappe.session.user != "Administrator":
+    #     frappe.throw(_("Only Administrator is allowed to perform this operation."))
 
     # --- Update Bale Audit Detail ---
     for row in frappe.get_all(
