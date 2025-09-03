@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-03 17:18:34.152963",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "bale_barcode",
+  "column_break_mott",
+  "new_weight",
+  "column_break_bcyn",
+  "change_weight",
+  "section_break_jzsj",
+  "detail_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "bale_barcode",
+   "fieldtype": "Data",
+   "label": "Bale Barcode"
+  },
+  {
+   "fieldname": "column_break_mott",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_weight",
+   "fieldtype": "Float",
+   "label": "New Weight"
+  },
+  {
+   "fieldname": "column_break_bcyn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "change_weight",
+   "fieldtype": "Button",
+   "label": "Change Weight"
+  },
+  {
+   "fieldname": "section_break_jzsj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Bale Audit Change Log"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-09-03 17:26:30.897343",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Bale Audit Change",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
