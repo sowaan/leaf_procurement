@@ -5,6 +5,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "section_break_txwk",
   "bale_barcode",
   "column_break_mott",
   "new_bale_barcode",
@@ -62,13 +63,18 @@
   {
    "fieldname": "column_break_xrqb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_txwk",
+   "fieldtype": "Section Break",
+   "label": "You can only update bale id and audited weight in Bale Audit and GTN Documents. "
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-04 14:28:59.109341",
+ "modified": "2025-09-04 16:08:47.689347",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit Change",
