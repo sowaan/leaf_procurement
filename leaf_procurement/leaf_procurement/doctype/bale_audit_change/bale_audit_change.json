@@ -7,8 +7,10 @@
  "field_order": [
   "bale_barcode",
   "column_break_mott",
-  "new_weight",
+  "new_bale_barcode",
   "column_break_bcyn",
+  "new_weight",
+  "column_break_xrqb",
   "change_weight",
   "section_break_jzsj",
   "detail_table"
@@ -17,7 +19,9 @@
   {
    "fieldname": "bale_barcode",
    "fieldtype": "Data",
-   "label": "Bale Barcode"
+   "in_list_view": 1,
+   "label": "Bale Barcode",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_mott",
@@ -26,7 +30,9 @@
   {
    "fieldname": "new_weight",
    "fieldtype": "Float",
-   "label": "New Weight"
+   "in_list_view": 1,
+   "label": "New Weight",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_bcyn",
@@ -45,13 +51,24 @@
    "fieldname": "detail_table",
    "fieldtype": "Table",
    "options": "Bale Audit Change Log"
+  },
+  {
+   "fieldname": "new_bale_barcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "New Bale Barcode",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xrqb",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-03 17:26:30.897343",
+ "modified": "2025-09-04 14:28:59.109341",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Audit Change",
