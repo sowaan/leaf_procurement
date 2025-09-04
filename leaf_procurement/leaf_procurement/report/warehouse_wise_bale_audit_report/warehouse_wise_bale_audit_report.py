@@ -16,10 +16,10 @@ def execute(filters=None):
 
 def get_columns():
     return [
-        {"label": "Warehouse", "fieldname": "warehouse", "fieldtype": "Data", "width": 150},
+        {"label": "Warehouse", "fieldname": "warehouse", "fieldtype": "Data", "width": 250},
         {"label": "Number of Bales", "fieldname": "number_of_bales", "fieldtype": "Int", "width": 130},
         {"label": "Item Grade", "fieldname": "item_grade", "fieldtype": "Data", "width": 100},
-        {"label": "Item Sub Grade", "fieldname": "item_sub_grade", "fieldtype": "Data", "width": 120},
+        # {"label": "Item Sub Grade", "fieldname": "item_sub_grade", "fieldtype": "Data", "width": 120},
         {"label": "Advance Weight (Kgs)", "fieldname": "advance_weight", "fieldtype": "Float", "width": 150},
         {"label": "Re-Weight (Kgs)", "fieldname": "re_weight", "fieldtype": "Float", "width": 140},
         {"label": "Difference (Kgs)", "fieldname": "difference", "fieldtype": "Float", "width": 130},
@@ -32,14 +32,23 @@ def get_data(filters):
     conditions = []
     params = filters.copy()
 
-    if filters.get("date"):
-        conditions.append("grn.date = %(date)s")
+    if filters.get("date") and filters.get("to_date"):
+        conditions.append("grn.date BETWEEN %(date)s AND %(to_date)s")
+    elif filters.get("date"):
+        conditions.append("grn.date >= %(date)s")
+    elif filters.get("to_date"):
+        conditions.append("grn.date <= %(to_date)s")
+
+    # if filters.get("date"):
+    #     conditions.append("grn.date = %(date)s")
+    if filters.get("depot"):
+        conditions.append("grn.dispatch_location = %(depot)s")    
     if filters.get("warehouse"):
         conditions.append("grn.location_warehouse = %(warehouse)s")
     if filters.get("grade"):
         conditions.append("gtni.item_grade = %(grade)s")
-    if filters.get("sub_grade"):
-        conditions.append("gtni.item_sub_grade = %(sub_grade)s")
+    # if filters.get("sub_grade"):
+    #     conditions.append("gtni.item_sub_grade = %(sub_grade)s")
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
@@ -49,7 +58,6 @@ def get_data(filters):
             grn.location_warehouse AS warehouse,
             COUNT(gtni.name) AS number_of_bales,
             gtni.item_grade,
-            gtni.item_sub_grade,
             SUM(gtni.weight) AS advance_weight,
             SUM(IFNULL(bad.weight, 0)) AS re_weight,
             -- Calculation moved directly into SQL
@@ -63,12 +71,11 @@ def get_data(filters):
         FROM `tabGoods Receiving Note` AS grn
         -- This join logic is preserved from your original query
         INNER JOIN `tabGoods Transfer Note Items` AS gtni ON grn.name = gtni.parent
-        LEFT JOIN `tabBale Audit Detail` AS bad ON gtni.bale_barcode = bad.bale_barcode
+        inner JOIN `tabBale Audit Detail` AS bad ON gtni.bale_barcode = bad.bale_barcode
         {where_clause}
         GROUP BY
             grn.location_warehouse,
-            gtni.item_grade,
-            gtni.item_sub_grade
+            gtni.item_grade
         ORDER BY
             grn.location_warehouse,
             gtni.item_grade
