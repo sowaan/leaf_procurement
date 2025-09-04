@@ -81,7 +81,7 @@ def update_bale_audit_from_gtn(bale_barcode: str):
         # Get Bale Audit where this barcode exists
         audit = frappe.get_all(
             "Bale Audit Detail",
-            filters={"bale_barcode": bale_barcode, "gtn_number": ["is", "not set"]},
+            filters={"bale_barcode": bale_barcode},
             fields=["parent", "name"]
         )
 
