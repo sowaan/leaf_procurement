@@ -194,8 +194,8 @@ before_uninstall = "leaf_procurement.uninstall.before_uninstall"
 after_migrate = [
     "leaf_procurement.setup.setup_hooks.set_supplier_naming_series",
     # "leaf_procurement.patches.fix_purchase_invoice_procedure.execute",
-    "leaf_procurement.tasks.audit_taks.update_bale_audit_detail",
-    "leaf_procurement.tasks.audit_taks.update_gtn_with_bale_audit"
+    "leaf_procurement.tasks.audit_tasks.update_bale_audit_detail",
+    "leaf_procurement.tasks.audit_tasks.update_gtn_with_bale_audit"
 ]
 
 
@@ -273,8 +273,8 @@ scheduler_events = {
         ]
     },
     "daily": [
-        "leaf_procurement.tasks.audit_taks.update_bale_audit_detail",
-        "leaf_procurement.tasks.audit_taks.update_gtn_with_bale_audit"
+        "leaf_procurement.tasks.audit_tasks.update_bale_audit_detail",
+        "leaf_procurement.tasks.audit_tasks.update_gtn_with_bale_audit"
     ]    
 # 	"all": [
 # 		"leaf_procurement.tasks.all"

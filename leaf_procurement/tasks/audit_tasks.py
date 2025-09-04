@@ -1,5 +1,6 @@
 import frappe # type: ignore
 
+@frappe.whitelist()
 def update_bale_audit_detail():
     
     try:
@@ -31,7 +32,7 @@ def update_bale_audit_detail():
         frappe.logger().error(f"Error updating Bale Audit Detail: {e}")
 
 
-
+@frappe.whitelist()
 def update_gtn_with_bale_audit():
     try:
         batch_size=5000
