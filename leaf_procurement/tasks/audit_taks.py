@@ -1,7 +1,9 @@
-import frappe
+import frappe # type: ignore
 
-def update_bale_audit_detail(batch_size=5000):
+def update_bale_audit_detail():
+    
     try:
+        batch_size=5000
         affected = frappe.db.sql("""
             UPDATE `tabBale Audit Detail` AS bad
             JOIN `tabGoods Transfer Note Items` AS gtni
@@ -30,8 +32,9 @@ def update_bale_audit_detail(batch_size=5000):
 
 
 
-def update_gtn_with_bale_audit(batch_size=5000):
+def update_gtn_with_bale_audit():
     try:
+        batch_size=5000
         affected =frappe.db.sql("""
             UPDATE `tabGoods Transfer Note Items` AS gtni
             JOIN `tabBale Audit Detail` AS bad
