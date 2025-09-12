@@ -20,6 +20,7 @@ class BaleAudit(Document):
                 row.truck_number = gtn_details.get("vehicle_number")
                 row.advance_weight = gtn_details.get("weight")
                 # Store fetched barcode to detect changes later
+                row.difference = float(row.weight) - float(row.advance_weight) if row.advance_weight else None
 
 
 
@@ -52,7 +53,7 @@ class BaleAudit(Document):
         if live_server:
             prefix = "LV-" + prefix
         else:
-            prefix = "NL-" + prefix
+            prefix = "" + prefix
 
         # Normal autoname
         self.name = make_autoname(prefix + ".######")
