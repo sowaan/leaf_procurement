@@ -25,12 +25,21 @@ class BaleAudit(Document):
 
 
     def autoname(self):
-        # Check live flag from settings
-        live_server = frappe.db.get_single_value("Leaf Procurement Settings", "live_server")
+        # If explicitly set from sync (servername)
+        if getattr(self, "skip_autoname", False) :
+            self.name = self.servername
+            # self._update_series_from_name()
+            return
+        
+        if not self.location_shortcode:
+            frappe.throw(_("Location Shortcode is required to generate name"))
 
         # Ensure self.date exists
         if not self.date:
             frappe.throw("Date is required for generating name")
+
+        # Check live flag from settings
+        live_server = frappe.db.get_single_value("Leaf Procurement Settings", "live_server")
 
         # Format date
         doc_date = datetime.strptime(str(self.date), "%Y-%m-%d")
@@ -41,13 +50,9 @@ class BaleAudit(Document):
 
         # Add LIVE- if this is from live server
         if live_server:
-            prefix = "LIVE-" + prefix
-
-        # If explicitly set from sync (servername)
-        if getattr(self, "skip_autoname", False) and getattr(self, "servername", None):
-            self.name = self.servername
-            # self._update_series_from_name()
-            return
+            prefix = "LV-" + prefix
+        else:
+            prefix = "NL-" + prefix
 
         # Normal autoname
         self.name = make_autoname(prefix + ".######")
