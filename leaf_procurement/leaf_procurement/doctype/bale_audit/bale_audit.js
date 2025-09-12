@@ -176,7 +176,7 @@ function update_audit_display(frm) {
             frm.fields_dict.gtn_detail.grid.grid_rows.forEach(row => {
                 const data = row.doc;
                 if (data.bales_scanned) {
-                    console.log(data.truck_number, data.bales_scanned);
+                    //console.log(data.truck_number, data.bales_scanned);
                     total_items += flt(data.bales_scanned);
                 }
             });
@@ -209,7 +209,14 @@ let html = `
 
 }
 async function validate_bale_data(frm) {
+    if (frm.doc.bale_barcode && !/^\d+$/.test(frm.doc.bale_barcode)) {
+        frappe.show_alert({
+            message: __('Barcode must contain only numbers.'),
+            indicator: "red"
+        });
+        return { valid: false };
 
+    }
     if (frm.doc.gtn_detail.length == 0) {
         frappe.show_alert({
             message: __('Please add record in Truck/GTN details to start adding bales.'),
@@ -465,10 +472,40 @@ frappe.ui.form.on("Bale Audit", {
         const weight = values.captured_weight;
         if (!values.bale_barcode) return;
 
+        // let advance_weight = 0;
+        // let gtn_number = "";
+        // let tsa_number = "";
+        // let truck_number = "";
+        // try {
+        //     frappe.call({
+        //         method: "leaf_procurement.leaf_procurement.api.bale_audit_utils.get_gtn_datails_for_bale",
+        //         args: { bale_barcode: values.bale_barcode },
+        //         callback: function(r) {
+        //             console.log("GTN details fetched:", r);
+        //             if (r.message) {
+        //                 console.log("GTN details fetched:", r.message);
+        //                 gtn_number = r.message.gtn_name || "";
+
+        //                 tsa_number = r.message.tsa_number || "";
+        //                 truck_number = r.message.vehicle_number || "";
+        //                 advance_weight = r.message.weight || 0;
+
+
+        //             }
+        //         }
+        //     });
+        // } catch (e) {
+        //     console.error("Error fetching GTN rate:", e);
+        // }
+
         frm.doc.detail_table.push({
             bale_barcode: values.bale_barcode,
             weight: weight,
             bale_remarks: values.bale_comments,
+            // gtn_number: gtn_number,
+            // tsa_number: tsa_number,
+            // truck_number: truck_number,
+            // advance_weight: advance_weight
         });
 
         // Reset fields

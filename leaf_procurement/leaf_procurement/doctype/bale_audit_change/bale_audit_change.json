@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-03 17:18:34.152963",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_txwk",
+  "bale_barcode",
+  "column_break_mott",
+  "new_bale_barcode",
+  "column_break_bcyn",
+  "new_weight",
+  "column_break_xrqb",
+  "change_weight",
+  "section_break_jzsj",
+  "detail_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "bale_barcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bale Barcode",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_mott",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "New Weight",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_bcyn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "change_weight",
+   "fieldtype": "Button",
+   "label": "Change Weight"
+  },
+  {
+   "fieldname": "section_break_jzsj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Bale Audit Change Log"
+  },
+  {
+   "fieldname": "new_bale_barcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "New Bale Barcode",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xrqb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_txwk",
+   "fieldtype": "Section Break",
+   "label": "You can only update bale id and audited weight in Bale Audit and GTN Documents. "
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-09-04 16:08:47.689347",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Bale Audit Change",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

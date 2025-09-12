@@ -24,10 +24,47 @@ def create_goods_transfer_note(goods_transfer_note):
         for row in doc.bale_registration_detail:
             if row.bale_barcode:
                 update_bale_audit_from_gtn(row.bale_barcode)
+                update_gtn_from_bale_audit(row.bale_barcode)
                 
         frappe.logger().info(f"[GTN Sync] Created: {doc.name}")
     except Exception:
         frappe.log_error(frappe.get_traceback(), "Goods Transfer Note Sync Error")
+
+def update_gtn_from_bale_audit(bale_barcode: str):
+    try:
+        # Step 1: Get Bale Audit Detail for this barcode
+        audit_detail = frappe.db.get_value(
+            "Bale Audit Detail",
+            {"bale_barcode": bale_barcode, "docstatus": ["<", 2]},
+            ["weight", "bale_remarks"],
+            as_dict=True
+        )
+        if not audit_detail:
+            return  # No audit record or no GTN linked
+
+        # Step 2: Find GTN Item using bale_barcode and parent = audit_detail.gtn_number
+        gtn_item = frappe.db.get_value(
+            "Goods Transfer Note Items",
+            {"bale_barcode": bale_barcode},
+            ["name", "weight"],
+            as_dict=True
+        )
+        if not gtn_item:
+            return
+
+        # Step 3: Update the GTN Item's weight from Bale Audit Detail
+        frappe.db.set_value("Goods Transfer Note Items", gtn_item.name, {
+            "audit_weight": audit_detail.weight,
+            "audit_remarks": audit_detail.bale_remarks,
+            # ,"weight_difference": float(gtn_item.weight or 0) - float(audit_detail.weight or 0),
+        })
+        frappe.db.commit()
+
+    except Exception:
+        frappe.log_error(
+            title="update_gtn_from_bale_audit Failed",
+            message=f"Bale Barcode: {bale_barcode}\nError: {frappe.get_traceback()}"
+        )
 
 def update_bale_audit_from_gtn(bale_barcode: str):
     try:
@@ -44,7 +81,7 @@ def update_bale_audit_from_gtn(bale_barcode: str):
         # Get Bale Audit where this barcode exists
         audit = frappe.get_all(
             "Bale Audit Detail",
-            filters={"bale_barcode": bale_barcode, "gtn_number": ["is", "not set"]},
+            filters={"bale_barcode": bale_barcode},
             fields=["parent", "name"]
         )
 
@@ -69,6 +106,7 @@ def update_bale_audit_from_gtn(bale_barcode: str):
             title="update_bale_audit_from_gtn Failed",
             message=f"Bale Barcode: {bale_barcode}\nError: {frappe.get_traceback()}"
         )
+ 
           
 #call this from bale audit sync up
 def update_audit_details_from_gtn(audit_name: str):
@@ -77,6 +115,16 @@ def update_audit_details_from_gtn(audit_name: str):
 		for row in doc.detail_table:
 			if row.bale_barcode:
 				update_bale_audit_from_gtn(row.bale_barcode)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Update Audit Details from GTN Error")
+
+#call this from bale audit sync up
+def update_gtn_details_from_audit(audit_name: str):
+	try:
+		doc = frappe.get_doc("Bale Audit", audit_name)
+		for row in doc.detail_table:
+			if row.bale_barcode:
+				update_gtn_from_bale_audit(row.bale_barcode)
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "Update Audit Details from GTN Error")
 

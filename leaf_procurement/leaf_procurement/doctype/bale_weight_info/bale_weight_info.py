@@ -6,6 +6,7 @@ from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
 from frappe.utils import flt # type: ignore
+from leaf_procurement.leaf_procurement.api.bale_weight_utils import create_purchase_invoice
 
 class BaleWeightInfo(Document):
 	def before_save(self):
@@ -26,33 +27,6 @@ class BaleWeightInfo(Document):
 		prefix = f"{self.location_short_code}-{fy_start_year_short}-{fy_end_year_short}-BW-"
 		self.name = make_autoname(prefix + ".######")
 
-	def before_submit(self):
-		self.validate_item_rates()
-
-	def validate_item_rates(self):
-		for row in self.detail_table:
-			# Check if weight is zero and item is not rejected
-			item_grade_doc = frappe.get_doc("Item Grade", row.item_grade)
-			if not item_grade_doc.rejected_grade and flt(row.weight) == 0:
-				frappe.throw(
-					f"Weight cannot be zero for Bale Barcode: {row.bale_barcode} "
-					f"since the item is not marked as rejected. "
-				)
-			
-			# Validate quota
-			if not item_grade_doc.rejected_grade:
-				quota_validation(self.location_warehouse, row.bale_barcode, row.weight)
-
-			# Validate item grade pricing
-			validate_item_grade_price(
-				row.item_grade,
-				row.item_sub_grade,
-				self.location_warehouse,
-				row.rate,
-				row.bale_barcode
-			)
-
-
 	def on_submit(self):
 		if not self.bale_registration_code:
 			return
@@ -68,8 +42,6 @@ class BaleWeightInfo(Document):
 
 		if not day_open:
 			frappe.throw(_("⚠️ You cannot register bales because the day is either not opened or already closed."))
-
-
 
 		# Get all registered bale barcodes for this registration
 		registered_bales = frappe.get_all(
@@ -110,58 +82,55 @@ class BaleWeightInfo(Document):
 				indicator='orange'
 			)
 			raise ValidationError
+		
+		# Validate item rates and bale weights
+		self.validate_item_rates()
+		
+		# Create purchase invoice
+		create_purchase_invoice(self.name)
 
-		self.make_purchase_invoice()
+		# Update bale registration status
+		# Only update if bale_registration_code is set
+		# This is to avoid unnecessary updates if bale_registration_code is not provided
 		if self.bale_registration_code:
 			frappe.db.set_value("Bale Registration", self.bale_registration_code, "bale_status", "In Print Voucher") 
 
 		self.reload()
 
+	def validate_item_rates(self):
+		for row in self.detail_table:
+			# Check if weight is zero and item is not rejected
+			item_grade_doc = frappe.get_doc("Item Grade", row.item_grade)
+			if not item_grade_doc.rejected_grade and flt(row.weight) == 0:
+				frappe.throw(
+					f"Weight cannot be zero for Bale Barcode: {row.bale_barcode} "
+					f"since the item is not marked as rejected. "
+				)
+			
+			if item_grade_doc.rejected_grade: continue
 
-	
-	# def update_status(self):
-	# 	pass
-		# if self.docstatus == 2:
-		# 	self.status = "Cancelled"
-		# elif self.reprint_reason:
-		# 	self.status = "Re-Printed"
-		# elif self.stationery:
-		# 	self.status = "Printed"
-		# else:
-		# 	self.status = "No Printed"
+			quota_validation(self.location_warehouse, row.bale_barcode, row.weight, row.item_grade)
 
-
-	def make_purchase_invoice(self):
-		from leaf_procurement.leaf_procurement.api.bale_weight_utils import create_purchase_invoice
-
-		create_purchase_invoice(self.name)
-
-	# def autoname(self):
-	# 	cached_prefix = get_cached_prefix()
-
-	# 	prefix = f"{cached_prefix}-BW"
-
-	# 	# Find current max number with this prefix
-	# 	last_name = frappe.db.sql(
-	# 		"""
-	# 		SELECT name FROM `tabBale Weight Info`
-	# 		WHERE name LIKE %s ORDER BY name DESC LIMIT 1
-	# 		""",
-	# 		(prefix + "-%%%%%",),
-	# 	)
-
-	# 	if last_name:
-	# 		last_number = int(last_name[0][0].split("-")[-1])
-	# 		next_number = last_number + 1
-	# 	else:
-	# 		next_number = 1
-
-	# 	self.name = f"{prefix}-{next_number:05d}"
+			# Validate item grade pricing
+			validate_item_grade_price(
+				row.item_grade,
+				row.item_sub_grade,
+				self.location_warehouse,
+				row.rate,
+				row.bale_barcode
+			)
 
 @frappe.whitelist()
-def quota_validation(location, barcode, weight):
+def quota_validation(location, barcode, weight, item_grade):
     quota = quota_weight(location)
 
+    item_grade_doc = frappe.get_doc("Item Grade", item_grade)
+    is_rejected = item_grade_doc.rejected_grade
+
+    # Don't check price for rejected items
+    if is_rejected:
+        return
+	
     if not quota:
         frappe.throw(_("❌ Quota Setup is not defined. Please define a quota for this location."))
 
@@ -173,13 +142,6 @@ def quota_validation(location, barcode, weight):
 		
 @frappe.whitelist()
 def validate_item_grade_price(item_grade, item_sub_grade, location_warehouse, rate, bale_barcode):
-    item_grade_doc = frappe.get_doc("Item Grade", item_grade)
-    is_rejected = item_grade_doc.rejected_grade
-
-    # Don't check price for rejected items
-    if is_rejected:
-        return
-
     price_record = frappe.db.get_value(
         "Item Grade Price",
         {

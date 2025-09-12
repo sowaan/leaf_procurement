@@ -13,7 +13,10 @@
   "lot_number",
   "item_grade",
   "item_sub_grade",
-  "reclassification_grade"
+  "reclassification_grade",
+  "audit_weight",
+  "weight_difference",
+  "audit_remarks"
  ],
  "fields": [
   {
@@ -21,7 +24,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Bale Barcode",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fetch_from": "bale_barcode.batch_qty",
@@ -71,12 +75,29 @@
    "in_list_view": 1,
    "label": "Reclassified Grade",
    "options": "Reclassification Grade"
+  },
+  {
+   "fieldname": "audit_weight",
+   "fieldtype": "Read Only",
+   "label": "Audit Weight",
+   "search_index": 1
+  },
+  {
+   "fieldname": "weight_difference",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Weight Difference"
+  },
+  {
+   "fieldname": "audit_remarks",
+   "fieldtype": "Read Only",
+   "label": "Audit Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-19 09:07:41.678430",
+ "modified": "2025-09-02 17:20:28.476235",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note Items",

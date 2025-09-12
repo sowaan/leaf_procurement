@@ -18,13 +18,14 @@ class GoodsReceivingNote(Document):
 
         year = datetime.today().strftime('%Y') 
         
-        settings = frappe.get_doc("Leaf Procurement Settings")
-        self.location_short_code = frappe.db.get_value(
-            "Warehouse",
-            settings.get("location_warehouse"),
-            "custom_short_code"
-        )
-        prefix = f"{self.location_short_code}-GRN-{year}-"
+        # settings = frappe.get_doc("Leaf Procurement Settings")
+        # self.location_short_code = frappe.db.get_value(
+        #     "Warehouse",
+        #     #settings.get("location_warehouse"),
+        #     self.location_warehouse,
+        #     "custom_short_code"
+        # )
+        prefix = f"{self.location_shortcode or 'SAM'}-GRN-{year}-"
 
         self.name = make_autoname(prefix + ".######")
 
@@ -67,6 +68,6 @@ def create_stock_entry_from_gtn(grn_doc):
             "parenttype": "Stock Entry"
 		}
         stock_entry.append("items", item)
-    # stock_entry.flags.ignore_mandatory = True
+    stock_entry.flags.ignore_mandatory = True
     stock_entry.insert()
-    #stock_entry.submit()
+    stock_entry.submit()

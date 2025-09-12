@@ -6,6 +6,7 @@ import json
 from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch_exists
 from leaf_procurement.leaf_procurement.utils.sync_up import create_goods_transfer_note
 from leaf_procurement.leaf_procurement.utils.sync_up import update_audit_details_from_gtn
+from leaf_procurement.leaf_procurement.utils.sync_up import update_gtn_details_from_audit
 
 
 def create_company(settings, headers, data):
@@ -701,16 +702,13 @@ def purchase_invoice(purchase_invoice):
 	invoice.company = purchase_invoice.get("company")
 	invoice.set_posting_time = purchase_invoice.get("set_posting_time")
 	invoice.update_stock = purchase_invoice.get("update_stock")
-	invoice.set_warehouse = purchase_invoice.get("warehouse")
+	invoice.set_warehouse = purchase_invoice.get("set_warehouse")
 	invoice.rejected_warehouse = purchase_invoice.get("rejected_warehouse")
 	invoice.due_date = purchase_invoice.get("due_date")
 	invoice.custom_barcode = purchase_invoice.get("custom_barcode")
 	invoice.currency = purchase_invoice.get("currency")
 	invoice.conversion_rate = purchase_invoice.get("conversion_rate")
 	invoice.is_return = purchase_invoice.get("is_return")
-	invoice.buying_price_list = purchase_invoice.get("buying_price_list")
-	invoice.price_list_currency = purchase_invoice.get("price_list_currency")
-	invoice.plc_conversion_rate = purchase_invoice.get("plc_conversion_rate")
 	invoice.custom_short_code = purchase_invoice.get("custom_short_code")
 	invoice.docstatus = purchase_invoice.get("docstatus", 0)
 	invoice.is_paid = purchase_invoice.get("is_paid", 0)
@@ -718,42 +716,52 @@ def purchase_invoice(purchase_invoice):
 	invoice.custom_is_sync = 1
 	invoice.custom_stationary = purchase_invoice.get("custom_stationary")
 	invoice.custom_barcode = purchase_invoice.get("custom_barcode")
-	#invoice.custom_barcode_base64 = purchase_invoice.get("custom_barcode_base64")
-	# invoice.custom_rejected_items = purchase_invoice.get("custom_rejected_items", [])
 
+	# Always disable price list & pricing rules at the document level
+	invoice.apply_price_list = 0
+	invoice.ignore_pricing_rule = 1
+
+	
+	# Rejected items
 	for rejected in purchase_invoice.get("custom_rejected_items", []):
-		if rejected["batch_no"]:
+		if rejected.get("batch_no"):
 			ensure_batch_exists(rejected.get("batch_no"), rejected.get("item_code"), rejected.get("weight"))
 		invoice.append("custom_rejected_items", rejected)
- 
 
-	for detail in purchase_invoice.get("items"):
-		if detail["batch_no"]:
+	# Invoice items
+	for detail in purchase_invoice.get("items", []):
+		if detail.get("batch_no"):
 			ensure_batch_exists(detail.get("batch_no"), detail.get("item_code"), detail.get("weight"))
+
 		item_data = {
 			"item_code": detail.get("item_code"),
 			"qty": detail.get("qty"),
+			"received_qty":detail.get("qty"),
+			"apply_price_list": 0,  # Disable price list at item level
+			"ignore_pricing_rule": 1,  # Disable pricing rules at item level
 			"rate": detail.get("rate"),
+			"price_list_rate": detail.get("rate"),   # Keep equal
 			"uom": detail.get("uom"),
 			"description": detail.get("description"),
 		}
 
-		# Only include optional fields if they have a meaningful value
+		# Add optional fields if present
 		optional_fields = [
 			"received_qty", "warehouse", "use_serial_batch_fields",
 			"batch_no", "lot_number", "grade", "sub_grade", "reclassification_grade"
 		]
-
 		for key in optional_fields:
 			value = detail.get(key)
 			if value:
 				item_data[key] = value
-		invoice.append("items", item_data)   
+
+		invoice.append("items", item_data)
+
+
 
 	invoice.insert()
 	frappe.db.commit()
 	return invoice.name
-
 
 @frappe.whitelist()
 def goods_transfer_note(goods_transfer_note):
@@ -798,7 +806,13 @@ def bale_audit(bale_audit):
 		job_name=f"Update Audit Details {doc.name}",
 		audit_name=doc.name
 	)
-			
+
+	frappe.enqueue(
+		method=update_gtn_details_from_audit,
+		queue="long",  # or 'long' if many audits
+		job_name=f"Update GTN Details {doc.name}",
+		audit_name=doc.name
+	)	
 	return doc.name
 
 @frappe.whitelist()

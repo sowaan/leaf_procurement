@@ -286,6 +286,7 @@
    "label": "Bale Weight",
    "non_negative": 1,
    "precision": "2",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -377,7 +378,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-08 12:10:45.612698",
+ "modified": "2025-08-12 16:54:37.703371",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Bale Weight Info",
