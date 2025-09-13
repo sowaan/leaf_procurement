@@ -20,8 +20,15 @@ class BaleAudit(Document):
                 row.truck_number = gtn_details.get("vehicle_number")
                 row.advance_weight = gtn_details.get("weight")
                 # Store fetched barcode to detect changes later
-                row.difference = float(row.weight) - float(row.advance_weight) if row.advance_weight else None
-
+                if row.advance_weight and row.weight:
+                    try:
+                        row.difference = round(
+                            float(row.weight) - float(row.advance_weight), 2
+                        )
+                    except Exception:
+                        row.difference = None
+                else:
+                    row.difference = None
 
 
 
