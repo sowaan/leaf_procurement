@@ -154,6 +154,8 @@ function validate_bale_count(frm) {
 
 
 }
+
+
 function update_audit_display(frm) {
 
     let total_weight = 0;
@@ -393,8 +395,10 @@ frappe.ui.form.on("Bale Audit", {
             }
         }, 300);
     },
+
     onload: async function (frm) {
         update_audit_display(frm);
+
         frm.page.sidebar.toggle(false);
         updateScaleStatus(frm, scaleConnected);
         if (scaleConnected == 'Connected') {

@@ -7,6 +7,18 @@ from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from frappe.model.naming import make_autoname # type: ignore
 from leaf_procurement.leaf_procurement.api.bale_audit_utils import get_gtn_datails_for_bale  # type: ignore
+# from frappe.utils import today, add_days
+
+# bale_audit.py
+
+
+# def get_permission_query_conditions(user=None):
+#     if not user:
+#         return ""
+
+#     from frappe.utils import today, add_days
+#     two_days_ago = add_days(today(), -2)
+#     return f"""(`tabBale Audit`.`date` BETWEEN '{two_days_ago}' AND '{today()}')"""
 
 
 class BaleAudit(Document):

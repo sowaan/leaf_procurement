@@ -415,14 +415,20 @@ def log_sync_error(doctype: str, docname: str, response):
         status="Failed",
         message=error_msg
     )
-
+def safe_set_message(msg, max_len=65000):
+    """Truncate message safely before DB insert"""
+    if not msg:
+        return ""
+    if len(msg) > max_len:
+        return msg[:max_len - 50] + "\n...[truncated]..."
+    return msg
 def log_sync_result(parent_name, doctype, docname, status, message, retry_count=0):
     log = {
         "doctype": "Leaf Sync Log",
         "doctype_name": doctype,
         "document_name": docname,
         "status": status,
-        "message": message,
+        "message": safe_set_message(message, 65000),
         "retry_count": retry_count,
         "synced_at": frappe.utils.now_datetime()
     }
