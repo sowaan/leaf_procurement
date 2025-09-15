@@ -92,6 +92,7 @@ def execute(filters=None):
 			WHERE pi.docstatus = 1
 				AND pii.item_group = 'Products'
 				AND pi.posting_date >= %(from_date)s
+				 and pi.is_return = 0
 				AND pi.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)
 				{grade_filter}
 		),
