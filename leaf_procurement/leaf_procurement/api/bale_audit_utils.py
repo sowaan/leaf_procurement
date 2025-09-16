@@ -7,7 +7,7 @@ def get_gtn_datails_for_bale (bale_barcode: str):
         gtn_item = frappe.db.get_value("Goods Transfer Note Items", {"bale_barcode": bale_barcode}, ["parent", "weight"], as_dict=True)
         if not gtn_item:
             return     {
-                "gtn_name": "not hi",
+                "gtn_name": None,
                 "tsa_number": None,
                 "vehicle_number": None, 
                 "weight": None
@@ -16,7 +16,7 @@ def get_gtn_datails_for_bale (bale_barcode: str):
         gtn = frappe.db.get_value("Goods Transfer Note", gtn_item.parent, ["name", "tsa_number", "vehicle_number"], as_dict=True)
         if not gtn:
             return     {
-                "gtn_name": "hi",
+                "gtn_name": None,
                 "tsa_number": None,
                 "vehicle_number": None, 
                 "weight": None
