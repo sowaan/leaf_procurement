@@ -75,8 +75,8 @@ def get_data(filters):
 			gtn.tsa_number AS tsa,
 			gtn.name AS gtn,
 			gtn.vehicle_number AS truck_number,
-			gtni.weight AS advance_weight,
-			gtni.audit_weight AS re_weight,
+			ROUND(gtni.weight,2) AS advance_weight,
+			ROUND(gtni.audit_weight,2) AS re_weight,
 			(gtni.audit_weight - gtni.weight) AS weight_difference,
 			gtni.audit_remarks AS remarks,
 			1 AS bales

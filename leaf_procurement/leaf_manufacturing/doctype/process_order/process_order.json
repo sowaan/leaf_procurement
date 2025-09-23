@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-22 14:22:35.201030",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_sdff",
+  "date",
+  "location",
+  "location_short_code",
+  "status",
+  "column_break_qmge",
+  "shift",
+  "estimated_input",
+  "estimated_out_put",
+  "section_break_zzzo",
+  "remarks",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_sdff",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Process Order",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qmge",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "A",
+   "fieldname": "shift",
+   "fieldtype": "Select",
+   "label": "Shift",
+   "options": "A\nB\nC",
+   "reqd": 1
+  },
+  {
+   "fieldname": "estimated_input",
+   "fieldtype": "Float",
+   "label": "Estimated Input",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "estimated_out_put",
+   "fieldtype": "Float",
+   "label": "Estimated Out Put",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "default": "Created",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Created\nIn process\nCompleted",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "location.custom_short_code",
+   "fieldname": "location_short_code",
+   "fieldtype": "Read Only",
+   "label": "Location Short Code"
+  },
+  {
+   "fieldname": "section_break_zzzo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-22 15:27:32.170270",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Process Order",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

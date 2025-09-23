@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-22 15:47:34.789285",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "bale_barcode",
+  "purchase_weight",
+  "internal_grade",
+  "reweight",
+  "gain_loss"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "purchase_weight",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Purchase Weight"
+  },
+  {
+   "columns": 2,
+   "fieldname": "internal_grade",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Internal Grade"
+  },
+  {
+   "columns": 2,
+   "fieldname": "reweight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Re-Weight"
+  },
+  {
+   "columns": 2,
+   "fieldname": "gain_loss",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Gain/Loss"
+  },
+  {
+   "columns": 2,
+   "fieldname": "bale_barcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bale Barcode"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-23 16:08:16.643902",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Leaf Consumption Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
