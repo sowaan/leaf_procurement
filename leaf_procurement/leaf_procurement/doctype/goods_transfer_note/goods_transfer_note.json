@@ -13,6 +13,7 @@
   "transport_type",
   "tsa_number",
   "custom_is_sync",
+  "skip_stock_entry",
   "column_break_vvyy",
   "location_warehouse",
   "location_short_code",
@@ -258,12 +259,20 @@
    "label": "Is Sync",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "skip_stock_entry",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Skip Stock Entry"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-20 05:10:56.834108",
+ "modified": "2025-09-25 13:47:30.679293",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",

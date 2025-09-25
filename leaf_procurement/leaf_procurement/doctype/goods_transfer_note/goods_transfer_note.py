@@ -93,6 +93,9 @@ def ensure_unique_tsa_per_warehouse(self):
 def create_stock_entry_from_gtn(gtn_doc):
     if not gtn_doc.location_warehouse or not gtn_doc.receiving_location:
         frappe.throw("Dispatch and Receiving Warehouse must be set.")
+    
+    if gtn_doc.skip_stock_entry == 1:
+        return
 
     stock_entry = frappe.new_doc("Stock Entry")
     stock_entry.stock_entry_type = "Material Transfer"
