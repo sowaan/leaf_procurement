@@ -46,5 +46,5 @@ def check_bale_barcode_exists(bale_barcode):
     if not bale_barcode:
         return False
 
-    exists = frappe.db.exists("Leaf Consumption Detail", {"bale_barcode": bale_barcode})
+    exists = frappe.db.exists("Leaf Consumption Detail", {"bale_barcode": bale_barcode, "doc_status":1})
     return bool(exists)

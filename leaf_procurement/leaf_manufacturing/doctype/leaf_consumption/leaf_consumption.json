@@ -7,19 +7,25 @@
  "field_order": [
   "section_break_iir4",
   "process_order",
-  "estimated_input",
+  "date",
   "column_break_jxeu",
   "location",
-  "estimated_out_put",
-  "column_break_jhqk",
   "location_short_code",
+  "column_break_jhqk",
+  "estimated_input",
+  "estimated_out_put",
   "item",
+  "column_break_ghop",
+  "scale_status",
+  "connect_scale",
+  "disconnect_scale",
   "section_break_vnml",
   "scan_barcode",
   "column_break_efdz",
   "weight",
-  "column_break_amjt",
   "add_bale",
+  "column_break_amjt",
+  "audit_display",
   "barcode_length",
   "section_break_heqg",
   "consumption_detail",
@@ -114,25 +120,56 @@
   {
    "fieldname": "consumption_detail",
    "fieldtype": "Table",
-   "options": "Leaf Consumption Detail",
-   "read_only": 1
+   "label": "To update weight for existing barcode: scan the same bale-> provide new weight -> click save.",
+   "options": "Leaf Consumption Detail"
   },
   {
    "fieldname": "item",
    "fieldtype": "Read Only",
+   "hidden": 1,
    "label": "Item"
   },
   {
    "fieldname": "add_bale",
    "fieldtype": "Button",
    "label": "Add Bale"
+  },
+  {
+   "fetch_from": "process_order.date",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "audit_display",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "column_break_ghop",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scale_status",
+   "fieldtype": "HTML",
+   "label": "Scale Status"
+  },
+  {
+   "fieldname": "connect_scale",
+   "fieldtype": "Button",
+   "label": "Connect Scale"
+  },
+  {
+   "fieldname": "disconnect_scale",
+   "fieldtype": "Button",
+   "label": "Disconnect Scale"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-23 16:11:47.063925",
+ "modified": "2025-09-25 12:45:23.759910",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Leaf Consumption",
