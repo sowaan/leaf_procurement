@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "prized_grade_name"
+  "prized_grade_name",
+  "cost_per_kg"
  ],
  "fields": [
   {
@@ -16,12 +17,17 @@
    "label": "Prized Grade Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "cost_per_kg",
+   "fieldtype": "Currency",
+   "label": "Cost Per KG"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-09 13:15:58.338676",
+ "modified": "2025-10-01 13:32:05.263055",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Prized Grade",

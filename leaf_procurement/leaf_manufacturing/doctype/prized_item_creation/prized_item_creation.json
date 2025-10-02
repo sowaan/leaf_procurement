@@ -1,0 +1,151 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-01 13:48:23.573657",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_znc0",
+  "process_order",
+  "date",
+  "column_break_tinq",
+  "shift",
+  "estimated_out_put",
+  "column_break_iicz",
+  "location",
+  "total_output",
+  "location_short_code",
+  "column_break_yate",
+  "process_order_date",
+  "item",
+  "section_break_oivq",
+  "detail_table",
+  "section_break_ussw",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_znc0",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Prized Item Creation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "process_order",
+   "fieldtype": "Link",
+   "label": "Process Order",
+   "link_filters": "[[\"Process Order\",\"docstatus\",\"=\",\"1\"]]",
+   "options": "Process Order"
+  },
+  {
+   "fieldname": "column_break_tinq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_iicz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_yate",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ussw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "process_order.shift",
+   "fieldname": "shift",
+   "fieldtype": "Read Only",
+   "label": "Shift"
+  },
+  {
+   "fetch_from": "process_order.location",
+   "fieldname": "location",
+   "fieldtype": "Read Only",
+   "label": "Location"
+  },
+  {
+   "fetch_from": "process_order.location_short_code",
+   "fieldname": "location_short_code",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Location Short Code"
+  },
+  {
+   "fetch_from": "process_order.date",
+   "fieldname": "process_order_date",
+   "fieldtype": "Read Only",
+   "label": "Process Order Date"
+  },
+  {
+   "fieldname": "section_break_oivq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Prized Item Creation Entry"
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Prized Item Creation Date"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Item",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "process_order.estimated_out_put",
+   "fieldname": "estimated_out_put",
+   "fieldtype": "Read Only",
+   "label": "Estimated Out Put"
+  },
+  {
+   "fieldname": "total_output",
+   "fieldtype": "Read Only",
+   "label": "Total Output"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-10-02 16:11:56.030981",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Prized Item Creation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

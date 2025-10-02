@@ -7,6 +7,7 @@
  "field_order": [
   "company_name",
   "default_item",
+  "processed_item",
   "rejected_item_sub_grade",
   "lot_size",
   "allow_sunday_open",
@@ -154,13 +155,19 @@
    "fieldname": "live_server",
    "fieldtype": "Check",
    "label": "Live Server"
+  },
+  {
+   "fieldname": "processed_item",
+   "fieldtype": "Link",
+   "label": "Processed Item",
+   "options": "Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-09 12:18:19.907196",
+ "modified": "2025-10-02 15:42:00.552372",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Leaf Procurement Settings",

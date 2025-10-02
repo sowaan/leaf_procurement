@@ -23,9 +23,9 @@ class LeafConsumption(Document):
 		self.name = make_autoname(prefix + ".######")
 
 	def on_submit(self):
-		create_stock_entry_from_gtn(self)
+		create_stock_entry(self)
 	
-def create_stock_entry_from_gtn(cons_doc):
+def create_stock_entry(cons_doc):
 
     if not cons_doc.location:
         frappe.throw("Please provide Location to move stock.")

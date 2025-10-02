@@ -50,6 +50,7 @@
    "fieldname": "process_order",
    "fieldtype": "Link",
    "label": "Process Order",
+   "link_filters": "[[\"Process Order\",\"docstatus\",\"=\",\"1\"]]",
    "options": "Process Order"
   },
   {
@@ -169,7 +170,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-25 12:45:23.759910",
+ "modified": "2025-10-01 13:29:06.171300",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Leaf Consumption",

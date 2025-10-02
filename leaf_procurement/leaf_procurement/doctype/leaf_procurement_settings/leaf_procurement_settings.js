@@ -38,6 +38,13 @@ frappe.ui.form.on("Leaf Procurement Settings", {
                 }
             };
         });        
+        frm.set_query('processed_item', () => {
+            return {
+                filters: {
+                    item_group: 'Products'
+                }
+            };
+        });  
     },    
     take_backup(frm) {
         frappe.call({
