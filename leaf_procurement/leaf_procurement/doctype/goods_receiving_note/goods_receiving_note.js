@@ -68,9 +68,9 @@ frappe.ui.form.on("Goods Receiving Note", {
         const exists = frm.doc.detail_table.some(row => row.bale_barcode === barcode);
         if (exists) {
             frappe.show_alert({
-    message: `Barcode "${barcode}" is already scanned.`,
-    indicator: 'red' // You can use 'orange', 'green', etc. based on severity
-});
+                message: `Barcode "${barcode}" is already scanned.`,
+                indicator: 'red' // You can use 'orange', 'green', etc. based on severity
+            });
         } else {
             frappe.call({
                 method: 'frappe.client.get',
@@ -95,15 +95,15 @@ frappe.ui.form.on("Goods Receiving Note", {
                             frm.refresh_field('detail_table');
                         } else {
                             frappe.show_alert({
-    message: `No details found for barcode "${barcode}" in GTN ${frm.doc.gtn_number}.`,
-    indicator: 'orange' // You can use 'green', 'red', 'blue', etc.
-});
+                                message: `No details found for barcode "${barcode}" in GTN ${frm.doc.gtn_number}.`,
+                                indicator: 'orange' // You can use 'green', 'red', 'blue', etc.
+                            });
                         }
                     } else {
                         frappe.show_alert({
-    message: __('No details found for the provided GTN number.'),
-    indicator: 'orange' // Optional: color of the alert
-});
+                            message: __('No details found for the provided GTN number.'),
+                            indicator: 'orange' // Optional: color of the alert
+                        });
                     }
                 }
             });
@@ -121,7 +121,13 @@ frappe.ui.form.on("Goods Receiving Note", {
                 name: frm.doc.gtn_number
             },
             callback: function (r) {
+                if (!frm.doc.location_warehouse && r.message ) {
+                    frm.set_value("location_warehouse", r.message.receiving_location);
+                    frm.set_value("dispatch_location", r.message.location_warehouse);
+                    frm.set_value("transit_location", r.message.transit_location);
+                }
                 if (r.message) {
+
                     frm.clear_table('detail_table');
                     r.message.bale_registration_detail.forEach(item => {
                         const child = frm.add_child('detail_table');

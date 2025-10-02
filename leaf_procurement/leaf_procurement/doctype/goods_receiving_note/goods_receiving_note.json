@@ -100,7 +100,6 @@
    "reqd": 1
   },
   {
-   "fetch_from": "gtn_number.receiving_location",
    "fieldname": "location_warehouse",
    "fieldtype": "Link",
    "label": "Warehouse (Receiving)",
@@ -142,7 +141,6 @@
    "read_only": 1
   },
   {
-   "fetch_from": "gtn_number.location_warehouse",
    "fieldname": "dispatch_location",
    "fieldtype": "Link",
    "label": "Dispatch Location",
@@ -150,7 +148,6 @@
    "read_only": 1
   },
   {
-   "fetch_from": "gtn_number.transit_location",
    "fieldname": "transit_location",
    "fieldtype": "Link",
    "label": "Transit Location",
@@ -168,7 +165,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-01 17:41:50.978700",
+ "modified": "2025-10-02 14:30:34.844984",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
