@@ -69,5 +69,8 @@ def create_stock_entry_from_gtn(grn_doc):
 		}
         stock_entry.append("items", item)
     stock_entry.flags.ignore_mandatory = True
-    stock_entry.insert()
-    stock_entry.submit()
+    # ✅ Save as draft first — so ERPNext processes the valuation properly
+    stock_entry.save(ignore_permissions=True)
+
+    # ✅ Now reload (to simulate UI reload)
+    stock_entry.reload()

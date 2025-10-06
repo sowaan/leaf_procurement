@@ -1,7 +1,7 @@
 app_name = "leaf_procurement"
 app_title = "Leaf Procurement"
 app_publisher = "Sowaan"
-app_description = "Tobaco purchase and process system"
+app_description = "Tobacco purchase and process system"
 app_email = "amir.baloch@sowaan.com"
 app_license = "mit"
 
