@@ -344,7 +344,7 @@ if (!window._scaleConnection) {
 function updateMainWeightDisplay(frm, weight) {
     let color = scaleConnected === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${scaleConnected}<br />${weight}</h2>`;
-    if (updateWeightOnForm) {
+    if (updateWeightOnForm && scaleConnected=="Connected") {
         frm.set_value('weight', weight);
         frm.fields_dict.scale_status.$wrapper.html(html);
     }
@@ -354,6 +354,7 @@ function updateScaleStatus(frm, status) {
     let color = status === "Connected" ? "#007bff" : "red";
     let html = `<h2 style="color: ${color}; font-weight: bold;">Scale: ${status}</h2>`;
     frm.fields_dict.scale_status.$wrapper.html(html);
+
 }
 
 async function readScaleContinuously(frm) {

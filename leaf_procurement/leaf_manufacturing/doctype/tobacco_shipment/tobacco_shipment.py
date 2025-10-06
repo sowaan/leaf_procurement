@@ -62,17 +62,9 @@ def create_stock_entry(doc):
             "conversion_factor": 1,
         })
 
-    # ✅ Must call these controller methods BEFORE insert/submit
-    stock_entry.set_missing_values()
-    stock_entry.calculate_rate_and_amount()
-
     # ✅ Save as draft first — so ERPNext processes the valuation properly
-    stock_entry.save(ignore_permissions=True)
-
-    # ✅ Now reload (to simulate UI reload)
-    stock_entry.reload()
+    stock_entry.insert(ignore_permissions=True)
 
     # ✅ Submit (GL entries will now be created)
     stock_entry.submit()
 
-    frappe.db.commit()
