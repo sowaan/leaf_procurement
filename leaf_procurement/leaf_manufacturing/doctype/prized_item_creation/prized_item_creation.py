@@ -112,5 +112,6 @@ def create_stock_entry(doc):
     # ✅ Submit (GL entries will now be created)
     stock_entry.submit()
 
-    frappe.db.set_value("Process Order", doc.process_order, "status", "In Process")
+    if status == "Created":
+        frappe.db.set_value("Process Order", doc.process_order, "status", "In Process")
     frappe.db.commit()
