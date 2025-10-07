@@ -1,0 +1,66 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"dOfVojAQcX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Production</span>\",\"col\":12}},{\"id\":\"F5vOVtr9EK\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Process Order\",\"col\":3}},{\"id\":\"KvhSKo0jLZ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Leaf Consumption Request\",\"col\":3}},{\"id\":\"Jnr7xkfcuU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Prized Item Creation\",\"col\":3}},{\"id\":\"2gl_Ep1aTu\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tobacco Shipment\",\"col\":3}}]",
+ "creation": "2025-09-25 14:09:11.152776",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "external-link",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Production",
+ "links": [],
+ "modified": "2025-10-07 15:58:45.526485",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Production",
+ "number_cards": [],
+ "owner": "ahsan.tareen@sowaan.com",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Manufacturing Manager"
+  }
+ ],
+ "sequence_id": 10.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Process Order",
+   "link_to": "Process Order",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Prized Item Creation",
+   "link_to": "Prized Item Creation",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Leaf Consumption Request",
+   "link_to": "Leaf Consumption",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Tobacco Shipment",
+   "link_to": "Tobacco Shipment",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Production"
+}
