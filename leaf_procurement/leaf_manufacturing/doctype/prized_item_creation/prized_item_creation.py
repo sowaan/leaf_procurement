@@ -49,6 +49,17 @@ def get_process_order_output(process_order):
     return total_output
 
 def create_stock_entry(doc):
+    if not doc.process_order:
+        frappe.throw("Please provide Process Order to move stock.")    
+    status = frappe.db.get_value("Process Order", doc.process_order, "status")
+    restricted_status = ["On Hold", "Completed", "Closed"]
+
+    if status in restricted_status:
+        frappe.throw(
+            _("You cannot submit this entry because the linked Process Order '{0}' is {1}.")
+            .format(doc.process_order, status)
+        )    
+    
     settings = frappe.get_single("Leaf Procurement Settings")
     item =  settings.processed_item
 
@@ -57,6 +68,8 @@ def create_stock_entry(doc):
 
     if not doc.location:
         frappe.throw("Please provide Location to move stock.")
+
+
 
     stock_entry = frappe.new_doc("Stock Entry")
     stock_entry.stock_entry_type = "Material Receipt"
@@ -99,4 +112,5 @@ def create_stock_entry(doc):
     # ✅ Submit (GL entries will now be created)
     stock_entry.submit()
 
+    frappe.db.set_value("Process Order", doc.process_order, "status", "In Process")
     frappe.db.commit()
