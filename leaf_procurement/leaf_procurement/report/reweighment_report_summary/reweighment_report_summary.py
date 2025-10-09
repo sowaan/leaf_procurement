@@ -100,7 +100,7 @@ LEFT JOIN `tabBale Audit` ba
     ON bad.parent = ba.name
    AND ba.docstatus = 1
 WHERE gtn.docstatus = 1
-  AND gtn.date BETWEEN '2025-07-01' AND '2025-07-31'
+  {sql_conditions}
 ORDER BY gtn.name, gtn_items.bale_barcode
 ) t
 GROUP BY gtn

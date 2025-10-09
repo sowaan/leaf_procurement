@@ -126,7 +126,8 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date",
-   "read_only": 1
+   "read_only": 1,
+   "search_index": 1
   },
   {
    "fieldname": "transport_type",
@@ -272,7 +273,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-25 13:47:30.679293",
+ "modified": "2025-10-09 13:40:05.211905",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",

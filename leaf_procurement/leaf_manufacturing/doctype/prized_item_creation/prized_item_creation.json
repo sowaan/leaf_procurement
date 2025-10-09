@@ -17,6 +17,7 @@
   "location_short_code",
   "column_break_yate",
   "process_order_date",
+  "process_order_status",
   "item",
   "section_break_oivq",
   "detail_table",
@@ -118,13 +119,19 @@
    "fieldname": "total_output",
    "fieldtype": "Read Only",
    "label": "Total Output"
+  },
+  {
+   "fetch_from": "process_order.status",
+   "fieldname": "process_order_status",
+   "fieldtype": "Read Only",
+   "label": "Process Order Status"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-02 16:11:56.030981",
+ "modified": "2025-10-07 16:21:38.477179",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Prized Item Creation",
