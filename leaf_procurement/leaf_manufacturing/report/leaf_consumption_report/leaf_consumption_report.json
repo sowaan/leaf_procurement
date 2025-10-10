@@ -1,0 +1,100 @@
+{
+ "add_total_row": 1,
+ "add_translate_data": 0,
+ "columns": [
+  {
+   "fieldname": "process_order",
+   "fieldtype": "Data",
+   "label": "Process Order",
+   "width": 0
+  },
+  {
+   "fieldname": "Date",
+   "fieldtype": "Date",
+   "label": "date",
+   "width": 0
+  },
+  {
+   "fieldname": "Location",
+   "fieldtype": "Data",
+   "label": "location",
+   "width": 0
+  },
+  {
+   "fieldname": "Bale Barcode",
+   "fieldtype": "Data",
+   "label": "bale_barcode",
+   "width": 0
+  },
+  {
+   "fieldname": "Purchase Weight",
+   "fieldtype": "Float",
+   "label": "purchase_weight",
+   "width": 0
+  },
+  {
+   "fieldname": "Internal Grade",
+   "fieldtype": "Data",
+   "label": "internal_grade",
+   "width": 0
+  },
+  {
+   "fieldname": "Re-Weight",
+   "fieldtype": "Float",
+   "label": "reweight",
+   "width": 0
+  },
+  {
+   "fieldname": "Difference",
+   "fieldtype": "Float",
+   "label": "difference",
+   "width": 0
+  }
+ ],
+ "creation": "2025-10-09 13:57:10.272675",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [
+  {
+   "fieldname": "process_order",
+   "fieldtype": "Link",
+   "label": "Process Order",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  }
+ ],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Samsons Letter Head",
+ "letterhead": null,
+ "modified": "2025-10-09 14:55:55.825883",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Leaf Consumption Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Leaf Consumption",
+ "report_name": "Leaf Consumption Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "timeout": 0
+}
