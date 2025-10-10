@@ -59,7 +59,7 @@ def get_columns():
 		{"label": "Re-Weight", "fieldname": "re_weight", "fieldtype": "Float", "width": 130},
 		{"label": "Weight Difference", "fieldname": "weight_difference", "fieldtype": "Float", "width": 150},
 		{"label": "Remarks", "fieldname": "remarks", "fieldtype": "Data", "width": 200},
-		{"label": "Bales", "fieldname": "bales", "fieldtype": "Int", "width": 80},
+		# {"label": "Bales", "fieldname": "bales", "fieldtype": "Int", "width": 80},
 	]
 
 
