@@ -17,12 +17,17 @@ def execute(filters=None):
 def get_columns():
     return [
         {
-            "label": "Supplier Name",
-            "fieldname": "supplier_name",
+            "label": "Depot",
+            "fieldname": "custom_location_warehouse",
             "fieldtype": "Data",
             "width": 200
         },
         {
+            "label": "Supplier Name",
+            "fieldname": "supplier_name",
+            "fieldtype": "Data",
+            "width": 200
+        },        {
             "label": "Father Name",
             "fieldname": "custom_father_name",
             "fieldtype": "Data",
@@ -72,14 +77,15 @@ def get_data(filters):
         conditions.append("pi.posting_date >= %(date)s")
     elif filters.get("to_date"):
         conditions.append("pi.posting_date <= %(to_date)s")
+    if filters.get("depot"):
+        conditions.append("th.custom_location_warehouse = %(depot)s")    
     if filters.get("grower"):
-        conditions.append("th.name = %(grower)s")    
-
+        conditions.append("th.name = %(grower)s")  
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
     # This single query performs all filtering, aggregation, and calculation
     query = f"""
-SELECT th.name, th.supplier_name ,
+SELECT  th.custom_location_warehouse, th.name, th.supplier_name ,
        th.custom_father_name ,
        th.custom_nic_number ,
        th.mobile_no ,
@@ -90,7 +96,7 @@ SELECT th.name, th.supplier_name ,
  INNER JOIN `tabPurchase Invoice` AS pi
     ON th.name = pi.supplier
      {where_clause}
- GROUP BY th.name, th.supplier_name,
+ GROUP BY  th.custom_location_warehouse, th.name, th.supplier_name,
           th.custom_father_name,
           th.custom_nic_number,
           th.mobile_no

@@ -18,6 +18,19 @@ frappe.query_reports["Grower Quota Vs Actual Purchase ToDate"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname": "depot",
+			"label": "Depot",
+			"fieldtype": "Link",
+			"options": "Warehouse",
+			"get_query": function() {
+                return {
+                    filters: {
+                        "custom_is_depot": 1
+                    }
+                }				
+			}
+		},
+		{
 			"fieldname": "grower",
 			"label": "Grower",
 			"fieldtype": "Link",
