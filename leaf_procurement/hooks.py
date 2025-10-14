@@ -272,10 +272,10 @@ scheduler_events = {
             "leaf_procurement.tasks.sync.hybrid_sync"
         ]
     },
-    "daily": [
-        "leaf_procurement.tasks.audit_tasks.update_bale_audit_detail",
-        "leaf_procurement.tasks.audit_tasks.update_gtn_with_bale_audit"
-    ]    
+    # "daily": [
+    #     "leaf_procurement.tasks.audit_tasks.update_bale_audit_detail",
+    #     "leaf_procurement.tasks.audit_tasks.update_gtn_with_bale_audit"
+    # ]    
 # 	"all": [
 # 		"leaf_procurement.tasks.all"
 # 	],
