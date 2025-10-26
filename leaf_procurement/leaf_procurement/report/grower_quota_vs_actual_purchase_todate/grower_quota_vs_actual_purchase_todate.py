@@ -46,6 +46,12 @@ def get_columns():
             "width": 140
         },
         {
+            "label": "Village",
+            "fieldname": "custom_village",
+            "fieldtype": "Data",
+            "width": 140
+        },        
+        {
             "label": "Custom Quota Allowed",
             "fieldname": "custom_quota_allowed",
             "fieldtype": "Float",
@@ -88,7 +94,7 @@ def get_data(filters):
 SELECT  th.custom_location_warehouse, th.name, th.supplier_name ,
        th.custom_father_name ,
        th.custom_nic_number ,
-       th.mobile_no ,
+       th.mobile_no , th.custom_village,
        th.custom_quota_allowed ,
        sum(pi.total_qty) AS total_qty,
        th.custom_quota_allowed - sum(pi.total_qty) AS balance_qty
@@ -99,7 +105,7 @@ SELECT  th.custom_location_warehouse, th.name, th.supplier_name ,
  GROUP BY  th.custom_location_warehouse, th.name, th.supplier_name,
           th.custom_father_name,
           th.custom_nic_number,
-          th.mobile_no
+          th.mobile_no,th.custom_village
         ORDER BY
             th.supplier_name
     """
