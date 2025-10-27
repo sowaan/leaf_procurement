@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-27 15:24:53.749589",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "gtn_number",
+  "skip_stock_entry"
+ ],
+ "fields": [
+  {
+   "fieldname": "gtn_number",
+   "fieldtype": "Link",
+   "label": "GTN Number",
+   "link_filters": "[[\"Goods Transfer Note\",\"docstatus\",\"=\",\"0\"]]",
+   "options": "Goods Transfer Note"
+  },
+  {
+   "default": "1",
+   "fieldname": "skip_stock_entry",
+   "fieldtype": "Check",
+   "label": "Skip Stock Entry"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-10-27 15:26:14.866526",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Submit GTN",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
