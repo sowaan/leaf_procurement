@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-20 17:34:49.739477",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_kxnk",
+  "date",
+  "column_break_mnfa",
+  "location",
+  "column_break_ikgg",
+  "location_shortcode",
+  "section_break_gqkn",
+  "detail_table",
+  "section_break_ykag",
+  "amended_from",
+  "comments"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_kxnk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bale Creation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_mnfa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location",
+   "link_filters": "[[\"Warehouse\",\"custom_is_depot\",\"=\",0]]",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_gqkn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ikgg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ykag",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
+   "fieldname": "detail_table",
+   "fieldtype": "Table",
+   "options": "Bale Creation Detail"
+  },
+  {
+   "fetch_from": "location.custom_short_code",
+   "fieldname": "location_shortcode",
+   "fieldtype": "Read Only",
+   "label": "Location Shortcode"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-10-20 18:18:48.997629",
+ "modified_by": "Administrator",
+ "module": "Leaf Procurement",
+ "name": "Bale Creation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -104,7 +104,7 @@ def get_current_batch_location(batch_no: str) -> str | None:
         INNER JOIN `tabSerial and Batch Entry` sbe
             ON sbe.parent = sb.name
         WHERE sbe.batch_no = %s
-          AND sb.docstatus = 1
+          AND sb.docstatus = 1 AND sbe.is_outward = 0
         ORDER BY sb.posting_date DESC, sb.posting_time DESC, sb.modified DESC
         LIMIT 1
     """, (batch_no,), as_dict=True)

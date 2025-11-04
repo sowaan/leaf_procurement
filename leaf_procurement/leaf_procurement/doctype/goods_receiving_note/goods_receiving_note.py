@@ -62,7 +62,8 @@ def create_stock_entry_from_gtn(grn_doc):
 			"sub_grade": row.item_sub_grade,            
 			"to_lot_number": row.lot_number,
 			"to_grade": row.item_grade,
-			"to_sub_grade": row.item_sub_grade,   
+			"to_sub_grade": row.item_sub_grade, 
+            "reclassification_grade": row.reclassification_grade,     
             "doctype": "Stock Entry Detail",
             "parentfield": "items",
             "parenttype": "Stock Entry"
