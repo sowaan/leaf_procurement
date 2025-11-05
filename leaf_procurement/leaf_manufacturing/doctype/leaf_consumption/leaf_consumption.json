@@ -29,7 +29,9 @@
   "barcode_length",
   "section_break_heqg",
   "consumption_detail",
-  "amended_from"
+  "amended_from",
+  "section_break_xblt",
+  "bad_items"
  ],
  "fields": [
   {
@@ -164,13 +166,24 @@
    "fieldname": "disconnect_scale",
    "fieldtype": "Button",
    "label": "Disconnect Scale"
+  },
+  {
+   "fieldname": "section_break_xblt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bad_items",
+   "fieldtype": "Table",
+   "label": "Bad Items",
+   "options": "Leaf Consumption Bad Items",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-01 13:29:06.171300",
+ "modified": "2025-11-05 23:23:14.783606",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Leaf Consumption",
@@ -191,6 +204,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

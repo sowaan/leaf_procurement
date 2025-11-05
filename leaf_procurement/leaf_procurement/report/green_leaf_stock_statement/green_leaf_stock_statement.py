@@ -124,6 +124,6 @@ def get_report_data(filters):
     })
 
     # Debugging
-    frappe.log_error("Warehouse Pivot Using Short Codes", f"Query:\n{query}\nParams:\n{final_params}")
+    # frappe.log_error("Warehouse Pivot Using Short Codes", f"Query:\n{query}\nParams:\n{final_params}")
 
     return columns, data

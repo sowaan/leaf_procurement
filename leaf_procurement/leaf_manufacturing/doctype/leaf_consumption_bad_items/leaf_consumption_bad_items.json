@@ -1,0 +1,69 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-05 23:20:44.740192",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "batch_no",
+  "item_code",
+  "reason",
+  "expected_qty",
+  "found_qty",
+  "source_warehouse"
+ ],
+ "fields": [
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Batch No"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Item Code"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Reason"
+  },
+  {
+   "fieldname": "expected_qty",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Expected Qty"
+  },
+  {
+   "fieldname": "found_qty",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Found Qty"
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Source Warehouse"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-05 23:22:21.096526",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Leaf Consumption Bad Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
