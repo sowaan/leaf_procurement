@@ -4,6 +4,7 @@
 import frappe # type: ignore
 from frappe.model.document import Document # type: ignore
 from frappe.model.naming import make_autoname # type: ignore
+from erpnext.stock.doctype.batch.batch import get_batch_qty # type: ignore
 
 
 class GoodsReceivingNote(Document):
@@ -49,11 +50,15 @@ def create_stock_entry_from_gtn(grn_doc):
     stock_entry.custom_gtn_number = grn_doc.name  # custom field if needed
 
     for row in grn_doc.detail_table:
+        batch_info = get_batch_qty(batch_no=row.bale_barcode, item_code=grn_doc.default_item)
+      
+        info = batch_info[0]
+        warehouse = info["warehouse"]         
         item = {
             "item_code": grn_doc.default_item,
             "qty": row.weight,
             "basic_rate": row.rate,
-            # "s_warehouse": gtn_doc.location_warehouse,
+            "s_warehouse": warehouse,
             # "t_warehouse": gtn_doc.receiving_location,
             "use_serial_batch_fields": 1,
             "batch_no": row.bale_barcode,
@@ -75,3 +80,5 @@ def create_stock_entry_from_gtn(grn_doc):
 
     # ✅ Now reload (to simulate UI reload)
     stock_entry.reload()
+    stock_entry.submit()
+
