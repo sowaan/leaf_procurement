@@ -151,7 +151,8 @@
    "fieldname": "transit_location",
    "fieldtype": "Link",
    "label": "Transit Location",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   },
   {
    "fieldname": "naming_series",
@@ -165,7 +166,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-02 14:30:34.844984",
+ "modified": "2025-11-06 17:45:02.707574",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
@@ -186,6 +187,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
