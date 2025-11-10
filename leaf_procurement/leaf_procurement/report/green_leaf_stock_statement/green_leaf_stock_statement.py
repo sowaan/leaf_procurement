@@ -78,11 +78,15 @@ def get_report_data(filters):
     #     conditions.append("sle.company = %s")
     #     params.append(filters["company"])
 
-    if filters.get("from_date") and filters.get("to_date"):
-        conditions.append("sle.posting_date BETWEEN %(from_date)s AND %(to_date)s")
-        params["from_date"] = filters["from_date"]
+    # if filters.get("from_date") and filters.get("to_date"):
+    #     conditions.append("sle.posting_date BETWEEN %(from_date)s AND %(to_date)s")
+    #     params["from_date"] = filters["from_date"]
+    #     params["to_date"] = filters["to_date"]
+    # else:
+    if filters.get("to_date"):
+        conditions.append("sle.posting_date <= %(to_date)s")
         params["to_date"] = filters["to_date"]
-
+    
     where_clause = " AND ".join(conditions)
     frappe.log_error("Warehouse Pivot Where Clause", where_clause)
     # -------------------------------------------------------------------------

@@ -3,17 +3,11 @@
 
 frappe.query_reports["Green Leaf Stock Statement"] = {
 	"filters": [
-		{
-			fieldname: "from_date",
-			fieldtype: "Date",
-			label: __("From Date"),
-			default: frappe.datetime.add_months(frappe.datetime.get_today(), -1),
-			mandatory: 1
-		},
+
 		{
 			fieldname: "to_date",
             fieldtype: "Date",
-            label: __("To Date"),
+            label: __("As Of Date"),
             default: "Today",
             mandatory: 1
         },
