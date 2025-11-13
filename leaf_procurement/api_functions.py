@@ -9,6 +9,160 @@ from leaf_procurement.leaf_procurement.utils.sync_up import update_audit_details
 from leaf_procurement.leaf_procurement.utils.sync_up import update_gtn_details_from_audit
 
 
+from frappe.utils import flt # type: ignore
+
+
+
+def reconcile_all_purchase_invoices(limit=50):
+    """
+    Bulk reconcile Purchase Invoices that have mismatched totals or ledger inconsistencies.
+    - Skips invoices that already have Payment Entry or Journal Entry linked.
+    - Uses frappe.log_error() for skipped and failed invoices.
+    - Prints progress for traceability.
+    """
+
+    # 1️⃣ Identify suspicious invoices
+    invoices = frappe.db.sql("""
+        SELECT name, supplier, posting_date, grand_total, base_rounded_total, outstanding_amount
+        FROM `tabPurchase Invoice`
+        WHERE docstatus = 1
+        AND (
+            ROUND(grand_total, 2) != ROUND(base_tax_withholding_net_total, 2)            
+        )
+        ORDER BY posting_date DESC
+        LIMIT %s
+    """, (limit,), as_dict=True)
+
+    if not invoices:
+        frappe.msgprint("✅ No mismatched Purchase Invoices found.")
+        return
+
+    frappe.msgprint(f"🧾 Found {len(invoices)} mismatched Purchase Invoices. Starting reconciliation...")
+
+    skipped, fixed, failed = [], [], []
+
+    for inv in invoices:
+        try:
+            # 2️⃣ Check if invoice has existing payment entries
+            has_payment = frappe.db.exists(
+                "Payment Entry Reference",
+                {"reference_name": inv.name, "reference_doctype": "Purchase Invoice"}
+            )
+
+            has_jv = frappe.db.exists(
+                "Journal Entry Account",
+                {"reference_name": inv.name, "reference_type": "Purchase Invoice"}
+            )
+
+            if has_payment or has_jv:
+                skipped.append(inv.name)
+
+                frappe.log_error(
+                    title=f"Skipped Purchase Invoice {inv.name}",
+                    message=f"""
+						⚠️ Skipped reconciliation for Purchase Invoice {inv.name}.
+
+						Reason: Already linked to {'Payment Entry' if has_payment else 'Journal Entry'}.
+
+						Details:
+						- Supplier: {inv.supplier or 'N/A'}
+						- Posting Date: {inv.posting_date}
+						- Grand Total: {inv.grand_total}
+						- Outstanding: {inv.outstanding_amount}
+                    """,
+                )
+
+                print(f"⚠️ Skipped {inv.name} (linked to payment/journal entry)")
+                continue
+
+            # 3️⃣ Run reconciliation safely
+            reconcile_purchase_invoice(inv.name)
+            fixed.append(inv.name)
+            print(f"✅ Successfully reconciled {inv.name}")
+
+        except Exception:
+            failed.append(inv.name)
+            frappe.log_error(
+                title=f"Reconcile Error for {inv.name}",
+                message=frappe.get_traceback()
+            )
+            print(f"❌ Error fixing {inv.name}. Logged in Error Log.")
+
+    frappe.db.commit()
+
+    # 4️⃣ Summary message
+    frappe.msgprint(f"""
+🎯 Bulk Reconciliation Completed
+
+✅ Fixed: {len(fixed)} invoices
+⚠️ Skipped: {len(skipped)} (linked to Payment/Journal Entry)
+❌ Failed: {len(failed)} (see Error Log)
+    """)
+
+    print("\nSummary:")
+    print(f"✅ Fixed: {fixed}")
+    print(f"⚠️ Skipped: {skipped}")
+    print(f"❌ Failed: {failed}")
+
+
+def reconcile_purchase_invoice(invoice_name):
+    """
+    Fully reconcile a single Purchase Invoice including Payment Schedule and existing Payment Ledger Entries.
+    """
+    doc = frappe.get_doc("Purchase Invoice", invoice_name)
+
+    # 1️⃣ Recalculate totals
+    doc.calculate_taxes_and_totals()
+
+    base_paid = getattr(doc, "base_paid_amount", 0) or 0
+    total_advance = getattr(doc, "total_advance", 0) or 0
+    new_outstanding = round(doc.base_rounded_total - base_paid - total_advance, 2)
+
+    # 2️⃣ Update parent totals
+    frappe.db.set_value("Purchase Invoice", doc.name, {
+        "grand_total": doc.grand_total,
+        "base_grand_total": doc.base_grand_total,
+        "base_rounded_total": doc.base_rounded_total,
+        "base_tax_withholding_net_total": doc.base_tax_withholding_net_total,
+        "base_rounding_adjustment": doc.base_rounding_adjustment,
+        "outstanding_amount": new_outstanding
+    })
+
+    # 3️⃣ Update Payment Schedule
+    if doc.payment_schedule:
+        total_payment = sum(d.payment_amount for d in doc.payment_schedule)
+        ratio = doc.grand_total / total_payment if total_payment else 1
+        for row in doc.payment_schedule:
+            new_payment_amount = round(row.payment_amount * ratio, 2)
+            frappe.db.set_value("Payment Schedule", row.name, {
+                "payment_amount": new_payment_amount,
+                "base_payment_amount": new_payment_amount,
+                "outstanding": new_payment_amount,
+                "base_outstanding": new_payment_amount
+            })
+
+    # 4️⃣ Fix Payment Ledger Entries
+    ledgers = frappe.get_all(
+        "Payment Ledger Entry",
+        filters={"voucher_type": "Purchase Invoice", "voucher_no": invoice_name},
+        fields=["name", "amount_in_account_currency"]
+    )
+
+    if ledgers:
+        for led in ledgers:
+            frappe.db.set_value("Payment Ledger Entry", led.name, {
+                "amount_in_account_currency": new_outstanding,
+                "amount": new_outstanding
+            })
+
+    # 5️⃣ Commit
+    frappe.db.commit()
+
+    # 6️⃣ Print verification
+    updated = frappe.get_doc("Purchase Invoice", invoice_name)
+    total_sched = sum([d.base_outstanding for d in updated.payment_schedule]) if updated.payment_schedule else 0
+    print(f"Invoice {invoice_name} fixed → grand_total: {updated.grand_total}, base_rounded_total: {updated.base_rounded_total}, outstanding: {updated.outstanding_amount}, schedule total: {total_sched}")
+
 def create_company(settings, headers, data):
 	"""Update company records with the received data."""
 	created = []
