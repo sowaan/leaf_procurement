@@ -76,11 +76,11 @@ def create_stock_entry(doc):
     stock_entry.to_warehouse = doc.location
 
     stock_entry.posting_date = doc.date 
-    stock_entry.posting_time = "20:30:00"
-    stock_entry.purpose = "Material Receipt"
-    stock_entry.set_posting_time = 1
-    stock_entry.skip_future_date_validation = True
-    stock_entry.custom_receiving_warehouse = doc.location
+    # stock_entry.posting_time = "20:30:00"
+    # stock_entry.purpose = "Material Receipt"
+    # stock_entry.set_posting_time = 1
+    # stock_entry.skip_future_date_validation = True
+    # stock_entry.custom_receiving_warehouse = doc.location
     for row in doc.detail_table:
                 
         stock_entry.append("items", {
@@ -88,8 +88,8 @@ def create_stock_entry(doc):
             "qty": row.kgs,
             "target_warehouse": doc.location,
             "use_serial_batch_fields": 1,
-            "prized_grade": row.prized_grade,
-            "process_order": doc.process_order,
+            "to_prized_grade": row.prized_grade,
+            "to_process_order": doc.process_order,
             "basic_rate": row.standard_rate,
             "basic_amount": row.amount,
             "custom_packing_quantity": row.quantity,

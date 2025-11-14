@@ -8,6 +8,7 @@ from erpnext.accounts.utils import get_fiscal_year # type: ignore
 from datetime import datetime
 from frappe import _, ValidationError 	#type: ignore
 from leaf_procurement.leaf_procurement.api.config import get_cached_prefix
+import re
 
 class BaleCreation(Document):
     def autoname(self):
@@ -30,6 +31,32 @@ class BaleCreation(Document):
         self.name = make_autoname(prefix + ".######")
         # self._update_series_from_name()
 
+    def validate(self):
+        settings = frappe.get_single("Leaf Procurement Settings")
+        item =  settings.default_item
+        existing_batches = []
+        invalid_batches = []
+
+        for row in self.detail_table:
+            barcode = row.bale_barcode.strip()
+
+            if batch_exists(barcode, item):
+                existing_batches.append(barcode)         
+
+            # Pattern: 1 letter + 11 digits
+            pattern = r'^[A-Za-z][0-9]{11}$'
+
+            if not re.match(pattern, barcode):
+                invalid_batches.append(barcode)
+
+        if existing_batches:
+            frappe.throw(_("⚠️ The following bale barcodes already exist as batches:<br><br>{0}")
+                .format("<br>".join(existing_batches)))
+
+        if invalid_batches:
+            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must start with alphabet and should contain 11 digits):<br><br>{0}")
+                .format("<br>".join(invalid_batches)))
+            
     def on_submit(self):
         settings = frappe.get_single("Leaf Procurement Settings")
         item =  settings.default_item
@@ -37,18 +64,23 @@ class BaleCreation(Document):
         invalid_batches = []
 
         for row in self.detail_table:
-            if batch_exists(row.bale_barcode, item):
-                existing_batches.append(row.bale_barcode)
-            
-            if len(row.bale_barcode) <8 or len(row.bale_barcode)>12:
-                invalid_batches.append(row.bale_barcode)
+            barcode = row.bale_barcode.strip()
+
+            if batch_exists(barcode, item):
+                existing_batches.append(barcode)         
+
+            # Pattern: 1 letter + 11 digits
+            pattern = r'^[A-Za-z][0-9]{11}$'
+
+            if not re.match(pattern, barcode):
+                invalid_batches.append(barcode)
 
         if existing_batches:
             frappe.throw(_("⚠️ The following bale barcodes already exist as batches:<br><br>{0}")
                 .format("<br>".join(existing_batches)))
 
         if invalid_batches:
-            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must be 8-12 characters):<br><br>{0}")
+            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must start with alphabet and should contain 11 digits):<br><br>{0}")
                 .format("<br>".join(invalid_batches)))
         
         create_stock_entry(self, item)
