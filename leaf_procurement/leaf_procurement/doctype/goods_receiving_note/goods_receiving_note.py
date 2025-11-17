@@ -39,7 +39,7 @@ def create_stock_entry_from_gtn(grn_doc):
         frappe.throw("Dispatch and Receiving Warehouse must be set.")
 
     stock_entry = frappe.new_doc("Stock Entry")
-    stock_entry.stock_entry_type = "Material Receipt"
+    stock_entry.stock_entry_type = "Material Transfer"
     stock_entry.company = grn_doc.company
     stock_entry.add_to_transit = False
     stock_entry.to_warehouse = grn_doc.location_warehouse
