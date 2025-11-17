@@ -112,6 +112,8 @@ def create_stock_entry_from_gtn(gtn_doc):
     stock_entry.set_posting_time = 1
     stock_entry.skip_future_date_validation = True
 
+    stock_entry.custom_reference_doctype = "Goods Transfer Note"
+    stock_entry.custom_reference_name = gtn_doc.name
 
     for row in gtn_doc.bale_registration_detail:
 

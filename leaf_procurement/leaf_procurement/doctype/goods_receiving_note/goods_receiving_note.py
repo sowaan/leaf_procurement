@@ -49,6 +49,9 @@ def create_stock_entry_from_gtn(grn_doc):
     stock_entry.purpose = "Material Transfer"
     stock_entry.custom_gtn_number = grn_doc.name  # custom field if needed
 
+    stock_entry.custom_reference_doctype = "Goods Receiving Note"
+    stock_entry.custom_reference_name = grn_doc.name
+
     bad_items = []
     # frappe.log_error("Starting Stock Entry creation",f"Creating Stock Entry for default item {grn_doc.default_item}")
     for row in grn_doc.detail_table:

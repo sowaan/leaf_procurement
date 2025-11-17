@@ -45,6 +45,9 @@ def create_stock_entry(cons_doc):
         # stock_entry.skip_future_date_validation = True
         # stock_entry.custom_receiving_warehouse = cons_doc.location
 
+        stock_entry.custom_reference_doctype = "Leaf Consumption"
+        stock_entry.custom_reference_name = cons_doc.name
+
         bad_items = []
         for row in cons_doc.consumption_detail:
             try:

@@ -76,6 +76,10 @@ def create_stock_entry(doc):
     stock_entry.to_warehouse = doc.location
 
     stock_entry.posting_date = doc.date 
+
+    stock_entry.custom_reference_doctype = "Prized Item Creation"
+    stock_entry.custom_reference_name = doc.name    
+
     # stock_entry.posting_time = "20:30:00"
     # stock_entry.purpose = "Material Receipt"
     # stock_entry.set_posting_time = 1
