@@ -68,26 +68,40 @@ def create_stock_entry(cons_doc):
                 info = batch_info[0]
 
                 if flt(info.get("qty"), 3) != flt(row.purchase_weight, 3):
-                        bad_items.append({
-                            "batch_no": row.bale_barcode,
-                            "reason": "Batch quantity mismatch",
-                            "expected_qty": row.purchase_weight,
-                            "found_qty": info.get("qty"),
-                            "item_code": cons_doc.item
-                        })
-                        continue  # ✅ Skip this item and move forward
+                    bad_items.append({
+                        "batch_no": row.bale_barcode,
+                        "reason": "Batch quantity mismatch",
+                        "expected_qty": row.purchase_weight,
+                        "found_qty": info.get("qty"),
+                        "item_code": cons_doc.item
+                    })
+                    continue  # ✅ Skip this item and move forward
 
                 # ✅ All good — safe to use warehouse
                 warehouse = info["warehouse"]     
 
                 if not warehouse:
-                    frappe.throw(f"Batch {row.bale_barcode} not found in any warehouse")
+                    bad_items.append({
+                        "batch_no": row.bale_barcode,
+                        "reason": "Batch not found in any warehouse",
+                        "expected_qty": row.purchase_weight,
+                        "found_qty": 0,
+                        "item_code": cons_doc.item
+                    })
+                    continue  # ✅ Skip this item and move forward
 
                 # frappe.log_error(f"Batch {row.bale_barcode} found in warehouse {warehouse}")    
 
                 details = get_invoice_item_by_barcode(cons_doc.item, row.bale_barcode)
                 if not details:
-                    frappe.throw(f"Batch {row.bale_barcode} not found in any Purchase Invoice for item {cons_doc.item}")
+                    bad_items.append({
+                        "batch_no": row.bale_barcode,
+                        "reason": "Batch not found in any Purchase Invoice",
+                        "expected_qty": row.purchase_weight,
+                        "found_qty": 0,
+                        "item_code": cons_doc.item
+                    })
+                    continue  # ✅ Sk                    
                 
                 # rate = details.get("rate")
                 lot_number = details.get("lot_number")
@@ -170,9 +184,10 @@ def create_stock_entry(cons_doc):
             "bad_items": bad_items
         }
     except ValidationError as ve:
+        frappe.log_error(error=frappe.get_traceback(), title="Error in creating Stock Entry for Leaf Consumption")
         frappe.throw(ve)
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Error in creating Stock Entry for Leaf Consumption")
+        frappe.log_error(error=frappe.get_traceback(), title="Error in creating Stock Entry for Leaf Consumption")
         frappe.throw(_("An error occurred while creating Stock Entry: {0}").format(str(e)))
 
 
