@@ -67,15 +67,19 @@ def create_stock_entry(cons_doc):
                 
                 info = batch_info[0]
 
-                if flt(info.get("qty"), 3) != flt(row.purchase_weight, 3):
+                # Safely extract qty (convert None or empty to 0)
+                found_qty = flt(info.get("qty") or 0, 3)
+
+                # Compare expected vs found
+                if found_qty != flt(row.purchase_weight, 3):
                     bad_items.append({
                         "batch_no": row.bale_barcode,
                         "reason": "Batch quantity mismatch",
                         "expected_qty": row.purchase_weight,
-                        "found_qty": info.get("qty"),
+                        "found_qty": found_qty,
                         "item_code": cons_doc.item
                     })
-                    continue  # ✅ Skip this item and move forward
+                    continue# ✅ Skip this item and move forward
 
                 # ✅ All good — safe to use warehouse
                 warehouse = info["warehouse"]     
@@ -85,7 +89,6 @@ def create_stock_entry(cons_doc):
                         "batch_no": row.bale_barcode,
                         "reason": "Batch not found in any warehouse",
                         "expected_qty": row.purchase_weight,
-                        "found_qty": 0,
                         "item_code": cons_doc.item
                     })
                     continue  # ✅ Skip this item and move forward
@@ -98,7 +101,6 @@ def create_stock_entry(cons_doc):
                         "batch_no": row.bale_barcode,
                         "reason": "Batch not found in any Purchase Invoice",
                         "expected_qty": row.purchase_weight,
-                        "found_qty": 0,
                         "item_code": cons_doc.item
                     })
                     continue  # ✅ Sk                    
@@ -136,7 +138,6 @@ def create_stock_entry(cons_doc):
                     "item_code": cons_doc.item,
                     "reason": f"Unexpected error see detailed reason field.",
                     "expected_qty": row.purchase_weight,
-                    "found_qty": info.get("qty") if 'info' in locals() else None,
                     "detailed_reason": str(ex)
                 })
                 continue  # ✅ Skip this batch and move to next           
