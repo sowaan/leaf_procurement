@@ -12,6 +12,44 @@ frappe.ui.form.on("Leaf Consumption", {
     refresh(frm) {
         frm.page.sidebar.hide();
         update_consumption_display(frm);
+        if (frm.fields_dict.bad_items) {
+            const grid = frm.fields_dict.bad_items.grid;
+
+            // Refresh the grid and color rows
+            grid.grid_rows.forEach(function(row) {
+                const reason = row.doc.reason;
+                const $row = $(row.row);
+
+                // Reset color
+                $row.css("background-color", "");
+
+                // Apply color based on reason
+                if (reason === "Already Issued") {
+                    $row.css("background-color", "#d4edda"); // green
+                } else if (reason === "Batch Not Found" || reason === "Invoice Not Found") {
+                    $row.css("background-color", "#f8d7da"); // red
+                } else if (reason === "Quantity Mismatch") {
+                    $row.css("background-color", "#fff3cd"); // yellow
+                } else if (reason === "Unexpected Error") {
+                    $row.css("background-color", "#f0f0f0"); // gray
+                }
+            });
+
+            // Scroll to the first row with an error
+            const first_error_row = grid.grid_rows.find(r => 
+                ["Already Issued", "Batch Not Found", "Invoice Not Found", "Quantity Mismatch", "Unexpected Error"].includes(r.doc.reason)
+            );
+
+            if (first_error_row) {
+                const $scroll_to = $(first_error_row.row);
+                if ($scroll_to.length) {
+                    // Scroll parent container to make row visible
+                    $scroll_to[0].scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }
+            // Finally, refresh the field to ensure UI updates
+            frm.refresh_field("bad_items");
+        }      
     },
     connect_scale: async function (frm) {
         if (!window._scaleConnection.port) {

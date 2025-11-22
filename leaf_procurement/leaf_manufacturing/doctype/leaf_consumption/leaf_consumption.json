@@ -76,12 +76,14 @@
    "label": "Location Short Code"
   },
   {
+   "allow_on_submit": 1,
    "fetch_from": "process_order.estimated_input",
    "fieldname": "estimated_input",
    "fieldtype": "Read Only",
    "label": "Estimated Input"
   },
   {
+   "allow_on_submit": 1,
    "fetch_from": "process_order.estimated_out_put",
    "fieldname": "estimated_out_put",
    "fieldtype": "Read Only",
@@ -114,6 +116,7 @@
    "label": "Bale Barcode"
   },
   {
+   "allow_on_submit": 1,
    "default": "11",
    "fieldname": "barcode_length",
    "fieldtype": "Read Only",
@@ -172,6 +175,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "bad_items",
    "fieldtype": "Table",
    "label": "Bad Items",
@@ -183,7 +187,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-05 23:23:14.783606",
+ "modified": "2025-11-22 22:37:45.638198",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Leaf Consumption",

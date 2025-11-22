@@ -13,184 +13,230 @@ from erpnext.stock.doctype.batch.batch import get_batch_qty # type: ignore
 
 
 class LeafConsumption(Document):
-	def autoname(self):
-		date_str = str(self.date)  # or date_obj.strftime("%Y-%m-%d")
-		today = datetime.strptime(date_str, "%Y-%m-%d")
+    def autoname(self):
+        date_str = str(self.date)  # or date_obj.strftime("%Y-%m-%d")
+        today = datetime.strptime(date_str, "%Y-%m-%d")
 
-		#today = datetime.strptime(self.date, "%Y-%m-%d")
-		
-		fy = get_fiscal_year(today)
-		fy_start_year_short = fy[1].strftime("%y")
-		fy_end_year_short = fy[2].strftime("%y")
-		prefix = f"{self.location_short_code}-{fy_start_year_short}-{fy_end_year_short}-CON-"
-		self.name = make_autoname(prefix + ".######")
+        #today = datetime.strptime(self.date, "%Y-%m-%d")
+        
+        fy = get_fiscal_year(today)
+        fy_start_year_short = fy[1].strftime("%y")
+        fy_end_year_short = fy[2].strftime("%y")
+        prefix = f"{self.location_short_code}-{fy_start_year_short}-{fy_end_year_short}-CON-"
+        self.name = make_autoname(prefix + ".######")
 
-	def on_submit(self):
-		create_stock_entry(self)
-	
-def create_stock_entry(cons_doc):
-    try:
-        if not cons_doc.location:
-            frappe.throw("Please provide Location to move stock.")
+    def on_submit(self):
+        try:
+            result = create_stock_entry(self)
+        except Exception as e:
+            frappe.throw(_("Error creating Stock Entry: {0}").format(str(e)))
 
-
-        stock_entry = frappe.new_doc("Stock Entry")
-        stock_entry.stock_entry_type = "Material Issue"
-        # stock_entry.to_warehouse = cons_doc.location
-
-        # stock_entry.posting_date = cons_doc.date 
-        # stock_entry.posting_time = "23:00:00"
-        # stock_entry.purpose = "Material Issue"
-        # stock_entry.set_posting_time = 1
-        # stock_entry.skip_future_date_validation = True
-        # stock_entry.custom_receiving_warehouse = cons_doc.location
-
-        stock_entry.custom_reference_doctype = "Leaf Consumption"
-        stock_entry.custom_reference_name = cons_doc.name
-
-        bad_items = []
-        for row in cons_doc.consumption_detail:
-            try:
-            # warehouse = get_current_batch_location(row.bale_barcode)
-                batch_info = get_batch_qty(batch_no=row.bale_barcode, item_code=cons_doc.item)
-
-                    # ✅ CASE 1 — No batch info found
-                if not batch_info:
-                    bad_items.append({
-                        "batch_no": row.bale_barcode,
-                        "reason": "Batch not found in any warehouse",
-                        "expected_qty": row.purchase_weight,
-                        "found_qty": 0,
-                        "item_code": cons_doc.item
-                    })
-                    continue  # ✅ Skip this item and move to next      
-                
-                info = batch_info[0]
-
-                # Safely extract qty (convert None or empty to 0)
-                found_qty = flt(info.get("qty") or 0, 3)
-
-                # Compare expected vs found
-                if found_qty != flt(row.purchase_weight, 3):
-                    bad_items.append({
-                        "batch_no": row.bale_barcode,
-                        "reason": "Batch quantity mismatch",
-                        "expected_qty": row.purchase_weight,
-                        "found_qty": found_qty,
-                        "item_code": cons_doc.item
-                    })
-                    continue# ✅ Skip this item and move forward
-
-                # ✅ All good — safe to use warehouse
-                warehouse = info["warehouse"]     
-
-                if not warehouse:
-                    bad_items.append({
-                        "batch_no": row.bale_barcode,
-                        "reason": "Batch not found in any warehouse",
-                        "expected_qty": row.purchase_weight,
-                        "item_code": cons_doc.item
-                    })
-                    continue  # ✅ Skip this item and move forward
-
-                # frappe.log_error(f"Batch {row.bale_barcode} found in warehouse {warehouse}")    
-
-                details = get_invoice_item_by_barcode(cons_doc.item, row.bale_barcode)
-                if not details:
-                    bad_items.append({
-                        "batch_no": row.bale_barcode,
-                        "reason": "Batch not found in any Purchase Invoice",
-                        "expected_qty": row.purchase_weight,
-                        "item_code": cons_doc.item
-                    })
-                    continue  # ✅ Sk                    
-                
-                # rate = details.get("rate")
-                lot_number = details.get("lot_number")
-                grade = details.get("grade")
-                sub_grade = details.get("sub_grade")
-                # reclassification_grade = details.get("reclassification_grade")
-                # invoice_qty = details.get("qty")
-
-                stock_entry.append("items", {
-                    "item_code": cons_doc.item,
-                    "qty": row.purchase_weight,
-                    "s_warehouse": warehouse,
-
-                    "uom": "Kg",
-                    "stock_uom": "Kg",
-                    "conversion_factor": 1,
-
-                    "use_serial_batch_fields": 1,
-                    "batch_no": row.bale_barcode,
-                    "reclassification_grade": row.internal_grade,
-                    "process_order": cons_doc.process_order,
-                    "lot_number": lot_number,
-                    "grade": grade,
-                    "sub_grade": sub_grade,
-                    # "basic_rate": rate,
-                    # "basic_amount": rate * invoice_qty
-                })
-            except Exception as ex:
-                # ✅ Unexpected exception for this batch — record it
-                bad_items.append({
-                    "batch_no": row.bale_barcode,
-                    "item_code": cons_doc.item,
-                    "reason": f"Unexpected error see detailed reason field.",
-                    "expected_qty": row.purchase_weight,
-                    "detailed_reason": str(ex)
-                })
-                continue  # ✅ Skip this batch and move to next           
-
-        # ✅ Must call these controller methods BEFORE insert/submit
-        stock_entry.set_missing_values()
-        stock_entry.calculate_rate_and_amount()
-
-        # ✅ Save as draft first — so ERPNext processes the valuation properly
-        stock_entry.save(ignore_permissions=True)
-
-        # ✅ Now reload (to simulate UI reload)
-        stock_entry.reload()
-
-        # ✅ Submit (GL entries will now be created)
-        stock_entry.submit()
-
+        bad_items = result.get("bad_items", [])
+        stock_entry = result.get("stock_entry")
+        # -----------------------------
+        # FINAL MESSAGE
+        # -----------------------------
         if bad_items:
-            for b in bad_items:
-                cons_doc.append("bad_items", {
-                    "batch_no": b["batch_no"],
-                    "item_code": b["item_code"],
-                    "reason": b["reason"],
-                    "expected_qty": b["expected_qty"],
-                    "found_qty": b["found_qty"],
-                    "source_warehouse": b.get("source_warehouse")
-                })
-
-            cons_doc.save(ignore_permissions=True)
-
             message = "<br>".join([
                 f"Batch <b>{b['batch_no']}</b>: {b['reason']} "
-                f"(Expected: {b['expected_qty']}, Found: {b['found_qty']})"
                 for b in bad_items
             ])
 
-            # frappe.msgprint(_("Stock Entry {0} created with some issues. ").format(stock_entry.name))
-            frappe.msgprint("Stock Entry created with errors. Some items were skipped:<br><br>" + message)
+        # If no stock entry created → cancel submit
+        if not stock_entry:
+            frappe.throw(
+                _("No Stock Entry created due to the following issues:<br><br>{0}<br><br>Kindly refresh the page to see details.").format(message),
+                frappe.ValidationError
+            )
+
+        if bad_items:
+            frappe.msgprint("Stock Entry created with some skipped items:<br><br>" + message)
         else:
             frappe.msgprint(_("Stock Entry {0} created successfully").format(stock_entry.name))
-        
+
+
+	
+def create_stock_entry(cons_doc):
+
+    if not cons_doc.location:
+        frappe.throw("Please provide Location to move stock.")
+
+    cons_doc.set("bad_items", [])
+    stock_entry = frappe.new_doc("Stock Entry")
+    stock_entry.stock_entry_type = "Material Issue"
+    stock_entry.custom_reference_doctype = "Leaf Consumption"
+    stock_entry.custom_reference_name = cons_doc.name
+
+    bad_items = []
+
+    for row in cons_doc.consumption_detail:
+        try:
+            sename = already_issued(row.bale_barcode, cons_doc.item)
+            # frappe.log_error("Leaf Consumption - Create Stock Entry",f"Stock Entry:  {sename or 'Not issued yet'} for Batch: {row.bale_barcode}")
+            if sename:
+                bad_items.append({
+                    "batch_no": row.bale_barcode,
+                    "reason": "Already Issued",
+                    "expected_qty": row.purchase_weight,
+                    "found_qty": 0,
+                    "item_code": cons_doc.item,
+                    "detailed_reason": f"Already issued in Stock Entry {sename}"
+                })
+                continue
+
+            
+            batch_info = get_batch_qty(batch_no=row.bale_barcode, item_code=cons_doc.item)
+            info = batch_info[0] if batch_info else None
+            
+
+            
+
+
+            # -----------------------------
+            # CASE 1: Batch info NOT found
+            # -----------------------------
+            if not info:
+                bad_items.append({
+                    "batch_no": row.bale_barcode,
+                    "reason": "Batch Not Found",
+                    "expected_qty": row.purchase_weight,
+                    "found_qty": 0,
+                    "item_code": cons_doc.item,
+                    "detailed_reason": "No batch information found in the system."
+                })
+                continue
+
+            warehouse = info.get("warehouse")
+            found_qty = flt(info.get("qty") or 0, 3)
+
+            # -----------------------------
+            # CASE 2: Qty mismatch
+            # -----------------------------
+            if found_qty != flt(row.purchase_weight, 3):
+                bad_items.append({
+                    "batch_no": row.bale_barcode,
+                    "reason": "Quantity Mismatch",
+                    "expected_qty": row.purchase_weight,
+                    "found_qty": found_qty,
+                    "item_code": cons_doc.item,
+                    "detailed_reason": f"Expected {row.purchase_weight}, but found {found_qty} in batch."
+                })
+                continue
+
+            # -----------------------------
+            # CASE 3: Validate invoice details
+            # -----------------------------
+            details = get_invoice_item_by_barcode(cons_doc.item, row.bale_barcode)
+
+            if not details:
+                bad_items.append({
+                    "batch_no": row.bale_barcode,
+                    "reason": "Invoice Not Found",
+                    "expected_qty": row.purchase_weight,
+                    "found_qty": found_qty,
+                    "item_code": cons_doc.item,
+                    "detailed_reason": "No matching invoice details found for this barcode."
+                })
+                continue
+
+            rate = details.get("rate")
+            lot_number = details.get("lot_number")
+            grade = details.get("grade")
+            sub_grade = details.get("sub_grade")
+            invoice_qty = details.get("qty")
+
+            # -----------------------------
+            # ADD VALID ITEM TO STOCK ENTRY
+            # -----------------------------
+            stock_entry.append("items", {
+                "item_code": cons_doc.item,
+                "qty": row.purchase_weight,
+                "s_warehouse": warehouse,
+
+                "uom": "Kg",
+                "stock_uom": "Kg",
+                "conversion_factor": 1,
+
+                "batch_no": row.bale_barcode,
+                "use_serial_batch_fields": 1,
+
+                "reclassification_grade": row.internal_grade,
+                "process_order": cons_doc.process_order,
+                "lot_number": lot_number,
+                "grade": grade,
+                "sub_grade": sub_grade,
+                "basic_rate": rate,
+                "basic_amount": rate * invoice_qty
+            })
+
+        except Exception as ex:
+            frappe.log_error("Error Creating Stock Entry For POS", str(ex))
+            bad_items.append({
+                "batch_no": row.bale_barcode,
+                "item_code": cons_doc.item,
+                "reason": "Unexpected error",
+                "expected_qty": row.purchase_weight,
+                "found_qty": 0,
+                "detailed_reason": str(ex)
+            })
+            continue
+
+    # -----------------------------
+    # SAVE BAD ITEMS IN DOC
+    # -----------------------------
+    if bad_items:
+        for b in bad_items:
+            cons_doc.append("bad_items", {
+                "batch_no": b["batch_no"],
+                "item_code": b["item_code"],
+                "reason": b["reason"],
+                "expected_qty": b["expected_qty"],
+                "found_qty": b.get("found_qty", 0),
+                "detailed_reason": b["detailed_reason"]
+
+            })
+        cons_doc.save(ignore_permissions=True)
         frappe.db.commit()
+        
+
+    # -----------------------------
+    # NO VALID ITEMS → STOP HERE
+    # -----------------------------
+    if not stock_entry.items:
+        # frappe.msgprint("No valid items found. Stock Entry will not be created.")
         return {
-            "stock_entry": stock_entry.name,
+            "stock_entry": None,
             "bad_items": bad_items
         }
-    except ValidationError as ve:
-        frappe.log_error(error=frappe.get_traceback(), title="Error in creating Stock Entry for Leaf Consumption")
-        frappe.throw(ve)
-    except Exception as e:
-        frappe.log_error(error=frappe.get_traceback(), title="Error in creating Stock Entry for Leaf Consumption")
-        frappe.throw(_("An error occurred while creating Stock Entry: {0}").format(str(e)))
 
+    # -----------------------------
+    # PROCESS & SUBMIT STOCK ENTRY
+    # -----------------------------
+    stock_entry.set_missing_values()
+    stock_entry.calculate_rate_and_amount()
+    stock_entry.save(ignore_permissions=True)
+    stock_entry.reload()
+    stock_entry.submit()
+
+
+    return {
+        "stock_entry": stock_entry.name,
+        "bad_items": bad_items
+    }
+
+def already_issued(batch_no, item_code):
+    result = frappe.db.sql("""
+        SELECT sed.parent
+        FROM `tabStock Entry Detail` sed
+        JOIN `tabStock Entry` se ON se.name = sed.parent
+        WHERE sed.batch_no = %s
+          AND sed.item_code = %s
+          AND se.stock_entry_type = 'Material Issue'
+          AND se.docstatus = 1
+        LIMIT 1
+    """, (batch_no, item_code), as_dict=True)
+
+    return result[0].get("parent") if result else None
 
 def get_current_batch_location(batch_no: str) -> str | None:
     """
