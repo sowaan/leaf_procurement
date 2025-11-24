@@ -14,10 +14,9 @@
  ],
  "fields": [
   {
-   "allow_on_submit": 1,
    "columns": 2,
    "fieldname": "purchase_weight",
-   "fieldtype": "Read Only",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Purchase Weight",
    "read_only": 1
@@ -41,7 +40,7 @@
   {
    "columns": 2,
    "fieldname": "gain_loss",
-   "fieldtype": "Read Only",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Gain/Loss",
    "read_only": 1
@@ -59,7 +58,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-23 00:19:49.237835",
+ "modified": "2025-11-24 13:55:40.461094",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Leaf Consumption Detail",

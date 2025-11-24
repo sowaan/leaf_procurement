@@ -37,7 +37,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Packing Type",
-   "options": "Box\nBale",
+   "options": "Box\nBale\nBag",
    "reqd": 1
   },
   {
@@ -76,13 +76,14 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-02 16:03:08.199655",
+ "modified": "2025-11-24 14:04:33.867126",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Prized Item Creation Entry",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

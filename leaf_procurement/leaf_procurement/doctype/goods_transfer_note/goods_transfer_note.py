@@ -100,7 +100,7 @@ def create_stock_entry_from_gtn(gtn_doc):
     stock_entry = frappe.new_doc("Stock Entry")
     stock_entry.stock_entry_type = "Material Transfer"
     stock_entry.company = gtn_doc.company
-    stock_entry.add_to_transit = True
+    # stock_entry.add_to_transit = True
     stock_entry.from_warehouse = gtn_doc.location_warehouse
     stock_entry.to_warehouse = gtn_doc.transit_location
     stock_entry.custom_receiving_warehouse = gtn_doc.receiving_location

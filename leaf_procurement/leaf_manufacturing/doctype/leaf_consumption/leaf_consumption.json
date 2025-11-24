@@ -76,18 +76,20 @@
    "label": "Location Short Code"
   },
   {
-   "allow_on_submit": 1,
    "fetch_from": "process_order.estimated_input",
    "fieldname": "estimated_input",
-   "fieldtype": "Read Only",
-   "label": "Estimated Input"
+   "fieldtype": "Float",
+   "label": "Estimated Input",
+   "precision": "0",
+   "read_only": 1
   },
   {
-   "allow_on_submit": 1,
    "fetch_from": "process_order.estimated_out_put",
    "fieldname": "estimated_out_put",
-   "fieldtype": "Read Only",
-   "label": "Estimated Out Put"
+   "fieldtype": "Float",
+   "label": "Estimated Out Put",
+   "precision": "0",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_jhqk",
@@ -187,7 +189,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-22 22:37:45.638198",
+ "modified": "2025-11-24 13:54:49.816290",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Leaf Consumption",

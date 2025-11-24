@@ -71,8 +71,10 @@ def create_stock_entry(cons_doc):
 
     for row in cons_doc.consumption_detail:
         try:
+            # -----------------------------
+            # CASE 1: Batch already issued
+            # -----------------------------            
             sename = already_issued(row.bale_barcode, cons_doc.item)
-            # frappe.log_error("Leaf Consumption - Create Stock Entry",f"Stock Entry:  {sename or 'Not issued yet'} for Batch: {row.bale_barcode}")
             if sename:
                 bad_items.append({
                     "batch_no": row.bale_barcode,
@@ -87,15 +89,26 @@ def create_stock_entry(cons_doc):
             
             batch_info = get_batch_qty(batch_no=row.bale_barcode, item_code=cons_doc.item)
             info = batch_info[0] if batch_info else None
-            
-
-            
-
 
             # -----------------------------
-            # CASE 1: Batch info NOT found
+            # CASE 2: Batch info NOT found
             # -----------------------------
             if not info:
+                #-----------------------------------
+                # CASE 3: Check if batch in transit
+                #-----------------------------------
+                transit_entry = get_transit_stock_entry(row.bale_barcode)
+                if transit_entry:
+                    bad_items.append({
+                        "batch_no": row.bale_barcode,
+                        "reason": "Batch In Transit",
+                        "expected_qty": row.purchase_weight,
+                        "found_qty": 0,
+                        "item_code": cons_doc.item,
+                        "detailed_reason": f"Batch is currently in transit via Stock Entry {transit_entry}."
+                    })
+                    continue
+
                 bad_items.append({
                     "batch_no": row.bale_barcode,
                     "reason": "Batch Not Found",
@@ -110,7 +123,7 @@ def create_stock_entry(cons_doc):
             found_qty = flt(info.get("qty") or 0, 3)
 
             # -----------------------------
-            # CASE 2: Qty mismatch
+            # CASE 4: Qty mismatch
             # -----------------------------
             if found_qty != flt(row.purchase_weight, 3):
                 bad_items.append({
@@ -124,7 +137,7 @@ def create_stock_entry(cons_doc):
                 continue
 
             # -----------------------------
-            # CASE 3: Validate invoice details
+            # CASE 5: Validate invoice details
             # -----------------------------
             details = get_invoice_item_by_barcode(cons_doc.item, row.bale_barcode)
 
@@ -223,6 +236,31 @@ def create_stock_entry(cons_doc):
         "stock_entry": stock_entry.name,
         "bad_items": bad_items
     }
+
+def get_transit_stock_entry(batch_no):
+    """
+    Returns Stock Entry name if the given batch is in transit.
+    Otherwise returns None.
+    """
+
+    query = """
+        SELECT se.name
+        FROM `tabStock Entry` se
+        INNER JOIN `tabStock Entry Detail` sei 
+            ON sei.parent = se.name
+        WHERE 
+            se.docstatus = 1
+            AND sei.add_to_transit = 1
+            AND sei.batch_no = %s
+        LIMIT 1
+    """
+
+    result = frappe.db.sql(query, (batch_no,), as_dict=True)
+
+    if result:
+        return result[0].name  # Stock Entry number
+
+    return None
 
 def already_issued(batch_no, item_code):
     result = frappe.db.sql("""
