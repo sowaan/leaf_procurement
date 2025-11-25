@@ -87,7 +87,7 @@ def create_stock_entry_from_gtn(grn_doc):
             }
             stock_entry.append("items", item)
         except Exception as e:
-            frappe.log_error(f"Error processing bale {row.bale_barcode} in GRN {grn_doc.name}: {str(e)}")
+            frappe.log_error(title=f"Invalid Bale {row.bale_barcode}",message=f"Error processing bale {row.bale_barcode} in GRN {grn_doc.name}: {str(e)}")
             bad_items.append({
                 "batch_no": row.bale_barcode,
                 "reason": str(e),
@@ -113,5 +113,5 @@ def create_stock_entry_from_gtn(grn_doc):
         stock_entry.reload()
         stock_entry.submit()
     except Exception as e:
-        frappe.log_error(f"Error submitting Stock Entry for GRN {grn_doc.name}: {str(e)}")
+        frappe.log_error(title="Error Creating GRN Stock Entry", message=f"Error submitting Stock Entry for GRN {grn_doc.name}: {str(e)}")
         frappe.throw(f"Failed to submit Stock Entry for GRN {grn_doc.name}: {str(e)}")
