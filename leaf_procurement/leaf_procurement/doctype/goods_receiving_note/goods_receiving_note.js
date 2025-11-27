@@ -39,7 +39,7 @@ frappe.ui.form.on("Goods Receiving Note", {
     },
     refresh(frm) {
         //hide_grid_controls(frm);
-        frm.set_df_property('detail_table', 'read_only', 1);
+        // frm.set_df_property('detail_table', 'read_only', 1);
         frm.refresh_field('detail_table'); // important to apply read-only       
     },
     onload_post_render(frm) {
