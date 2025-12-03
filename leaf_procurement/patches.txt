@@ -7,3 +7,4 @@
 leaf_procurement.patches.remove_add_total_from_reports
 leaf_procurement.patches.put_add_total_in_reports
 leaf_procurement.patches.set_buying_settings
+leaf_procurement.patches.create_batch_index

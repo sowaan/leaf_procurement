@@ -26,7 +26,9 @@
   "column_break_waau",
   "section_break_jbaj",
   "detail_table",
-  "amended_from"
+  "amended_from",
+  "section_break_cwdf",
+  "bad_items"
  ],
  "fields": [
   {
@@ -160,13 +162,25 @@
    "hidden": 1,
    "label": "Naming Series",
    "options": ".{location_shortcode}.-GRN-.YYYY.-.######"
+  },
+  {
+   "fieldname": "section_break_cwdf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "bad_items",
+   "fieldtype": "Table",
+   "label": "Bad Items",
+   "options": "Leaf Consumption Bad Items",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-06 17:45:02.707574",
+ "modified": "2025-12-03 14:55:23.617422",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Receiving Note",
