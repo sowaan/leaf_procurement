@@ -227,35 +227,35 @@ def create_stock_entry(cons_doc):
     if not stock_entry.items:
         return {"stock_entry": None, "bad_items": bad_items}
 
-    # Prepare SE, revalidate before submit (minimize race)
-    stock_entry.set_missing_values()
-    stock_entry.calculate_rate_and_amount()
+    # # Prepare SE, revalidate before submit (minimize race)
+    # stock_entry.set_missing_values()
+    # stock_entry.calculate_rate_and_amount()
 
-    # Re-check availability for each item before submit. Remove items that are now insufficient.
-    items_to_remove = []
-    for idx, it in enumerate(stock_entry.items):
-        avail = get_warehouse_qty(item_code=it.item_code, warehouse=it.s_warehouse, batch_no=it.batch_no)
-        if avail < flt(it.qty, 3) - tol:
-            # record as bad and mark to remove
-            bad_items.append({
-                "batch_no": it.batch_no,
-                "item_code": it.item_code,
-                "expected_qty": it.qty,
-                "found_qty": avail,
-                "reason": "Insufficient stock at submit time",
-                "detailed_reason": f"Available {avail}, required {it.qty}"
-            })
-            items_to_remove.append(idx)
+    # # Re-check availability for each item before submit. Remove items that are now insufficient.
+    # items_to_remove = []
+    # for idx, it in enumerate(stock_entry.items):
+    #     avail = get_warehouse_qty(item_code=it.item_code, warehouse=it.s_warehouse, batch_no=it.batch_no)
+    #     if avail < flt(it.qty, 3) - tol:
+    #         # record as bad and mark to remove
+    #         bad_items.append({
+    #             "batch_no": it.batch_no,
+    #             "item_code": it.item_code,
+    #             "expected_qty": it.qty,
+    #             "found_qty": avail,
+    #             "reason": "Insufficient stock at submit time",
+    #             "detailed_reason": f"Available {avail}, required {it.qty}"
+    #         })
+    #         items_to_remove.append(idx)
 
-    # remove from the end to maintain indices
-    for i in reversed(items_to_remove):
-        stock_entry.items.pop(i)
+    # # remove from the end to maintain indices
+    # for i in reversed(items_to_remove):
+    #     stock_entry.items.pop(i)
 
     result = {"stock_entry": None, "bad_items": bad_items}
 
-    # if after removal no items remain, return bad_items
-    if not stock_entry.items:
-        return result
+    # # if after removal no items remain, return bad_items
+    # if not stock_entry.items:
+    #     return result
 
 
 
