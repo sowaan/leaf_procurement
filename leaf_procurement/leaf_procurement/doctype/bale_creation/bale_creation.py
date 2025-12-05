@@ -43,8 +43,8 @@ class BaleCreation(Document):
             if batch_exists(barcode, item):
                 existing_batches.append(barcode)         
 
-            # Pattern: 1 letter + 11 digits
-            pattern = r'^[A-Za-z][0-9]{11}$'
+            # Pattern: 1 letter + 10 digits
+            pattern = r'^[A-Za-z][0-9]{10}$'
 
             if not re.match(pattern, barcode):
                 invalid_batches.append(barcode)
