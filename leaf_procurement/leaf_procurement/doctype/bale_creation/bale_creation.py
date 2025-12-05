@@ -54,7 +54,7 @@ class BaleCreation(Document):
                 .format("<br>".join(existing_batches)))
 
         if invalid_batches:
-            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must start with alphabet and should contain 11 digits):<br><br>{0}")
+            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must start with alphabet and should contain 10 digits):<br><br>{0}")
                 .format("<br>".join(invalid_batches)))
             
     def on_submit(self):
@@ -70,7 +70,7 @@ class BaleCreation(Document):
                 existing_batches.append(barcode)         
 
             # Pattern: 1 letter + 11 digits
-            pattern = r'^[A-Za-z][0-9]{11}$'
+            pattern = r'^[A-Za-z][0-9]{10}$'
 
             if not re.match(pattern, barcode):
                 invalid_batches.append(barcode)
@@ -80,7 +80,7 @@ class BaleCreation(Document):
                 .format("<br>".join(existing_batches)))
 
         if invalid_batches:
-            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must start with alphabet and should contain 11 digits):<br><br>{0}")
+            frappe.throw(_("⚠️ The following bale barcodes are invalid (barcode must start with alphabet and should contain 10 digits):<br><br>{0}")
                 .format("<br>".join(invalid_batches)))
         
         create_stock_entry(self, item)
