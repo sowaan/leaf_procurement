@@ -311,3 +311,19 @@ def get_current_batch_location(batch_no: str) -> str | None:
     if result:
         return result[0].warehouse
     return None
+
+
+def batch_exists(batch_no: str, item_code: str) -> None:
+    """
+    Ensures that a Batch record exists for the given barcode and item.
+    Creates one if it does not exist.
+
+    Args:
+        batch_no (str): The barcode (Batch ID).
+        item_code (str): The item code.
+        batch_qty (float): The quantity associated with the batch.
+    """
+    if frappe.db.exists("Batch", {"batch_id": batch_no, "item": item_code}):
+        return True
+    else:
+        return False

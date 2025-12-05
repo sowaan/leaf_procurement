@@ -319,13 +319,15 @@ async function validate_bale_data(frm) {
     const values = frm.doc;
     const weight = values.weight;
 
-    if (frm.doc.scan_barcode && !/^\d+$/.test(frm.doc.scan_barcode)) {
+    if (
+        frm.doc.scan_barcode &&
+        !/^([A-Za-z]\d{10}|\d{11})$/.test(frm.doc.scan_barcode)
+    ) {
         frappe.show_alert({
-            message: __('Barcode must contain only numbers.'),
+            message: __('Barcode must be either 11 digits or 1 letter followed by 10 digits.'),
             indicator: "red"
         });
         return { valid: false };
-
     }
 
     const expectedLength = frm.doc.barcode_length || 0;
