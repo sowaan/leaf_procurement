@@ -3,21 +3,21 @@
 
 frappe.query_reports["Leaf Consumption Report"] = {
 	"filters": [
-		{
-			"fieldname": "process_order",
-			"fieldtype": "Link",
-			"label": "Process Order",
-			"mandatory": 0,
-			"options": "Process Order",
-			"wildcard_filter": 0,
-			get_query: function () {
-				return {
-					filters: {
-						docstatus: 1
-					}
-				}
-			}
-		},
+		// {
+		// 	"fieldname": "process_order",
+		// 	"fieldtype": "Link",
+		// 	"label": "Process Order",
+		// 	"mandatory": 0,
+		// 	"options": "Process Order",
+		// 	"wildcard_filter": 0,
+		// 	get_query: function () {
+		// 		return {
+		// 			filters: {
+		// 				docstatus: 1
+		// 			}
+		// 		}
+		// 	}
+		// },
 		{
 			"location": "location",
 			"fieldname": "location",

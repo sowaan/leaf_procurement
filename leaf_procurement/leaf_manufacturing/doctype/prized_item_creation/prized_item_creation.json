@@ -85,7 +85,7 @@
    "fetch_from": "process_order.date",
    "fieldname": "process_order_date",
    "fieldtype": "Read Only",
-   "label": "Process Order Date"
+   "label": "Date"
   },
   {
    "fieldname": "section_break_oivq",
@@ -98,9 +98,12 @@
   },
   {
    "default": "now",
+   "fetch_from": "process_order.date",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Prized Item Creation Date"
+   "hidden": 1,
+   "label": "Prized Item Creation Date",
+   "read_only": 1
   },
   {
    "fieldname": "item",
@@ -131,7 +134,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-07 16:21:38.477179",
+ "modified": "2026-01-13 16:34:22.146470",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Prized Item Creation",
@@ -152,6 +155,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
