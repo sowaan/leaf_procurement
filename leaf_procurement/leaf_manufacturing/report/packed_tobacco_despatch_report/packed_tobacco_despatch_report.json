@@ -1,0 +1,54 @@
+{
+ "add_total_row": 1,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2026-02-05 15:39:18.410215",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Manufacturing Location",
+   "mandatory": 0,
+   "options": "Warehouse",
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "Shipment Date From",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "Shipment Date To",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  }
+ ],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": null,
+ "modified": "2026-02-05 16:07:13.627524",
+ "modified_by": "Administrator",
+ "module": "Leaf Manufacturing",
+ "name": "Packed Tobacco Despatch Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Leaf Consumption",
+ "report_name": "Packed Tobacco Despatch Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Stock Manager"
+  }
+ ],
+ "timeout": 0
+}

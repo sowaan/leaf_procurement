@@ -5,6 +5,7 @@ import frappe  # type: ignore
 
 
 def execute(filters=None):
+
     if not filters:
         filters = frappe._dict()
 
@@ -72,7 +73,7 @@ def execute(filters=None):
 		FROM `tabProcess Order` po
 
 		/* -------- INPUT (Leaf Consumption) -------- */
-		JOIN (
+		LEFT JOIN (
 			SELECT
 				lc.process_order,
 				COUNT(lcd.name) AS input_nos,
@@ -87,10 +88,10 @@ def execute(filters=None):
 		) inp ON inp.process_order = po.name
 
 		/* -------- OUTPUT (Prized Item Creation) -------- */
-		JOIN (
+		LEFT JOIN (
 			SELECT
 				pic.process_order,
-				COUNT(pce.name) AS output_nos,
+				SUM(pce.quantity) AS output_nos,
 				SUM(pce.kgs) AS output_kgs
 			FROM `tabPrized Item Creation` pic
 			JOIN `tabPrized Item Creation Entry` pce
