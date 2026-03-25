@@ -31,7 +31,18 @@ class LeafConsumption(Document):
         Create Stock Entry for valid rows, collect bad_items and attach them to the doc
         BEFORE submit so updates are persisted as part of the submit transaction.
         """
+
+        seen = set()
+
+        for row in self.consumption_detail:
+            if row.bale_barcode in seen:
+                frappe.throw(
+                    _("Duplicate bale barcode found before submit: {0}").format(row.bale_barcode)
+                )
+            seen.add(row.bale_barcode)        
         try:
+
+            
             result = create_stock_entry(self)
         except Exception as e:
             # if helper raises, block submit with a clear message (optional)

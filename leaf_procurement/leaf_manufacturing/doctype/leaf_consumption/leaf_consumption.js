@@ -366,6 +366,21 @@ async function validate_bale_data(frm) {
         return { valid: false };
     }
 
+    let seen = new Set();
+
+    for (let row of (frm.doc.consumption_detail || [])) {
+        if (!row.bale_barcode) continue;
+
+        if (seen.has(row.bale_barcode)) {
+            frappe.show_alert({
+                message: __('Duplicate bale barcode found in table: {0}', [row.bale_barcode]),
+                indicator: 'red'
+            });
+            return { valid: false };
+        }
+
+        seen.add(row.bale_barcode);
+    }
 
     return { valid: true };
 
