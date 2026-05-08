@@ -12,6 +12,9 @@ def execute(filters=None):
 		filters["from_date"] = today()
 		filters["to_date"] = today()
 
+	if not filters.get("from_date") or not filters.get("to_date"):
+		frappe.throw("From Date and To Date are mandatory.")
+
 	data = get_raw_data(filters)
 	columns, rows = build_report(data)
 	return columns, rows
