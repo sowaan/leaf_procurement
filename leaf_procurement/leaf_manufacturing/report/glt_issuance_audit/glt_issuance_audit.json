@@ -1,5 +1,5 @@
 {
- "add_total_row": 1,
+ "add_total_row": 0,
  "add_translate_data": 0,
  "columns": [],
  "creation": "2026-05-07 18:38:23.378529",
@@ -11,7 +11,7 @@
  "is_standard": "Yes",
  "letter_head": "Samsons Letter Head",
  "letterhead": null,
- "modified": "2026-05-08 13:03:38.146990",
+ "modified": "2026-05-08 13:17:20.580855",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "GLT ISSUANCE AUDIT",

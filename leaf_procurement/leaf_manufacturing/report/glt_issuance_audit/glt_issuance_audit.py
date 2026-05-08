@@ -23,9 +23,9 @@ def get_columns():
 		{"label": "Warehouse", "fieldname": "warehouse", "fieldtype": "Data", "width": 120},
 		{"label": "Purch Center", "fieldname": "purch_center", "fieldtype": "Data", "width": 120},
 		{"label": "Buying Date", "fieldname": "buying_date", "fieldtype": "Date", "width": 120},
-		{"label": "Weight (Kgs)", "fieldname": "weight", "fieldtype": "Float", "width": 110, "precision": 3},
-		{"label": "Re-weight (Kgs)", "fieldname": "reweight", "fieldtype": "Float", "width": 120, "precision": 3},
-		{"label": "Difference (Kgs)", "fieldname": "difference", "fieldtype": "Float", "width": 120, "precision": 3},
+		{"label": "Weight (Kgs)", "fieldname": "weight", "fieldtype": "Float", "width": 110, "precision": 2},
+		{"label": "Re-weight (Kgs)", "fieldname": "reweight", "fieldtype": "Float", "width": 120, "precision": 2},
+		{"label": "Difference (Kgs)", "fieldname": "difference", "fieldtype": "Float", "width": 120, "precision": 2},
 	]
 
 
@@ -121,9 +121,9 @@ def get_data(filters):
 			"warehouse": row.get("warehouse"),
 			"purch_center": row.get("purch_center"),
 			"buying_date": row.get("buying_date"),
-			"weight": round(weight, 3),
-			"reweight": round(reweight, 3),
-			"difference": round(weight - reweight, 3),
+			"weight": round(weight, 2),
+			"reweight": round(reweight, 2),
+			"difference": round(weight - reweight, 2),
 		})
 
 	return result
