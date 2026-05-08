@@ -18,11 +18,12 @@ def get_columns():
 		{"label": "Purchase (Grower)", "fieldname": "purchase_grower", "fieldtype": "Int", "width": 130},
 		{"label": "Purchase (Trader)", "fieldname": "purchase_trader", "fieldtype": "Int", "width": 130},
 		{"label": "Total Bales Purchased", "fieldname": "total_bales_purchased", "fieldtype": "Int", "width": 150},
-		{"label": "Advance Weight (Kgs)", "fieldname": "advance_weight", "fieldtype": "Float", "width": 140, "precision": 3},
-		{"label": "Re-Weight (Kgs)", "fieldname": "re_weight", "fieldtype": "Float", "width": 140, "precision": 3},
-		{"label": "Difference (Kgs)", "fieldname": "difference_kgs", "fieldtype": "Float", "width": 130, "precision": 3},
+		{"label": "Total Purchase Weight (Kgs)", "fieldname": "total_purchase_weight", "fieldtype": "Float", "width": 170, "precision": 2},
+		{"label": "Advance Weight (Kgs)", "fieldname": "advance_weight", "fieldtype": "Float", "width": 140, "precision": 2},
+		{"label": "Re-Weight (Kgs)", "fieldname": "re_weight", "fieldtype": "Float", "width": 140, "precision": 2},
+		{"label": "Difference (Kgs)", "fieldname": "difference_kgs", "fieldtype": "Float", "width": 130, "precision": 2},
 		{"label": "Variance in %", "fieldname": "variance_percent", "fieldtype": "Percent", "width": 110, "precision": 2},
-		{"label": "Variance in (Kgs)", "fieldname": "variance_in_kgs", "fieldtype": "Float", "width": 130, "precision": 3},
+		{"label": "Variance in (Kgs)", "fieldname": "variance_in_kgs", "fieldtype": "Float", "width": 130, "precision": 2},
 	]
 
 
@@ -85,6 +86,7 @@ def get_data(filters):
 					WHEN IFNULL(pii.lot_number, '') = '' THEN 1
 					ELSE 0
 				END AS purchase_trader,
+				IFNULL(pii.qty, 0) AS purchase_weight,
 				IFNULL(ab.advance_weight, 0) AS advance_weight,
 				IFNULL(ab.re_weight, 0) AS re_weight
 			FROM `tabPurchase Invoice Item` pii
@@ -99,8 +101,9 @@ def get_data(filters):
 			SUM(purchase_grower) AS purchase_grower,
 			SUM(purchase_trader) AS purchase_trader,
 			SUM(purchase_grower + purchase_trader) AS total_bales_purchased,
-			ROUND(SUM(advance_weight), 3) AS advance_weight,
-			ROUND(SUM(re_weight), 3) AS re_weight
+			ROUND(SUM(purchase_weight), 2) AS total_purchase_weight,
+			ROUND(SUM(advance_weight), 2) AS advance_weight,
+			ROUND(SUM(re_weight), 2) AS re_weight
 		FROM base_data
 		GROUP BY warehouse
 		ORDER BY warehouse
@@ -110,27 +113,9 @@ def get_data(filters):
 	)
 
 	rows = []
-	total_row = {
-		"warehouse": "TOTAL",
-		"purchase_grower": 0,
-		"purchase_trader": 0,
-		"total_bales_purchased": 0,
-		"advance_weight": 0,
-		"re_weight": 0,
-	}
 
 	for row in data:
-		computed_row = build_computed_row(row)
-		rows.append(computed_row)
-
-		total_row["purchase_grower"] += computed_row["purchase_grower"]
-		total_row["purchase_trader"] += computed_row["purchase_trader"]
-		total_row["total_bales_purchased"] += computed_row["total_bales_purchased"]
-		total_row["advance_weight"] += flt(computed_row["advance_weight"])
-		total_row["re_weight"] += flt(computed_row["re_weight"])
-
-	if rows:
-		rows.append(build_computed_row(total_row))
+		rows.append(build_computed_row(row))
 
 	return rows
 
@@ -142,14 +127,17 @@ def build_computed_row(row):
 	difference = re_weight - advance_weight
 	variance_ratio = (difference / advance_weight) if advance_weight else 0
 
+	total_purchase_weight = flt(row.get("total_purchase_weight"))
+
 	return {
 		"warehouse": row.get("warehouse"),
 		"purchase_grower": row.get("purchase_grower", 0),
 		"purchase_trader": row.get("purchase_trader", 0),
 		"total_bales_purchased": row.get("total_bales_purchased", 0),
-		"advance_weight": round(advance_weight, 3),
-		"re_weight": round(re_weight, 3),
-		"difference_kgs": round(difference, 3),
+		"total_purchase_weight": round(total_purchase_weight, 2),
+		"advance_weight": round(advance_weight, 2),
+		"re_weight": round(re_weight, 2),
+		"difference_kgs": round(difference, 2),
 		"variance_percent": round(variance_ratio * 100, 2),
-		"variance_in_kgs": round(variance_ratio * total_bales, 3),
+		"variance_in_kgs": round(variance_ratio * total_bales, 2),
 	}
