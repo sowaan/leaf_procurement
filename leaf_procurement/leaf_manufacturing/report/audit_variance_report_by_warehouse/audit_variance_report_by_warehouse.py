@@ -24,6 +24,7 @@ def get_columns():
 		{"label": "Difference (Kgs)", "fieldname": "difference_kgs", "fieldtype": "Float", "width": 130, "precision": 2},
 		{"label": "Variance in %", "fieldname": "variance_percent", "fieldtype": "Percent", "width": 110, "precision": 2},
 		{"label": "Variance in (Kgs)", "fieldname": "variance_in_kgs", "fieldtype": "Float", "width": 130, "precision": 2},
+		{"label": "Total Variance (Kg)", "fieldname": "forecasted_wastage", "fieldtype": "Float", "width": 160, "precision": 2},
 	]
 
 
@@ -140,4 +141,5 @@ def build_computed_row(row):
 		"difference_kgs": round(difference, 2),
 		"variance_percent": round(variance_ratio * 100, 2),
 		"variance_in_kgs": round(variance_ratio * total_bales, 2),
+		"forecasted_wastage": round(variance_ratio * total_purchase_weight, 2),
 	}
