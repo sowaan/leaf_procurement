@@ -101,18 +101,22 @@ class BaleAudit(Document):
         if not self.check_validations:
             return
         
-        day_open = frappe.get_all("Audit Day Setup",
-            filters={
-                "location_warehouse": self.location_warehouse,
-                "date": self.date,
-                "day_open_time": ["is", "set"],
-                "day_close_time": ["is", "not set"]
-            },
-            fields=["name"]
-        )
+        # Check live flag from settings
+        live_server = frappe.db.get_single_value("Leaf Procurement Settings", "live_server")
 
-        if not day_open:
-            frappe.throw(_("⚠️ Audit not permitted because the day is either not opened or already closed for location: " + self.location_warehouse))
+        if not live_server:
+            day_open = frappe.get_all("Audit Day Setup",
+                filters={
+                    "location_warehouse": self.location_warehouse,
+                    "date": self.date,
+                    "day_open_time": ["is", "set"],
+                    "day_close_time": ["is", "not set"]
+                },
+                fields=["name"]
+            )
+
+            if not day_open:
+                frappe.throw(_("⚠️ Audit not permitted because the day is either not opened or already closed for location: " + self.location_warehouse))
         
         invalid_barcodes = []
         # ✅ validate barcodes in detail table

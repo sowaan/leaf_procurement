@@ -307,12 +307,15 @@ frappe.ui.form.on("Bale Audit", {
         cleanupSerial(frm);
     },
     location_warehouse: async function (frm) {
-        const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
+        const open_day = await get_open_day_date(frm.doc.location_warehouse);
         if (open_day) {
             frm.set_value('date', open_day.date);
             frm.set_value('day_setup', open_day.name);
         } else {
-            frappe.msgprint(__('There is no open audit day, you cannot add audit records.'));
+            const live_server = await frappe.db.get_single_value("Leaf Procurement Settings", "live_server");
+            if (!live_server) {
+                frappe.msgprint(__('There is no open audit day, you cannot add audit records.'));
+            }
         }
 
     },
