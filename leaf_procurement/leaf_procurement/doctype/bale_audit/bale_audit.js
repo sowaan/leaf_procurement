@@ -196,7 +196,7 @@ function update_audit_display(frm) {
         }
 
 
-let html = `
+        let html = `
     <div style="padding: 10px; font-size: 18px;">
         <b>Total Scanned Bales: 
         <span style="color: green;">${total_bales}</span> <br>
@@ -233,14 +233,18 @@ async function validate_bale_data(frm) {
         });
         return { valid: false };
     }
-    const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
-    if (!open_day) {
-        frappe.show_alert({
-            message: __('There is no open audit day you cannot add audit records.'),
-            indicator: "red"
-        });
-        return { valid: false };
+    const live_server = await frappe.db.get_single_value("Leaf Procurement Settings", "live_server");
+    if (!live_server) {
+        const open_day = await get_open_day_date(frm.doc.location_warehouse);  // ✅ Use value directly
+        if (!open_day) {
+            frappe.show_alert({
+                message: __('There is no open audit day you cannot add audit records.'),
+                indicator: "red"
+            });
+            return { valid: false };
+        }
     }
+
     if (!frm.doc.bale_barcode && frm.doc.detail_table.length === 0) {
         frappe.show_alert({
             message: __('You must add at least one row in the Detail Table before saving.'),
@@ -557,9 +561,9 @@ frappe.ui.form.on("Bale Audit", {
         //     weight: values.captured_weight,
         //     bale_remarks: values.bale_comments
         // });
-        
+
         // frm.save();
-        
+
         // // Reset fields
         // frm.set_value('bale_barcode', '');
         // frm.set_value('bale_comments', '');
@@ -639,7 +643,7 @@ frappe.ui.form.on("Bale Audit Detail", {
                         }
                     }
                 });
-               
+
             }
         );
     }

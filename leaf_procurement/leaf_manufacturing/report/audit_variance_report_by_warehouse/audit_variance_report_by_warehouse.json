@@ -1,5 +1,5 @@
 {
- "add_total_row": 0,
+ "add_total_row": 1,
  "add_translate_data": 0,
  "columns": [],
  "creation": "2026-04-16 16:14:44.813274",
@@ -41,7 +41,7 @@
  "is_standard": "Yes",
  "letter_head": "Samsons Letter Head",
  "letterhead": null,
- "modified": "2026-04-16 16:28:04.092091",
+ "modified": "2026-05-12 17:52:49.382439",
  "modified_by": "Administrator",
  "module": "Leaf Manufacturing",
  "name": "Audit Variance Report By Warehouse",
