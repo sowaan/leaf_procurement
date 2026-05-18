@@ -6,16 +6,28 @@ frappe.query_reports["Audit Master Report"] = {
 		{
 			fieldname: "from_date",
 			fieldtype: "Date",
-			label: __("From Date"),
+			label: __("From Date *"),
 			default: frappe.datetime.get_today(),
 			mandatory: 1
 		},
 		{
 			fieldname: "to_date",
 			fieldtype: "Date",
-			label: __("To Date"),
+			label: __("To Date *"),
 			default: frappe.datetime.get_today(),
 			mandatory: 1
+		},
+		{
+			fieldname: "depot",
+			fieldtype: "Link",
+			label: __("Purchase Center *"),
+			options: "Warehouse",
+			mandatory: 1,
+			get_query: function () {
+				return {
+					filters: { is_group: 0, custom_is_depot: 1 }
+				};
+			}
 		},
 		{
 			fieldname: "warehouse",

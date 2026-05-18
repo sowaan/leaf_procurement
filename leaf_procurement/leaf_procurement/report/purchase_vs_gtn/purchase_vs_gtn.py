@@ -32,10 +32,10 @@ def get_filters(filters):
 def get_columns():
     return [
         {"label": "Depot", "fieldname": "purchase_center", "fieldtype": "Link", "options": "Warehouse", "width": 200},
-        {"label": "GTN Bales", "fieldname": "gtn_bales", "fieldtype": "Int", "width": 110},
-        {"label": "GTN KGs", "fieldname": "gtn_kgs", "fieldtype": "Float", "width": 120},
         {"label": "Voucher Bales", "fieldname": "voucher_bales", "fieldtype": "Int", "width": 130},
         {"label": "Voucher KGs", "fieldname": "voucher_kgs", "fieldtype": "Float", "width": 120},
+        {"label": "GTN Bales", "fieldname": "gtn_bales", "fieldtype": "Int", "width": 110},
+        {"label": "GTN KGs", "fieldname": "gtn_kgs", "fieldtype": "Float", "width": 120},
         {"label": "Bale Diff", "fieldname": "bale_diff", "fieldtype": "Int", "width": 110},
         {"label": "KG Diff", "fieldname": "kg_diff", "fieldtype": "Float", "width": 120},
     ]

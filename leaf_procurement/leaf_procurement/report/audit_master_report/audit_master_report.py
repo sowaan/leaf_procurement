@@ -22,6 +22,10 @@ def get_filters(filters):
         params["from_date"] = filters["from_date"]
         params["to_date"] = filters["to_date"]
 
+    if filters.get("depot"):
+        conditions += " AND gtn.location_warehouse = %(depot)s"
+        params["depot"] = filters["depot"]
+
     if filters.get("warehouse"):
         conditions += " AND gtn.receiving_location = %(warehouse)s"
         params["warehouse"] = filters["warehouse"]
