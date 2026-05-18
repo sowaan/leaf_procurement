@@ -258,8 +258,7 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Is Sync",
-   "no_copy": 1,
-   "read_only": 1
+   "no_copy": 1
   },
   {
    "default": "0",
@@ -273,7 +272,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-09 13:40:05.211905",
+ "modified": "2026-05-18 18:39:20.704919",
  "modified_by": "Administrator",
  "module": "Leaf Procurement",
  "name": "Goods Transfer Note",
@@ -294,6 +293,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
