@@ -164,6 +164,10 @@ class FingerprintVerifyDialog {
 					["file_name", "like", `${this.frm.doc.party}\_right\_%.tpl`],
 				],
 				fields: ["file_name", "file_url"],
+				// If more than one finger was ever captured for this Grower
+				// (e.g. the operator switched fingers later), always verify
+				// against the most recently captured one, not an arbitrary match.
+				order_by: "creation desc",
 				limit: 1,
 			});
 

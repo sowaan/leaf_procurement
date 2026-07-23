@@ -225,6 +225,15 @@ class FingerprintCaptureDialog {
 	async capture() {
 		if (!this.selected) return;
 		const finger = this.selected;
+
+		// If this finger was already captured before, confirm before
+		// overwriting rather than silently piling up duplicate attachments.
+		const existing = await this.find_existing(finger);
+		if (existing.length) {
+			const replace = await this.confirm_replace(finger);
+			if (!replace) return;
+		}
+
 		this.set_status(__("Place {0} on the scanner...", [finger.label]));
 		this.dialog.disable_primary_action();
 
@@ -258,6 +267,11 @@ class FingerprintCaptureDialog {
 		this.set_status(__("Saving to attachments..."));
 
 		try {
+			if (existing.length) {
+				// Remove the old scan(s) for this finger first so verification
+				// (which just takes the newest match) can never pick a stale one.
+				await this.remove_existing(existing);
+			}
 			await this.upload(`${this.frm.doc.name}_${finger.id}.png`, result.image);
 			// The template (not the image) is what Payment Entry verification
 			// matches against later - saved alongside the PNG so both travel
@@ -276,6 +290,42 @@ class FingerprintCaptureDialog {
 		this.dialog.enable_primary_action();
 		this.dialog.set_primary_action(__("Capture Again"), () => this.capture());
 		this.frm.sidebar && this.frm.sidebar.reload_docinfo();
+	}
+
+	// Looks up any previously saved .png/.tpl attachments for this exact finger.
+	async find_existing(finger) {
+		try {
+			return await frappe.db.get_list("File", {
+				filters: [
+					["attached_to_doctype", "=", "Supplier"],
+					["attached_to_name", "=", this.frm.doc.name],
+					["file_name", "like", `${this.frm.doc.name}\_${finger.id}.%`],
+				],
+				fields: ["name"],
+			});
+		} catch (e) {
+			console.error(e);
+			return [];
+		}
+	}
+
+	confirm_replace(finger) {
+		return new Promise((resolve) => {
+			frappe.confirm(
+				__("{0} already has a saved fingerprint. Capture again and replace it?", [finger.label]),
+				() => resolve(true),
+				() => resolve(false)
+			);
+		});
+	}
+
+	async remove_existing(files) {
+		for (const file of files) {
+			await frappe.call({
+				method: "frappe.client.delete",
+				args: { doctype: "File", name: file.name },
+			});
+		}
 	}
 
 	mark_dot(id, cls) {
