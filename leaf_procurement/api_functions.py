@@ -7,6 +7,7 @@ from leaf_procurement.leaf_procurement.api.bale_weight_utils import ensure_batch
 from leaf_procurement.leaf_procurement.utils.sync_up import create_goods_transfer_note
 from leaf_procurement.leaf_procurement.utils.sync_up import update_audit_details_from_gtn
 from leaf_procurement.leaf_procurement.utils.sync_up import update_gtn_details_from_audit
+from erpnext.stock import get_warehouse_account_map
 
 
 from frappe.utils import flt # type: ignore
@@ -889,6 +890,14 @@ def purchase_invoice(purchase_invoice):
 			ensure_batch_exists(rejected.get("batch_no"), rejected.get("item_code"), rejected.get("weight"))
 		invoice.append("custom_rejected_items", rejected)
 
+	# Fallback defaults for fields the source invoice may legitimately have left
+	# blank (e.g. no reclassification happened, or the warehouse has no account
+	# linked here) but that this site requires - configurable on the Leaf
+	# Procurement Settings screen, not hardcoded, so they can be changed later
+	# without a code change.
+	settings = frappe.get_cached_doc("Leaf Procurement Settings")
+	warehouse_account = get_warehouse_account_map(invoice.company)
+
 	# Invoice items
 	for detail in purchase_invoice.get("items", []):
 		if detail.get("batch_no"):
@@ -915,6 +924,19 @@ def purchase_invoice(purchase_invoice):
 			value = detail.get(key)
 			if value:
 				item_data[key] = value
+
+		# Expense Head: prefer the item's own warehouse account (correct per
+		# depot); only fall back to the settings default if that lookup comes
+		# up empty (e.g. the warehouse here has no account linked).
+		warehouse = item_data.get("warehouse")
+		account = warehouse_account.get(warehouse, {}).get("account") if warehouse else None
+		item_data["expense_account"] = account or settings.default_expense_account
+
+		# Target Reclassification Grade: the source invoice leaves this blank
+		# whenever the bale was not reclassified - fall back to the settings
+		# default only in that case.
+		if not item_data.get("reclassification_grade") and settings.default_reclassification_grade:
+			item_data["reclassification_grade"] = settings.default_reclassification_grade
 
 		invoice.append("items", item_data)
 

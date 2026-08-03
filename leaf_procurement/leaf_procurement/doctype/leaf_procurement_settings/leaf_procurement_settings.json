@@ -19,6 +19,8 @@
   "rejected_location_warehouse",
   "transport_charges_item",
   "rejected_invoice_item",
+  "default_expense_account",
+  "default_reclassification_grade",
   "barcode_length",
   "backup_tab",
   "take_backup",
@@ -149,6 +151,20 @@
    "fieldtype": "Link",
    "label": "Rejected Invoice Item",
    "options": "Item"
+  },
+  {
+   "description": "Used by Sync Up as a fallback for Purchase Invoice Item's Expense Head when it can't be worked out automatically from the item's warehouse.",
+   "fieldname": "default_expense_account",
+   "fieldtype": "Link",
+   "label": "Default Expense Account",
+   "options": "Account"
+  },
+  {
+   "description": "Used by Sync Up as a fallback for Purchase Invoice Item's Target Reclassification Grade when the item was not reclassified.",
+   "fieldname": "default_reclassification_grade",
+   "fieldtype": "Link",
+   "label": "Default Reclassification Grade",
+   "options": "Reclassification Grade"
   },
   {
    "default": "0",
