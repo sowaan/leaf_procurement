@@ -251,8 +251,12 @@ def sync_records(doctype: str, base_url: str, endpoint: str, headers: dict):
     try:
         unsynced = frappe.get_all(doctype, filters={"custom_is_sync": 0, "docstatus": ["<", 2]}, pluck="name")
         for name in unsynced:
-            sync_single_record(doctype, name, f"{base_url}/api/method/leaf_procurement.api_functions.{endpoint}", headers)
-            
+            sync_single_record(
+                doctype, name,
+                f"{base_url}/api/method/leaf_procurement.api_functions.{endpoint}",
+                headers,
+            )
+
     except Exception:
         frappe.log_error(traceback.format_exc(), f"[Sync Error] {doctype}")
 
@@ -312,6 +316,13 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
         if doctype == "Driver":
             payload.pop("address", None)
 
+        if doctype == "Supplier":
+            # We don't sync the Contact document itself (name/address/etc.)
+            # - only the Mobile No, carried as a plain field below. Drop the
+            # link so the target never tries to validate/fetch against a
+            # Contact that was never created there.
+            payload.pop("supplier_primary_contact", None)
+
         #frappe.log_error(f"[Test] Pay Load:", payload)
         response = requests.post(url, headers=headers, json={doctype.lower().replace(" ", "_"): payload})
         
@@ -353,15 +364,13 @@ def sync_single_record(doctype: str, name: str, url: str, headers: dict):
                 frappe.db.set_value(doctype, name, "custom_is_sync", 1)
                 frappe.db.commit()            
 
-                log_sync_result(parent_name="Leaf Sync Up", 
+                log_sync_result(parent_name="Leaf Sync Up",
                     doctype=doctype,
-                    docname=name, 
-                    status= "Success", 
-                    message="Synced successfully")    
-                            
-            if doctype == "Supplier":
-                create_supplier_contact(f"{url}/../resource/Contact", headers, payload)
-        else:      
+                    docname=name,
+                    status= "Success",
+                    message="Synced successfully")
+
+        else:
             log_sync_error(doctype, name, response)
 
     except requests.exceptions.RequestException as re:
@@ -437,29 +446,6 @@ def log_sync_result(parent_name, doctype, docname, status, message, retry_count=
     parent.append("sync_history", log)
     parent.save(ignore_permissions=True)  # ✅ Needed to persist child rows
     frappe.db.commit()  # ✅ Ensures changes are flushed to DB
-
-def create_supplier_contact(url: str, headers: dict, supplier_doc: dict):
-    if not supplier_doc.get("supplier_primary_contact"):
-        return
-
-    contact = frappe.get_doc("Contact", supplier_doc["supplier_primary_contact"])
-    if contact.custom_is_sync:
-        print(f"⚠️ Contact {contact.name} already synced. Skipping...")
-        return
-
-    payload = prepare_sync_payload(contact)
-    response = requests.post(url, headers=headers, json=payload)
-
-    if response.status_code in [200, 201]:
-        print(f"✅ Synced Supplier Contact: {contact.name}")
-        frappe.db.set_value("Contact", contact.name, "custom_is_sync", 1)
-    else:
-        try:
-            error_msg = "Status Code: " + response.json().get("status_code", response.status_code)  + "Message: " +response.json().get("message", response.text)
-        except Exception:
-            error_msg = response.text
-        frappe.log_error(f"❌ Failed to sync Supplier Contact {contact.name}", error_msg)
-
 
 def ensure_batch_exists(url: str, headers: dict, batch_no: str, item_code: str, qty: float):
     """Ensure Batch is synced before syncing child transactions."""
