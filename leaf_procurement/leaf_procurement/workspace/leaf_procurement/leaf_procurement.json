@@ -211,7 +211,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 6,
+   "link_count": 8,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -274,6 +274,28 @@
    "link_to": "Depot Despatch Report",
    "link_type": "Report",
    "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Wise Audited Difference Report",
+   "link_count": 0,
+   "link_to": "Warehouse Wise Audited Difference Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Bale Audit",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Wise Bales Audited Report 2025",
+   "link_count": 0,
+   "link_to": "Warehouse Wise Bales Audited Report 2025",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Bale Audit",
    "type": "Link"
   },
   {

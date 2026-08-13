@@ -153,14 +153,12 @@
    "options": "Item"
   },
   {
-   "description": "Used by Sync Up as a fallback for Purchase Invoice Item's Expense Head when it can't be worked out automatically from the item's warehouse.",
    "fieldname": "default_expense_account",
    "fieldtype": "Link",
    "label": "Default Expense Account",
    "options": "Account"
   },
   {
-   "description": "Used by Sync Up as a fallback for Purchase Invoice Item's Target Reclassification Grade when the item was not reclassified.",
    "fieldname": "default_reclassification_grade",
    "fieldtype": "Link",
    "label": "Default Reclassification Grade",

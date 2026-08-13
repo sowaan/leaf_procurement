@@ -762,43 +762,56 @@ def supplier(supplier):
 	if not supplier_name:
 		frappe.throw(_("Supplier name is required."))
 
-	# ✅ Check if the supplier already exists
+	# ✅ Check if the supplier already exists - never modify an existing
+	# record (per explicit instruction: existing Grower data must not be
+	# changed by sync). Just report it as-is.
 	if frappe.db.exists("Supplier", supplier_name):
 		return supplier_name
 
-	if not should_create_supplier(supplier):
+	duplicate_name = find_duplicate_supplier(supplier)
+	if duplicate_name:
+		# A Supplier matching on all three of CNIC + Mobile No + Depot already
+		# exists here under a different (locally auto-generated) name. Do NOT
+		# touch it - flagged for manual review instead of being silently
+		# skipped or auto-updated, pending a decision on how duplicates like
+		# this should be handled.
 		frappe.log_error(
-			f"❌ Skipped to sync Supplier: {supplier_name}",
-			f"CNIC {supplier.get('custom_nic_number')} already exists against {supplier.get('custom_location_warehouse')}."
+			f"⚠️ Possible duplicate Supplier: {supplier_name}",
+			f"CNIC {supplier.get('custom_nic_number')}, Mobile No {supplier.get('mobile_no')}, and Depot {supplier.get('custom_location_warehouse')} "
+			f"all match existing Supplier {duplicate_name}. Existing record was left unchanged - needs manual review."
 		)
-		return supplier_name
+		return duplicate_name
 
 	doc = frappe.new_doc("Supplier")
 	doc.update(supplier)
 	doc.custom_is_sync = 1
+	# find_duplicate_supplier() above already ruled out a match on NIC +
+	# Mobile No + Depot together - skip the doctype's own CNIC-only
+	# uniqueness check so it doesn't contradict that decision (e.g. a
+	# genuinely different Grower who happens to share a NIC with someone
+	# at the same Depot, per the three-field sync rule).
+	doc.flags.skip_unique_nic_check = True
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
 
-def should_create_supplier(supplier) -> bool:
+def find_duplicate_supplier(supplier):
     """
-    Check if a supplier with same NIC and warehouse exists.
-    If exists, return False to skip creation.
+    Return the name of an existing Supplier that matches on ALL THREE of
+    CNIC, Mobile No, and Depot - if any one of the three differs, it's NOT
+    considered a duplicate (per explicit instruction), and this returns None
+    so the Grower syncs as a new record.
     """
     existing = frappe.get_all(
         "Supplier",
         filters={
             "custom_nic_number": supplier.get("custom_nic_number"),
-            "custom_location_warehouse": supplier.get("custom_location_warehouse")
+            "custom_location_warehouse": supplier.get("custom_location_warehouse"),
+            "mobile_no": supplier.get("mobile_no"),
         },
         fields=["name"]
     )
-
-    if existing:
-        # Optional: update the existing supplier with latest info
-        return False
-
-    return True
+    return existing[0].name if existing else None
 
 @frappe.whitelist()
 def driver(driver):
@@ -1016,6 +1029,3 @@ def goods_receiving_note(goods_receiving_note):
 	doc.insert()
 	frappe.db.commit()
 	return doc.name
-
-
-

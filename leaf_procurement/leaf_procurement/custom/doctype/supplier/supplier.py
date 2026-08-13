@@ -46,6 +46,15 @@ def validate_unique_nic(doc, method):
     if not normalized_nic or not location:
         return  # Skip if required fields are empty
 
+    # Sync (api_functions.supplier()) already runs its own duplicate check
+    # covering NIC + Mobile No + Depot together (find_duplicate_supplier) and
+    # sets this flag before inserting once it's already decided this is a
+    # genuinely new Grower - skip this CNIC-only check in that one case so
+    # the two don't contradict each other. Every other caller (UI, imports,
+    # etc.) always gets this check.
+    if doc.flags.get("skip_unique_nic_check"):
+        return
+
     # Check for duplicates with same normalized NIC in the same warehouse
     suppliers = frappe.get_all(
         "Supplier",
