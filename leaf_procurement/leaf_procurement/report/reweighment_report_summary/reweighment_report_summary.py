@@ -24,7 +24,7 @@ def get_filters(filters):
         params["to_date"] = filters.to_date
 
     if filters.get("depot"):
-        conditions.append("ba.location_warehouse = %(depot)s")
+        conditions.append("gtn.location_warehouse = %(depot)s")
         params["depot"] = filters.depot
 
     if filters.get("gtn"):
