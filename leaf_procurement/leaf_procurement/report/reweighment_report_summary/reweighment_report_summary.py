@@ -76,13 +76,12 @@ SELECT
     gtn.vehicle_number AS truck_number,
     gtn_items.weight AS advance_weight,
     bad.re_weight AS re_weight,
-    (bad.re_weight - gtn_items.weight) AS weight_difference,
-    bad.remarks AS remarks
+    (bad.re_weight - gtn_items.weight) AS weight_difference
 FROM `tabGoods Transfer Note` gtn
 INNER JOIN `tabGoods Transfer Note Items` gtn_items
     ON gtn_items.parent = gtn.name
 LEFT JOIN (
-        SELECT bad2.bale_barcode, bad2.weight AS re_weight, bad2.remarks,
+        SELECT bad2.bale_barcode, bad2.weight AS re_weight,
                ba2.location_warehouse AS l_warehouse
         FROM `tabBale Audit Detail` bad2
         INNER JOIN `tabBale Audit` ba2
