@@ -22,7 +22,7 @@ def execute(filters=None):
 			supp.custom_father_name AS father_name,
 			supp.custom_village AS village,
 			supp.custom_nic_number AS cnic,
-			supp.custom_location_warehouse AS depot,
+			pi.set_warehouse AS depot,
 			pi.posting_date AS purchase_date,
 			pi.due_date AS payment_date,
 			SUM(CASE WHEN pii.item_group = 'Products' THEN pii.amount ELSE 0 END) AS tob_amount,
@@ -68,7 +68,7 @@ def execute(filters=None):
 def get_conditions(filters):
 	conditions = []
 	if filters.get("depot"):
-		conditions.append("supp.custom_location_warehouse = %(depot)s")
+		conditions.append("pi.set_warehouse = %(depot)s")
 	if filters.get("grower"):
 		conditions.append("pi.supplier = %(grower)s")
 	if filters.get("due_date"):

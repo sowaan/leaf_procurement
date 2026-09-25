@@ -85,10 +85,9 @@ def execute(filters=None):
 				pii.qty,
 				pii.rate,
 				pii.name AS item_name,
-				supp.custom_location_warehouse AS depot_name
+				pi.set_warehouse AS depot_name
 			FROM `tabPurchase Invoice` pi
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-			LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
 			WHERE pi.docstatus = 1
 				AND pii.item_group = 'Products'
 				AND pi.posting_date >= %(from_date)s

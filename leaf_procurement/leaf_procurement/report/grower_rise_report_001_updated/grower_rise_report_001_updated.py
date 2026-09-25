@@ -22,7 +22,7 @@ def execute(filters=None):
         # Depot values in the data are inconsistently formatted (e.g. "CTS-1 - CTS"
         # vs "CTS 2 - CTS" - hyphen vs space), so match with hyphens and spaces
         # normalized to the same character rather than requiring an exact string.
-        depot_filter = " AND REPLACE(supp.custom_location_warehouse, '-', ' ') LIKE REPLACE(CONCAT('%%', %(depot)s, '%%'), '-', ' ')"
+        depot_filter = " AND REPLACE(pi.set_warehouse, '-', ' ') LIKE REPLACE(CONCAT('%%', %(depot)s, '%%'), '-', ' ')"
 
     raw_data = frappe.db.sql(f"""
         WITH base_data AS (
@@ -31,13 +31,13 @@ def execute(filters=None):
                 pii.qty,
                 pii.rate,
                 pii.name AS item_name,
-                supp.custom_location_warehouse AS depot_name,
+                pi.set_warehouse AS depot_name,
                 supp.name AS grower_id,
                 supp.supplier_name AS grower_name
             FROM `tabPurchase Invoice` pi
             JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
             LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-            LEFT JOIN `tabWarehouse` wh ON wh.name = supp.custom_location_warehouse
+            LEFT JOIN `tabWarehouse` wh ON wh.name = pi.set_warehouse
             WHERE pi.docstatus = 1
                 AND pii.item_group = 'Products'
                 AND pi.posting_date >= %(from_date)s

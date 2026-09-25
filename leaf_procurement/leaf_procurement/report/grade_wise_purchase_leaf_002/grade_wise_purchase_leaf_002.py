@@ -120,7 +120,7 @@ def execute(filters=None):
 		params["supplier"] = filters.get("supplier")
 
 	if filters.get("warehouse"):
-		conditions.append("supp.custom_location_warehouse = %(warehouse)s")
+		conditions.append("pi.set_warehouse = %(warehouse)s")
 		params["warehouse"] = filters.get("warehouse")
 
 	if not filters.get("include_rejected_bales", False):
@@ -152,10 +152,9 @@ def execute(filters=None):
 				pii.grade,
 				pii.sub_grade,
 				pii.reclassification_grade,
-				supp.custom_location_warehouse AS warehouse
+				pi.set_warehouse AS warehouse
 			FROM `tabPurchase Invoice` pi
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
-			LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
 			WHERE
 				pi.docstatus = 1
 				AND pii.item_group = 'Products'

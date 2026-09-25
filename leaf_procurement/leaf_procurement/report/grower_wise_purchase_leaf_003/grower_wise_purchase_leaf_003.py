@@ -67,7 +67,7 @@ def execute(filters=None):
 			supp.supplier_name AS grower_name,
 			supp.custom_father_name AS father_name,
 			supp.custom_nic_number AS cnic,
-			supp.custom_location_warehouse AS depot,
+			pi.set_warehouse AS depot,
 			pi.posting_date AS purchase_date,
 			pi.due_date AS payment_date,
 			sum(pii.qty) AS quantity,
@@ -108,7 +108,7 @@ def get_conditions(filters):
 	conditions = []
 	inc_rej_bales = filters.get("include_rejected_bales", False)
 	if filters.get("depot"):
-		conditions.append("supp.custom_location_warehouse = %(depot)s")
+		conditions.append("pi.set_warehouse = %(depot)s")
 	if filters.get("grower"):
 		conditions.append("pi.supplier = %(grower)s")
 	if not inc_rej_bales:
