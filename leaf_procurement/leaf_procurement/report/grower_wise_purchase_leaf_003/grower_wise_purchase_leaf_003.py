@@ -77,7 +77,7 @@ def execute(filters=None):
 		FROM `tabPurchase Invoice` pi
 		JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 		LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
-		WHERE pi.docstatus = 1 AND pii.item_group = 'Products'
+		WHERE pi.docstatus = 1 AND pi.is_return = 0 AND pii.item_group = 'Products'
 		AND pi.posting_date BETWEEN %(from_date)s AND %(to_date)s
 		AND {conditions}
 		GROUP BY pi.name

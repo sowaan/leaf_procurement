@@ -39,6 +39,7 @@ def execute(filters=None):
             LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
             LEFT JOIN `tabWarehouse` wh ON wh.name = pi.set_warehouse
             WHERE pi.docstatus = 1
+                AND pi.is_return = 0
                 AND pii.item_group = 'Products'
                 AND pi.posting_date >= %(from_date)s
                 AND pi.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)

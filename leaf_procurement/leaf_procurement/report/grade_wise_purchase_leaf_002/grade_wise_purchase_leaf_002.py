@@ -157,6 +157,7 @@ def execute(filters=None):
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 			WHERE
 				pi.docstatus = 1
+				AND pi.is_return = 0
 				AND pii.item_group = 'Products'
 				-- This date filtering is SARGable and allows the DB to use an index
 				AND pi.posting_date >= %(from_date)s

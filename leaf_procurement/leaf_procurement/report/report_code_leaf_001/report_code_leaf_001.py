@@ -89,6 +89,7 @@ def execute(filters=None):
 			FROM `tabPurchase Invoice` pi
 			JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 			WHERE pi.docstatus = 1
+				AND pi.is_return = 0
 				AND pii.item_group = 'Products'
 				AND pi.posting_date >= %(from_date)s
 				AND pi.posting_date < DATE_ADD(%(to_date)s, INTERVAL 1 DAY)

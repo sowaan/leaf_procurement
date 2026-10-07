@@ -31,6 +31,7 @@ def execute(filters=None):
 			LEFT JOIN `tabPurchase Invoice Item` pii ON pi.name = pii.parent
 			LEFT JOIN `tabSupplier` supp ON pi.supplier = supp.name
 		WHERE pi.docstatus = 1
+			AND pi.is_return = 0
 			AND pi.posting_date BETWEEN %(from_date)s AND %(to_date)s
 			AND {conditions}
 		GROUP BY pi.name
