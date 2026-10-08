@@ -61,9 +61,9 @@ class GoodsReceivingNote(Document):
             })
 
         # Optionally set a field on parent to link the created stock entry
-        if stock_entry_name:
+        #if stock_entry_name:
             # keep a reference field like `created_stock_entry` on your GRN or use a custom field
-            self.db_set("created_stock_entry", stock_entry_name)
+            #self.db_set("created_stock_entry", stock_entry_name)
             # Alternatively set in-memory so it gets saved on submit:
             # self.created_stock_entry = stock_entry_name
 
